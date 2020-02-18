@@ -1,9 +1,22 @@
+// Contents:
+// * Value
+// * IntValue
+// * FloatValue
+// * StringValue
+// * BooleanValue
+// * NullValue
+// * EnumValue
+// * ListValue
+// * ObjectField<Value>
+// * ObjectValue
+// * DefaultValue
 part of 'schema.dart';
 
 @immutable
 abstract class Value extends GraphQLEntity {
   const Value();
 
+  @override
   ValueNode get astNode;
 
   static Value fromNode(ValueNode node) {

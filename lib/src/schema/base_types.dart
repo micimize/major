@@ -1,3 +1,12 @@
+// Contents:
+// * GraphQLEntity
+// * AbstractType
+// * NamedType
+// * ListType
+// * Argument
+// * Directive
+// * TypeSystemDefinition
+// * TypeDefinition
 part of 'schema.dart';
 
 @immutable
@@ -11,19 +20,6 @@ abstract class GraphQLEntity {
 }
 
 mixin AbstractType on GraphQLEntity {}
-
-@immutable
-class Argument extends GraphQLEntity {
-  const Argument(this.astNode);
-
-  @override
-  final ArgumentNode astNode;
-
-  String get name => astNode.name.value;
-  Value get value => Value.fromNode(astNode.value);
-
-  static Argument fromNode(ArgumentNode astNode) => Argument(astNode);
-}
 
 @immutable
 class NamedType extends GraphQLEntity {
@@ -48,6 +44,19 @@ class ListType extends GraphQLEntity {
 }
 
 @immutable
+class Argument extends GraphQLEntity {
+  const Argument(this.astNode);
+
+  @override
+  final ArgumentNode astNode;
+
+  String get name => astNode.name.value;
+  Value get value => Value.fromNode(astNode.value);
+
+  static Argument fromNode(ArgumentNode astNode) => Argument(astNode);
+}
+
+@immutable
 class Directive extends GraphQLEntity {
   const Directive(this.astNode);
 
@@ -68,6 +77,8 @@ abstract class TypeSystemDefinition extends GraphQLEntity {
 
   @override
   TypeSystemDefinitionNode get astNode;
+
+  String get name => astNode.name.value;
 }
 
 @immutable
@@ -79,8 +90,42 @@ abstract class TypeDefinition extends TypeSystemDefinition {
 
   String get description => astNode.description.value;
 
-  String get name => astNode.name.value;
-
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
+
+  static TypeDefinition fromNode(TypeDefinitionNode node) {
+    if (node is ScalarTypeDefinitionNode) {
+      return ScalarTypeDefinition.fromNode(node);
+    }
+
+    if (node is InterfaceTypeDefinitionNode) {
+      return InterfaceTypeDefinition.fromNode(node);
+    }
+
+    if (node is ObjectTypeDefinitionNode) {
+      return ObjectTypeDefinition.fromNode(node);
+    }
+
+    if (node is UnionTypeDefinitionNode) {
+      return UnionTypeDefinition.fromNode(node);
+    }
+
+    if (node is EnumTypeDefinitionNode) {
+      return EnumTypeDefinition.fromNode(node);
+    }
+
+    if (node is InputObjectTypeDefinitionNode) {
+      return InputObjectTypeDefinition.fromNode(node);
+    }
+
+    /* 
+    https://github.com/graphql/graphql-js/blob/49d86bbc810d1203aa3f7d93252e51f257d9460f/src/language/predicates.js#L59
+    doesn't include enum values
+    if (node is EnumValueDefinitionNode) {
+      return EnumValueDefinition.fromNode(node);
+    }
+    */
+
+    throw ArgumentError('$node is unsupported');
+  }
 }
