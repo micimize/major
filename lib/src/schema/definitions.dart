@@ -2,13 +2,13 @@
 // * FieldDefinition
 // * ScalarTypeDefinition
 // * InputValueDefinition
-// * InterfaceTypeDefinition
-// * ObjectTypeDefinition
-// * UnionTypeDefinition
 // * EnumTypeDefinition
 // * EnumValueDefinition
 // * InputObjectTypeDefinition
 // * DirectiveDefinition
+// * InterfaceTypeDefinition
+// * ObjectTypeDefinition
+// * UnionTypeDefinition
 part of 'schema.dart';
 
 @immutable
@@ -22,7 +22,7 @@ class FieldDefinition extends GraphQLEntity {
 
   String get name => astNode.name.value;
 
-  //TypeNode get type => astNode.type;
+  GraphQLType get type => GraphQLType.fromNode(astNode.type);
 
   List<Directive> get directive =>
       astNode.directives.map(Directive.fromNode).toList();
@@ -53,9 +53,13 @@ class InputValueDefinition extends GraphQLEntity {
   final InputValueDefinitionNode astNode;
 
   String get description => astNode.description.value;
+
   String get name => astNode.name.value;
-  TypeNode get type => astNode.type;
+
+  TypeNode get typeNode => astNode.type;
+
   Value get defaultValue => Value.fromNode(astNode.defaultValue);
+
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
 
@@ -85,7 +89,7 @@ class ObjectTypeDefinition extends TypeDefinition {
   @override
   final ObjectTypeDefinitionNode astNode;
 
-  List<NamedType> get interfaces =>
+  List<NamedType> get interfaceNames =>
       astNode.interfaces.map(NamedType.fromNode).toList();
 
   List<FieldDefinition> get fields =>
@@ -102,7 +106,7 @@ class UnionTypeDefinition extends TypeDefinition with AbstractType {
   @override
   final UnionTypeDefinitionNode astNode;
 
-  List<NamedTypeNode> get types => astNode.types;
+  List<NamedType> get typeNames => astNode.types.map(NamedType.fromNode);
 
   static UnionTypeDefinition fromNode(UnionTypeDefinitionNode astNode) =>
       UnionTypeDefinition(astNode);
@@ -176,6 +180,7 @@ class OperationTypeDefinition extends GraphQLEntity {
   final OperationTypeDefinitionNode astNode;
 
   OperationType get operation => astNode.operation;
+
   NamedTypeNode get type => astNode.type;
 
   static OperationTypeDefinition fromNode(

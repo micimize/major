@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
 import 'package:gql/language.dart';
@@ -8,6 +6,7 @@ part 'base_types.dart';
 part 'value_types.dart';
 part 'definitions.dart';
 part 'defaults.dart';
+part 'schema_aware.dart';
 
 @immutable
 class GraphQLSchema extends TypeSystemDefinition {
@@ -47,16 +46,21 @@ class GraphQLSchema extends TypeSystemDefinition {
         | GraphQLEnumType
         | GraphQLInputObjectType;
       */
-  final Map<String, Object> typeMap;
+  final Map<String, TypeDefinition> typeMap;
 
-  Object getType(String name) => null;
+  TypeDefinition getType(String name) {
+    final type = typeMap[name];
+    return withAwareness(type, this) ?? type;
+  }
 
+  /*
   List<ObjectTypeDefinition> getPossibleTypes(AbstractType abstractType) =>
       null;
 
   bool isPossibleType(
           AbstractType abstractType, ObjectTypeDefinition objectType) =>
       false; // objectType is abstractType.runtimeType;
+  */
 
   static GraphQLSchema fromNode(DocumentNode documentNode) =>
       buildSchema(documentNode);
@@ -102,9 +106,11 @@ GraphQLSchema buildSchema(
       _directiveDefs.add(def);
     }
   }
-  final typeMap = Map.fromEntries(_typeDefs
-      .map(TypeDefinition.fromNode)
-      .map((type) => MapEntry(type.name, type)));
+  final typeMap = Map.fromEntries(
+    _typeDefs
+        .map(TypeDefinition.fromNode)
+        .map((type) => MapEntry(type.name, type)),
+  );
 
   final directives = _directiveDefs.map(DirectiveDefinition.fromNode).toList();
 

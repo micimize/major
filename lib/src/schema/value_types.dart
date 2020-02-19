@@ -134,9 +134,10 @@ class ListValue extends Value {
 }
 
 @immutable
-class ObjectField<V extends Value> {
+class ObjectField<V extends Value> extends GraphQLEntity {
   const ObjectField(this.astNode);
 
+  @override
   final ObjectFieldNode astNode;
 
   String get name => astNode.name.value;
@@ -165,9 +166,10 @@ class ObjectValue extends Value {
 }
 
 @immutable
-class DefaultValue {
+class DefaultValue extends GraphQLEntity {
   const DefaultValue(this.astNode);
 
+  @override
   final DefaultValueNode astNode;
 
   Value get value => Value.fromNode(astNode.value);

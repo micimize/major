@@ -22,23 +22,55 @@ abstract class GraphQLEntity {
 mixin AbstractType on GraphQLEntity {}
 
 @immutable
-class NamedType extends GraphQLEntity {
-  const NamedType(this.astNode);
+abstract class GraphQLType extends GraphQLEntity {
+  const GraphQLType();
+
+  @override
+  TypeNode get astNode;
+
+  bool get isNonNull => astNode.isNonNull;
+
+  String get baseTypeName;
+
+  static GraphQLType fromNode(TypeNode astNode) {
+    if (astNode is NamedTypeNode) {
+      return NamedType(astNode);
+    }
+    if (astNode is ListTypeNode) {
+      return ListType(astNode);
+    }
+    throw ArgumentError('$astNode is unsupported');
+  }
+}
+
+@immutable
+class NamedType extends GraphQLType {
+  const NamedType(this.astNode) : super();
 
   @override
   final NamedTypeNode astNode;
 
+  String get name => astNode.name.value;
+
+  @override
+  String get baseTypeName => name;
+
   static NamedType fromNode(NamedTypeNode astNode) => NamedType(astNode);
+
+  static String nameFromNode(NamedTypeNode astNode) => astNode.name.value;
 }
 
 @immutable
-class ListType extends GraphQLEntity {
+class ListType extends GraphQLType {
   const ListType(this.astNode);
 
   @override
   final ListTypeNode astNode;
 
-  TypeNode get type => astNode.type;
+  GraphQLType get type => GraphQLType.fromNode(astNode.type);
+
+  @override
+  String get baseTypeName => type.baseTypeName;
 
   static ListType fromNode(ListTypeNode astNode) => ListType(astNode);
 }
@@ -82,6 +114,7 @@ abstract class TypeSystemDefinition extends GraphQLEntity {
 }
 
 @immutable
+// same as GraphQLNamedType in the graphqljs implementation
 abstract class TypeDefinition extends TypeSystemDefinition {
   const TypeDefinition();
 
