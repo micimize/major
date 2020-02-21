@@ -25,7 +25,7 @@ class FieldDefinition extends GraphQLEntity {
 
   String get name => astNode.name.value;
 
-  String get description => astNode.description.value;
+  String get description => astNode.description?.value;
 
   GraphQLType get type => GraphQLType.fromNode(astNode.type);
 
@@ -59,7 +59,7 @@ class InputValueDefinition extends GraphQLEntity {
 
   String get name => astNode.name.value;
 
-  String get description => astNode.description.value;
+  String get description => astNode.description?.value;
 
   GraphQLType get type => GraphQLType.fromNode(astNode.type);
 
@@ -165,7 +165,7 @@ class DirectiveDefinition extends TypeSystemDefinition {
   @override
   final DirectiveDefinitionNode astNode;
 
-  String get description => astNode.description.value;
+  String get description => astNode.description?.value;
 
   List<InputValueDefinition> get args =>
       astNode.args.map(InputValueDefinition.fromNode).toList();

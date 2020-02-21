@@ -1,5 +1,4 @@
 // TODO this module is not really written for actual server usage atm, so these are broken
-import 'package:built_graphql/src/templates/base_types.dart';
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
 

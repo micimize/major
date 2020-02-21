@@ -1,8 +1,27 @@
 import 'package:meta/meta.dart';
 import 'package:recase/recase.dart';
+import 'package:dart_style/dart_style.dart';
+
+final _dartfmt = DartFormatter();
+
+/// Attempt to format a block
+String format(String source) {
+  try {
+    return _dartfmt.format(source);
+  } catch (e) {
+    return source;
+  }
+}
 
 String dartName(String name) => ReCase(name).camelCase;
 String className(String name) => ReCase(name).pascalCase;
+
+String docstring(String description, [String trailing = '\n']) {
+  if (description != null && description.trim().isNotEmpty) {
+    return '/// ' + description.trim().split('\n').join('\n///') + trailing;
+  }
+  return '';
+}
 
 typedef ItemTemplate<T> = Iterable<String> Function(T item);
 
@@ -16,6 +35,7 @@ class ListPrinter<T> {
     this.divider = ',',
     this.leading = '',
     this.trailing = '',
+    this.shouldTrailDivider = _defaultShouldTrailDivider,
   });
 
   /// Template with which to render [items].
@@ -39,6 +59,9 @@ class ListPrinter<T> {
   /// Trailing suffix for the final result with **if** it is not empty
   final String trailing;
 
+  /// Determines if the divider should trail
+  final bool Function(List<T> items, String innerResults) shouldTrailDivider;
+
   ListPrinter<T> copyWith({
     ItemTemplate<T> itemTemplate,
     Iterable<T> items,
@@ -46,14 +69,16 @@ class ListPrinter<T> {
     String divider,
     String leading,
     String trailing,
+    bool Function(List<T> items, String innerResult) shouldTrailDivider,
   }) =>
       ListPrinter(
         itemTemplate: itemTemplate ?? this.itemTemplate,
         items: items ?? this.items,
         spacing: spacing ?? this.spacing,
         divider: divider ?? this.divider,
-        leading: this.leading ?? leading,
-        trailing: this.trailing ?? trailing,
+        leading: leading ?? this.leading,
+        trailing: trailing ?? this.trailing,
+        shouldTrailDivider: shouldTrailDivider ?? this.shouldTrailDivider,
       );
 
   ListPrinter<T> over(Iterable<T> items) => copyWith(items: items);
@@ -64,13 +89,26 @@ class ListPrinter<T> {
   /// Wraps the printer in { }. alias for `copyWith(leading: '{', trailing: '}')`
   ListPrinter<T> get braced => copyWith(leading: '{', trailing: '}');
 
-  /// Alias for `copyWith(divider: ';\n');`
-  ListPrinter<T> get semicolons => copyWith(divider: ';\n');
+  ListPrinter<T> get options => copyWith(leading: '{', trailing: '}');
+
+  /// Alias for `copyWith(divider: ';\n', shouldTrailDivider: (items) => true,);`
+  ListPrinter<T> get semicolons => copyWith(
+        divider: ';\n',
+        shouldTrailDivider: (items, inner) => true,
+      );
+
+  //trailingCommaWhen({ int length =  }): (items, inner) => true,
 
   @override
   String toString() {
-    final results =
-        items.map((item) => itemTemplate(item).join(spacing)).join(divider);
-    return results.isEmpty ? results : '$leading$results$trailing';
+    final _items = items.toList();
+    var inner =
+        _items.map((item) => itemTemplate(item).join(spacing)).join(divider);
+    if (shouldTrailDivider(_items, inner)) {
+      inner += divider;
+    }
+    return inner.isEmpty ? inner : '$leading$inner$trailing';
   }
 }
+
+bool _defaultShouldTrailDivider(List<Object> items, String inner) => false;

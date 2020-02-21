@@ -1,12 +1,19 @@
 import 'package:built_graphql/src/schema/schema.dart';
 import 'package:built_graphql/src/templates/print_type.dart';
 import 'package:built_graphql/src/templates/utils.dart';
-import './parametrized_field.dart';
 
-String printInterface(InterfaceTypeDefinition interfaceType) {
-  final CLASS_NAME = className(interfaceType.name);
+String printInputObjectType(InputObjectTypeDefinition inputType) {
+  final CLASS_NAME = className(inputType.name);
 
-  final fieldsTemplate = ListPrinter(items: interfaceType.fields);
+  final fieldsTemplate = ListPrinter(items: inputType.fields);
+
+  /*
+  final interfaceTemplate = ListPrinter(
+    items: inputType.interfaceNames,
+    itemTemplate: (GraphQLType name) => [printType(name)],
+    trailing: ', ',
+  );
+  */
 
   final GETTERS = fieldsTemplate
       .map((field) => [
@@ -25,16 +32,19 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
             printType(field.type),
             dartName(field.name),
           ])
-implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> 
+  */
+
+  return format('''
+
+    ${docstring(inputType.description, '')}
+    abstract class $CLASS_NAME implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
 
       $CLASS_NAME._();
       factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-  */
-  return format(interfaceType.fields.map(printField).join('') +
-      '''
-    ${docstring(interfaceType.description, '')}
-    abstract class $CLASS_NAME {
+
       $GETTERS
+
     }
+
   ''');
 }

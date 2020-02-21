@@ -15,7 +15,7 @@ import './definitions/definitions.dart' as d;
 mixin SchemaAware on d.GraphQLEntity {}
 
 // TODO will this result in `type is SchemaAware == true`?
-mixin _TypeDefinition on d.TypeDefinition implements SchemaAware {}
+mixin SchemaAwareTypeDefinition on d.TypeDefinition implements SchemaAware {}
 
 @immutable
 class NamedType extends d.NamedType with SchemaAware {
@@ -29,7 +29,7 @@ class NamedType extends d.NamedType with SchemaAware {
 
 @immutable
 class InterfaceTypeDefinition extends d.InterfaceTypeDefinition
-    with _TypeDefinition {
+    with SchemaAwareTypeDefinition {
   const InterfaceTypeDefinition(
       InterfaceTypeDefinitionNode astNode, this.schema)
       : super(astNode);
@@ -43,7 +43,8 @@ class InterfaceTypeDefinition extends d.InterfaceTypeDefinition
 }
 
 @immutable
-class ObjectTypeDefinition extends d.ObjectTypeDefinition with _TypeDefinition {
+class ObjectTypeDefinition extends d.ObjectTypeDefinition
+    with SchemaAwareTypeDefinition {
   const ObjectTypeDefinition(ObjectTypeDefinitionNode astNode, this.schema)
       : super(astNode);
 
@@ -51,37 +52,55 @@ class ObjectTypeDefinition extends d.ObjectTypeDefinition with _TypeDefinition {
   final GraphQLSchema schema;
 
   @override
-  List<FieldDefinition> get fields =>
-      astNode.fields.map((f) => FieldDefinition(f, schema)).toList();
+  List<FieldDefinition> get fields {
+    final inherited = _inheritedFieldNames;
+    return astNode.fields
+        .map((f) => FieldDefinition(
+              f,
+              schema,
+              isOverride: inherited.contains(f.name.value),
+            ))
+        .toList();
+  }
 
   List<InterfaceTypeDefinition> get interfaces => interfaceNames
       .map((i) => schema.getType(i.name) as InterfaceTypeDefinition)
       .toList();
+
+  Set<String> get _inheritedFieldNames {
+    var inherited = <String>{};
+    for (final face in interfaces) {
+      inherited.addAll(face.fields.map((f) => f.name));
+    }
+    return inherited;
+  }
 }
 
 @immutable
-class UnionTypeDefinition extends d.UnionTypeDefinition with _TypeDefinition {
+class UnionTypeDefinition extends d.UnionTypeDefinition
+    with SchemaAwareTypeDefinition {
   const UnionTypeDefinition(UnionTypeDefinitionNode astNode, this.schema)
       : super(astNode);
 
   @protected
   final GraphQLSchema schema;
 
-  List<_TypeDefinition> get types =>
-      typeNames.map((t) => schema.getType(t.name) as _TypeDefinition).toList();
+  List<SchemaAwareTypeDefinition> get types => typeNames
+      .map((t) => schema.getType(t.name) as SchemaAwareTypeDefinition)
+      .toList();
 }
 
-_TypeDefinition withAwareness(
+SchemaAwareTypeDefinition withAwareness(
   TypeDefinition definition,
   GraphQLSchema schema,
 ) {
-  if (definition is InterfaceTypeDefinition) {
+  if (definition is d.InterfaceTypeDefinition) {
     return InterfaceTypeDefinition(definition.astNode, schema);
   }
-  if (definition is ObjectTypeDefinition) {
+  if (definition is d.ObjectTypeDefinition) {
     return ObjectTypeDefinition(definition.astNode, schema);
   }
-  if (definition is UnionTypeDefinition) {
+  if (definition is d.UnionTypeDefinition) {
     return UnionTypeDefinition(definition.astNode, schema);
   }
   return null;
@@ -125,11 +144,17 @@ class InputValueDefinition extends d.InputValueDefinition with SchemaAware {
 
 @immutable
 class FieldDefinition extends d.FieldDefinition with SchemaAware {
-  const FieldDefinition(FieldDefinitionNode astNode, this.schema)
-      : super(astNode);
+  const FieldDefinition(
+    FieldDefinitionNode astNode,
+    this.schema, {
+    this.isOverride = false,
+  }) : super(astNode);
 
   @protected
   final GraphQLSchema schema;
+
+  /// Set by [ObjectTypeDefinition] to specify if this field was inhereted from an [InterfaceTypeDefinition]
+  final bool isOverride;
 
   @override
   List<InputValueDefinition> get args =>
@@ -138,15 +163,4 @@ class FieldDefinition extends d.FieldDefinition with SchemaAware {
   @override
   GraphQLType get type =>
       _passThroughAwareness(astNode.type, schema) ?? super.type;
-}
-
-String printType(GraphQLType type) {
-  if (type is d.NamedType) {
-    return type.name;
-  }
-  if (type is d.ListType) {
-    return 'List<${printType(type.type)}>';
-  }
-
-  throw ArgumentError('$type is unsupported');
 }

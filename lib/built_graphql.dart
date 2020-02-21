@@ -1,6 +1,6 @@
-/// Support for doing something awesome.
-///
 /// More dartdocs go here.
 library built_graphql;
 
-// TODO: Export any libraries intended for clients of this package.
+export 'package:meta/meta.dart';
+export 'package:built_value/built_value.dart';
+export 'package:built_collection/built_collection.dart';

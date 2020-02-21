@@ -129,7 +129,7 @@ abstract class TypeDefinition extends TypeSystemDefinition {
   @override
   TypeDefinitionNode get astNode;
 
-  String get description => astNode.description.value;
+  String get description => astNode.description?.value;
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();

@@ -3,6 +3,8 @@ import 'package:gql/ast.dart';
 
 import './defaults.dart';
 
+import './definitions/definitions.dart' as d;
+
 import './definitions.dart';
 export './definitions.dart';
 
@@ -10,15 +12,20 @@ export './definitions.dart';
 class GraphQLSchema extends TypeSystemDefinition {
   const GraphQLSchema(
     this.astNode, {
-    this.query,
-    this.mutation,
-    this.subscription,
+    this.fullDocumentAst,
     this.typeMap,
     this.directives,
-  });
+    d.ObjectTypeDefinition mutation,
+    d.ObjectTypeDefinition query,
+    d.ObjectTypeDefinition subscription,
+  })  : _mutation = mutation,
+        _query = query,
+        _subscription = subscription;
 
   @override
   final SchemaDefinitionNode astNode;
+
+  final DocumentNode fullDocumentAst;
 
   final List<DirectiveDefinition> directives;
 
@@ -30,27 +37,45 @@ class GraphQLSchema extends TypeSystemDefinition {
   List<OperationTypeDefinition> get operationTypes =>
       astNode.operationTypes.map(OperationTypeDefinition.fromNode).toList();
 
-  final ObjectTypeDefinition mutation;
-  final ObjectTypeDefinition query;
-  final ObjectTypeDefinition subscription;
-
   /// Map of name => [TypeDefinition]
+  /// TODO saturating types with awareness before they make it to the end user is important
   final Map<String, TypeDefinition> typeMap;
 
-  TypeDefinition getType(String name) {
-    final type = typeMap[name];
-    return withAwareness(type, this) ?? type;
-  }
+  TypeDefinition _withAwareness(TypeDefinition type) =>
+      withAwareness(type, this) ?? type;
 
-  List<T> _getAll<T extends TypeDefinition>() => typeMap.values
-      .whereType<T>()
-      .map<T>((t) => withAwareness(t, this) as T ?? t)
-      .toList();
+  TypeDefinition getType(String name) => _withAwareness(typeMap[name]);
+
+  Iterable<TypeDefinition> get _allTypeDefinitions =>
+      typeMap.values.map(_withAwareness);
+
+  final d.ObjectTypeDefinition _mutation;
+  ObjectTypeDefinition get mutation =>
+      _withAwareness(_mutation) as ObjectTypeDefinition;
+
+  final d.ObjectTypeDefinition _query;
+  ObjectTypeDefinition get query =>
+      withAwareness(_query, this) as ObjectTypeDefinition;
+
+  final d.ObjectTypeDefinition _subscription;
+  ObjectTypeDefinition get subscription =>
+      withAwareness(_subscription, this) as ObjectTypeDefinition;
 
   List<InterfaceTypeDefinition> get interaces =>
       _getAll<InterfaceTypeDefinition>();
 
+  List<EnumTypeDefinition> get enums => _getAll<EnumTypeDefinition>();
+
   List<ObjectTypeDefinition> get objectTypes => _getAll<ObjectTypeDefinition>();
+
+  List<UnionTypeDefinition> get unions => _getAll<UnionTypeDefinition>();
+
+  List<InputObjectTypeDefinition> get inputObjectTypes =>
+      _getAll<InputObjectTypeDefinition>();
+
+  /// Collect all
+  List<T> _getAll<T extends TypeDefinition>() =>
+      _allTypeDefinitions.whereType<T>().toList();
 
   /*
   List<ObjectTypeDefinition> getPossibleTypes(AbstractType abstractType) =>
@@ -113,24 +138,10 @@ GraphQLSchema buildSchema(
 
   final directives = _directiveDefs.map(DirectiveDefinition.fromNode).toList();
 
-  final operationTypeNames = schemaDef != null
-      ? getOperationTypeNames(schemaDef)
-      : {
-          OperationType.query: 'Query',
-          OperationType.mutation: 'Mutation',
-          OperationType.subscription: 'Subscription',
-        };
-
   // If specified directives were not explicitly declared, add them.
   directives.addAll(missingBuiltinDirectives(directives));
 
-  ObjectTypeDefinition getType(OperationType rootType) {
-    final name = operationTypeNames[rootType];
-    if (name != null) {
-      return typeMap[name] as ObjectTypeDefinition;
-    }
-    return null;
-  }
+  final getType = _operationGetter(typeMap, schemaDef);
 
   return GraphQLSchema(
     schemaDef,
@@ -142,10 +153,40 @@ GraphQLSchema buildSchema(
   );
 }
 
-Map<OperationType, String> getOperationTypeNames(SchemaDefinitionNode schema) {
-  const opTypes = <OperationType, String>{};
-  for (final operationType in schema.operationTypes) {
-    opTypes[operationType.operation] = operationType.type.name.value;
+d.ObjectTypeDefinition Function(OperationType) _operationGetter(
+  Map<String, TypeDefinition> typeMap,
+  SchemaDefinitionNode schemaDef,
+) {
+  final operationTypeNames = _getOperationTypeNames(schemaDef);
+
+  d.ObjectTypeDefinition getType(OperationType rootType) {
+    final name = operationTypeNames[rootType];
+    if (name != null) {
+      return typeMap[name] as d.ObjectTypeDefinition;
+    }
+    return null;
   }
-  return opTypes;
+
+  return getType;
+}
+
+/// Resolve a map of { [OperationType]: [String] typeName }
+Map<OperationType, String> _getOperationTypeNames(
+    [SchemaDefinitionNode schema]) {
+  if (schema == null) {
+    return {
+      OperationType.query: 'Query',
+      OperationType.mutation: 'Mutation',
+      OperationType.subscription: 'Subscription',
+    };
+  }
+
+  return Map.fromEntries(
+    schema.operationTypes.map(
+      (operationType) => MapEntry(
+        operationType.operation,
+        operationType.type.name.value,
+      ),
+    ),
+  );
 }

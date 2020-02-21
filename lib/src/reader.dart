@@ -14,13 +14,15 @@ const astExtension = '.ast.gql.dart';
 
 @immutable
 class GraphQLDocument {
-  final List<String> imports;
-  final DocumentNode ast;
-
   GraphQLDocument({
+    @required this.path,
     @required this.imports,
     @required this.ast,
   });
+
+  final String path;
+  final List<String> imports;
+  final DocumentNode ast;
 }
 
 Future<GraphQLDocument> readDocument(
@@ -68,12 +70,12 @@ Future<GraphQLDocument> readDocument(
         (missing) => log.warning('Could not import missing file $missing.'),
       );
 
+  final path = (rootId ?? buildStep.inputId).path;
+
   return GraphQLDocument(
+    path: path,
     imports: importMap.keys.toList(),
-    ast: parseString(
-      content,
-      url: (rootId ?? buildStep.inputId).path,
-    ),
+    ast: parseString(content, url: path),
   );
 }
 

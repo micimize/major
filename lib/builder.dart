@@ -1,16 +1,21 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
+import 'package:meta/meta.dart';
 import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/schema/schema.dart';
 import 'package:built_graphql/src/templates/schema.dart';
-import 'package:dart_style/dart_style.dart';
+
+import 'package:path/path.dart' as p;
 
 const sourceExtension = '.graphql';
-const schemaExtension = '.schema.gql.dart';
-const astExtension = '.ast.gql.dart';
+const schemaExtension = '.graphql.dart';
+const schemaGeneratedExtension = '.graphql.g.dart';
+// const astExtension = '.ast.gql.dart';
 
-Builder schemaBuilder(BuilderOptions options) => SchemaBuilder();
+Builder schemaBuilder(BuilderOptions options) {
+  return SchemaBuilder();
+}
 
 class SchemaBuilder implements Builder {
   @override
@@ -21,17 +26,27 @@ class SchemaBuilder implements Builder {
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     final doc = await readDocument(buildStep);
+    final targetAsset = buildStep.inputId.changeExtension(schemaExtension);
 
     return buildStep.writeAsString(
-      buildStep.inputId.changeExtension(schemaExtension),
-      _dartfmt.format(printDocument(doc)),
+      targetAsset,
+      //_dartfmt.format(
+      printDocument(
+        doc,
+        generatedPart: p.basenameWithoutExtension(buildStep.inputId.path) +
+            schemaGeneratedExtension,
+      ),
+      //),
     );
   }
 }
 
-final DartFormatter _dartfmt = DartFormatter();
+String printDocument(GraphQLDocument document,
+        {@required String generatedPart}) =>
+    '''
+import 'package:built_graphql/built_graphql.dart';
 
-String printDocument(GraphQLDocument document) => '''
+part '${generatedPart}';
 
 ${document.imports.map(printImport).join(';\n')}
 

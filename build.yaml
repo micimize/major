@@ -1,8 +1,3 @@
-targets:
-  $default:
-    sources:
-      - lib/**
-
 builders:
   schema_builder:
     import: "package:built_graphql/builder.dart"
@@ -11,8 +6,8 @@ builders:
     auto_apply: none
     build_to: source
 
-# targets:
-#   $default:
-#     builders:
-#       gql_build|schema_builder:
-#         enabled: true
+targets:
+  $default:
+    builders:
+      built_graphql|schema_builder:
+        enabled: true
