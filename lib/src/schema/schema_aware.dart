@@ -1,92 +1,106 @@
-// Contents
+// Contents - Schema-aware overrides of:
+// * NamedType
 // * InterfaceTypeDefinition
 // * ObjectTypeDefinition
 // * UnionTypeDefinition
-part of 'schema.dart';
+// * ListType
+// * InputValueDefinition
+// * FieldDefinition
+import 'package:meta/meta.dart';
+import 'package:gql/ast.dart';
 
-mixin SchemaAware on GraphQLEntity {}
+import './schema.dart';
+import './definitions/definitions.dart' as d;
+
+mixin SchemaAware on d.GraphQLEntity {}
 
 // TODO will this result in `type is SchemaAware == true`?
-mixin SchemaAwareType on TypeDefinition implements SchemaAware {}
+mixin _TypeDefinition on d.TypeDefinition implements SchemaAware {}
 
 @immutable
-class _NamedType extends NamedType with SchemaAware {
-  _NamedType(NamedTypeNode astNode, this.schema) : super(astNode);
-
-  TypeDefinition get type => schema.getType(name);
+class NamedType extends d.NamedType with SchemaAware {
+  NamedType(NamedTypeNode astNode, this.schema) : super(astNode);
 
   @protected
   final GraphQLSchema schema;
+
+  d.TypeDefinition get type => schema.getType(name);
 }
 
 @immutable
-class InterfaceType extends InterfaceTypeDefinition with SchemaAwareType {
-  const InterfaceType(InterfaceTypeDefinitionNode astNode, this.schema)
+class InterfaceTypeDefinition extends d.InterfaceTypeDefinition
+    with _TypeDefinition {
+  const InterfaceTypeDefinition(
+      InterfaceTypeDefinitionNode astNode, this.schema)
       : super(astNode);
 
   @protected
   final GraphQLSchema schema;
 
   @override
-  List<Field> get fields =>
-      astNode.fields.map((f) => Field(f, schema)).toList();
+  List<FieldDefinition> get fields =>
+      astNode.fields.map((f) => FieldDefinition(f, schema)).toList();
 }
 
 @immutable
-class ObjectType extends ObjectTypeDefinition with SchemaAwareType {
-  const ObjectType(ObjectTypeDefinitionNode astNode, this.schema)
+class ObjectTypeDefinition extends d.ObjectTypeDefinition with _TypeDefinition {
+  const ObjectTypeDefinition(ObjectTypeDefinitionNode astNode, this.schema)
       : super(astNode);
 
   @protected
   final GraphQLSchema schema;
 
   @override
-  List<Field> get fields =>
-      astNode.fields.map((f) => Field(f, schema)).toList();
+  List<FieldDefinition> get fields =>
+      astNode.fields.map((f) => FieldDefinition(f, schema)).toList();
 
-  List<InterfaceType> get interfaces =>
-      interfaceNames.map((i) => schema.getType(i.name)).toList();
+  List<InterfaceTypeDefinition> get interfaces => interfaceNames
+      .map((i) => schema.getType(i.name) as InterfaceTypeDefinition)
+      .toList();
 }
 
 @immutable
-class UnionType extends UnionTypeDefinition with SchemaAwareType {
-  const UnionType(UnionTypeDefinitionNode astNode, this.schema)
+class UnionTypeDefinition extends d.UnionTypeDefinition with _TypeDefinition {
+  const UnionTypeDefinition(UnionTypeDefinitionNode astNode, this.schema)
       : super(astNode);
 
   @protected
   final GraphQLSchema schema;
 
-  List<SchemaAwareType> get types =>
-      typeNames.map((t) => schema.getType(t.name)).toList();
+  List<_TypeDefinition> get types =>
+      typeNames.map((t) => schema.getType(t.name) as _TypeDefinition).toList();
 }
 
-SchemaAware withAwareness(TypeDefinition definition, GraphQLSchema schema) {
+_TypeDefinition withAwareness(
+  TypeDefinition definition,
+  GraphQLSchema schema,
+) {
   if (definition is InterfaceTypeDefinition) {
-    InterfaceType(definition.astNode, schema);
+    return InterfaceTypeDefinition(definition.astNode, schema);
   }
   if (definition is ObjectTypeDefinition) {
-    ObjectType(definition.astNode, schema);
+    return ObjectTypeDefinition(definition.astNode, schema);
   }
   if (definition is UnionTypeDefinition) {
-    UnionType(definition.astNode, schema);
+    return UnionTypeDefinition(definition.astNode, schema);
   }
   return null;
 }
 
 // pass-through types
-GraphQLType _passThroughAwareness(TypeNode type, GraphQLSchema schema) {
+d.GraphQLType _passThroughAwareness(TypeNode type, GraphQLSchema schema) {
   if (type is NamedTypeNode) {
-    return _NamedType(type, schema);
+    return NamedType(type, schema);
   }
   if (type is ListTypeNode) {
-    return _ListType(type, schema);
+    return ListType(type, schema);
   }
   return null;
 }
 
 @immutable
-class _ListType extends ListType with SchemaAware {
-  _ListType(ListTypeNode astNode, this.schema) : super(astNode);
+class ListType extends d.ListType with SchemaAware {
+  ListType(ListTypeNode astNode, this.schema) : super(astNode);
 
   @protected
   final GraphQLSchema schema;
@@ -97,8 +111,9 @@ class _ListType extends ListType with SchemaAware {
 }
 
 @immutable
-class Field extends FieldDefinition with SchemaAware {
-  const Field(FieldDefinitionNode astNode, this.schema) : super(astNode);
+class InputValueDefinition extends d.InputValueDefinition with SchemaAware {
+  InputValueDefinition(InputValueDefinitionNode astNode, this.schema)
+      : super(astNode);
 
   @protected
   final GraphQLSchema schema;
@@ -106,4 +121,32 @@ class Field extends FieldDefinition with SchemaAware {
   @override
   GraphQLType get type =>
       _passThroughAwareness(astNode.type, schema) ?? super.type;
+}
+
+@immutable
+class FieldDefinition extends d.FieldDefinition with SchemaAware {
+  const FieldDefinition(FieldDefinitionNode astNode, this.schema)
+      : super(astNode);
+
+  @protected
+  final GraphQLSchema schema;
+
+  @override
+  List<InputValueDefinition> get args =>
+      astNode.args.map((arg) => InputValueDefinition(arg, schema)).toList();
+
+  @override
+  GraphQLType get type =>
+      _passThroughAwareness(astNode.type, schema) ?? super.type;
+}
+
+String printType(GraphQLType type) {
+  if (type is d.NamedType) {
+    return type.name;
+  }
+  if (type is d.ListType) {
+    return 'List<${printType(type.type)}>';
+  }
+
+  throw ArgumentError('$type is unsupported');
 }

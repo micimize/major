@@ -1,5 +1,9 @@
 // TODO this module is not really written for actual server usage atm, so these are broken
-part of 'schema.dart';
+import 'package:built_graphql/src/templates/base_types.dart';
+import 'package:meta/meta.dart';
+import 'package:gql/ast.dart';
+
+import './definitions/definitions.dart';
 
 @immutable
 class _BuiltInStringValue extends StringValue {
@@ -23,7 +27,7 @@ class _BuiltInArgument extends InputValueDefinition {
   @override
   final String name;
   @override
-  final TypeNode type;
+  final GraphQLType type;
   @override
   final Value defaultValue;
   @override

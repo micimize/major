@@ -1,12 +1,10 @@
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
-import 'package:gql/language.dart';
 
-part 'base_types.dart';
-part 'value_types.dart';
-part 'definitions.dart';
-part 'defaults.dart';
-part 'schema_aware.dart';
+import './defaults.dart';
+
+import './definitions.dart';
+export './definitions.dart';
 
 @immutable
 class GraphQLSchema extends TypeSystemDefinition {
@@ -36,22 +34,23 @@ class GraphQLSchema extends TypeSystemDefinition {
   final ObjectTypeDefinition query;
   final ObjectTypeDefinition subscription;
 
-  /**
-       * These named types do not include modifiers like List or NonNull.
-      export type GraphQLNamedType =
-        | GraphQLScalarType
-        | GraphQLObjectType
-        | GraphQLInterfaceType
-        | GraphQLUnionType
-        | GraphQLEnumType
-        | GraphQLInputObjectType;
-      */
+  /// Map of name => [TypeDefinition]
   final Map<String, TypeDefinition> typeMap;
 
   TypeDefinition getType(String name) {
     final type = typeMap[name];
     return withAwareness(type, this) ?? type;
   }
+
+  List<T> _getAll<T extends TypeDefinition>() => typeMap.values
+      .whereType<T>()
+      .map<T>((t) => withAwareness(t, this) as T ?? t)
+      .toList();
+
+  List<InterfaceTypeDefinition> get interaces =>
+      _getAll<InterfaceTypeDefinition>();
+
+  List<ObjectTypeDefinition> get objectTypes => _getAll<ObjectTypeDefinition>();
 
   /*
   List<ObjectTypeDefinition> getPossibleTypes(AbstractType abstractType) =>
@@ -117,15 +116,15 @@ GraphQLSchema buildSchema(
   final operationTypeNames = schemaDef != null
       ? getOperationTypeNames(schemaDef)
       : {
-          'query': 'Query',
-          'mutation': 'Mutation',
-          'subscription': 'Subscription',
+          OperationType.query: 'Query',
+          OperationType.mutation: 'Mutation',
+          OperationType.subscription: 'Subscription',
         };
 
   // If specified directives were not explicitly declared, add them.
   directives.addAll(missingBuiltinDirectives(directives));
 
-  ObjectTypeDefinition getType(String rootType) {
+  ObjectTypeDefinition getType(OperationType rootType) {
     final name = operationTypeNames[rootType];
     if (name != null) {
       return typeMap[name] as ObjectTypeDefinition;
@@ -135,16 +134,16 @@ GraphQLSchema buildSchema(
 
   return GraphQLSchema(
     schemaDef,
-    query: getType('query'),
-    mutation: getType('mutation'),
-    subscription: getType('subscription'),
+    query: getType(OperationType.query),
+    mutation: getType(OperationType.mutation),
+    subscription: getType(OperationType.subscription),
     typeMap: typeMap,
     directives: directives,
   );
 }
 
-Map<String, String> getOperationTypeNames(SchemaDefinitionNode schema) {
-  const opTypes = {};
+Map<OperationType, String> getOperationTypeNames(SchemaDefinitionNode schema) {
+  const opTypes = <OperationType, String>{};
   for (final operationType in schema.operationTypes) {
     opTypes[operationType.operation] = operationType.type.name.value;
   }

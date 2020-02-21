@@ -1,0 +1,6616 @@
+type AppUser implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `GoogleUser` that is related to this `AppUser`.
+  """
+  googleUserByAppUserId: GoogleUser
+
+  """
+  Reads and enables pagination through a set of `GoogleUser`.
+  """
+  googleUsersByAppUserId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: GoogleUserCondition
+  ): GoogleUsersConnection!
+    @deprecated(reason: "Please use googleUserByAppUserId instead")
+
+  """
+  Reads and enables pagination through a set of `Task`.
+  """
+  tasksByAppUserId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskCondition
+  ): TasksConnection!
+
+  """
+  Reads and enables pagination through a set of `Metric`.
+  """
+  metricsByAppUserId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: MetricCondition
+  ): MetricsConnection!
+}
+
+"""
+A condition to be used against `AppUser` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input AppUserCondition {
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `AppUser`
+"""
+input AppUserInput {
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+Represents an update to a `AppUser`. Fields that are set will be updated.
+"""
+input AppUserPatch {
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+A connection to a list of `AppUser` values.
+"""
+type AppUsersConnection {
+  """
+  A list of `AppUser` objects.
+  """
+  nodes: [AppUser]!
+
+  """
+  A list of edges which contains the `AppUser` and cursor to aid in pagination.
+  """
+  edges: [AppUsersEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `AppUser` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `AppUser` edge in the connection.
+"""
+type AppUsersEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `AppUser` at the end of the edge.
+  """
+  node: AppUser
+}
+
+"""
+Methods to use when ordering `AppUser`.
+"""
+enum AppUsersOrderBy {
+  NATURAL
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+type CalendarEvent implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  taskId: TemporalId!
+  start: FiniteDatetime!
+  end: FiniteDatetime!
+  recurrenceRule: Rrule
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+}
+
+"""
+A condition to be used against `CalendarEvent` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input CalendarEventCondition {
+  """
+  Checks for equality with the object’s `taskId` field.
+  """
+  taskId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `start` field.
+  """
+  start: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `end` field.
+  """
+  end: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `recurrenceRule` field.
+  """
+  recurrenceRule: Rrule
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `CalendarEvent`
+"""
+input CalendarEventInput {
+  taskId: TemporalIdInput!
+  start: FiniteDatetime!
+  end: FiniteDatetime!
+  recurrenceRule: Rrule
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+Represents an update to a `CalendarEvent`. Fields that are set will be updated.
+"""
+input CalendarEventPatch {
+  taskId: TemporalIdInput
+  start: FiniteDatetime
+  end: FiniteDatetime
+  recurrenceRule: Rrule
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+A connection to a list of `CalendarEvent` values.
+"""
+type CalendarEventsConnection {
+  """
+  A list of `CalendarEvent` objects.
+  """
+  nodes: [CalendarEvent]!
+
+  """
+  A list of edges which contains the `CalendarEvent` and cursor to aid in pagination.
+  """
+  edges: [CalendarEventsEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `CalendarEvent` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `CalendarEvent` edge in the connection.
+"""
+type CalendarEventsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `CalendarEvent` at the end of the edge.
+  """
+  node: CalendarEvent
+}
+
+"""
+Methods to use when ordering `CalendarEvent`.
+"""
+enum CalendarEventsOrderBy {
+  NATURAL
+  TASK_ID_ASC
+  TASK_ID_DESC
+  START_ASC
+  START_DESC
+  END_ASC
+  END_DESC
+  RECURRENCE_RULE_ASC
+  RECURRENCE_RULE_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+All input for the create `AppUser` mutation.
+"""
+input CreateAppUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` to be created by this mutation.
+  """
+  appUser: AppUserInput!
+}
+
+"""
+The output of our create `AppUser` mutation.
+"""
+type CreateAppUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` that was created by this mutation.
+  """
+  appUser: AppUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+All input for the `createCalendarEventBatch` mutation.
+"""
+input CreateCalendarEventBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  calendarEvents: [CalendarEventInput]
+}
+
+"""
+The output of our `createCalendarEventBatch` mutation.
+"""
+type CreateCalendarEventBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  calendarEvents: [CalendarEvent]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the create `CalendarEvent` mutation.
+"""
+input CreateCalendarEventInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` to be created by this mutation.
+  """
+  calendarEvent: CalendarEventInput!
+}
+
+"""
+The output of our create `CalendarEvent` mutation.
+"""
+type CreateCalendarEventPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` that was created by this mutation.
+  """
+  calendarEvent: CalendarEvent
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+
+  """
+  An edge for our `CalendarEvent`. May be used by Relay 1.
+  """
+  calendarEventEdge(
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CalendarEventsEdge
+}
+
+"""
+All input for the create `GoogleUser` mutation.
+"""
+input CreateGoogleUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` to be created by this mutation.
+  """
+  googleUser: GoogleUserInput!
+}
+
+"""
+The output of our create `GoogleUser` mutation.
+"""
+type CreateGoogleUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` that was created by this mutation.
+  """
+  googleUser: GoogleUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `GoogleUser`. May be used by Relay 1.
+  """
+  googleUserEdge(
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GoogleUsersEdge
+}
+
+"""
+All input for the `createMetricBatch` mutation.
+"""
+input CreateMetricBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  metrics: [MetricInput]
+}
+
+"""
+The output of our `createMetricBatch` mutation.
+"""
+type CreateMetricBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  metrics: [Metric]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the create `Metric` mutation.
+"""
+input CreateMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` to be created by this mutation.
+  """
+  metric: MetricInput!
+}
+
+"""
+The output of our create `Metric` mutation.
+"""
+type CreateMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` that was created by this mutation.
+  """
+  metric: Metric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Metric`. May be used by Relay 1.
+  """
+  metricEdge(
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricsEdge
+}
+
+"""
+All input for the `createMetricRecordBatch` mutation.
+"""
+input CreateMetricRecordBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  metricRecords: [MetricRecordInput]
+}
+
+"""
+The output of our `createMetricRecordBatch` mutation.
+"""
+type CreateMetricRecordBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  metricRecords: [MetricRecord]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the create `MetricRecord` mutation.
+"""
+input CreateMetricRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` to be created by this mutation.
+  """
+  metricRecord: MetricRecordInput!
+}
+
+"""
+The output of our create `MetricRecord` mutation.
+"""
+type CreateMetricRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` that was created by this mutation.
+  """
+  metricRecord: MetricRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+
+  """
+  An edge for our `MetricRecord`. May be used by Relay 1.
+  """
+  metricRecordEdge(
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricRecordsEdge
+}
+
+"""
+All input for the `createTaskBatch` mutation.
+"""
+input CreateTaskBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  tasks: [TaskInput]
+}
+
+"""
+The output of our `createTaskBatch` mutation.
+"""
+type CreateTaskBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  tasks: [Task]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the create `Task` mutation.
+"""
+input CreateTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` to be created by this mutation.
+  """
+  task: TaskInput!
+}
+
+"""
+All input for the `createTaskMetricBatch` mutation.
+"""
+input CreateTaskMetricBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  taskMetrics: [TaskMetricInput]
+}
+
+"""
+The output of our `createTaskMetricBatch` mutation.
+"""
+type CreateTaskMetricBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  taskMetrics: [TaskMetric]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the create `TaskMetric` mutation.
+"""
+input CreateTaskMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` to be created by this mutation.
+  """
+  taskMetric: TaskMetricInput!
+}
+
+"""
+The output of our create `TaskMetric` mutation.
+"""
+type CreateTaskMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` that was created by this mutation.
+  """
+  taskMetric: TaskMetric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+
+  """
+  An edge for our `TaskMetric`. May be used by Relay 1.
+  """
+  taskMetricEdge(
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskMetricsEdge
+}
+
+"""
+The output of our create `Task` mutation.
+"""
+type CreateTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` that was created by this mutation.
+  """
+  task: Task
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Task`. May be used by Relay 1.
+  """
+  taskEdge(
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""
+All input for the create `TaskRecord` mutation.
+"""
+input CreateTaskRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` to be created by this mutation.
+  """
+  taskRecord: TaskRecordInput!
+}
+
+"""
+The output of our create `TaskRecord` mutation.
+"""
+type CreateTaskRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` that was created by this mutation.
+  """
+  taskRecord: TaskRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  An edge for our `TaskRecord`. May be used by Relay 1.
+  """
+  taskRecordEdge(
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskRecordsEdge
+}
+
+"""
+All input for the `currentAppUser` mutation.
+"""
+input CurrentAppUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+}
+
+"""
+The output of our `currentAppUser` mutation.
+"""
+type CurrentAppUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  appUser: AppUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+A location in a connection that can be used for resuming pagination.
+"""
+scalar Cursor
+
+"""
+A point in time as described by the [ISO
+8601](https://en.wikipedia.org/wiki/ISO_8601) standard. May or may not include a timezone.
+"""
+scalar Datetime
+
+"""
+All input for the `deleteAppUserByEntityIdAndValidUntil` mutation.
+"""
+input DeleteAppUserByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteAppUserById` mutation.
+"""
+input DeleteAppUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteAppUserByVersionId` mutation.
+"""
+input DeleteAppUserByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteAppUser` mutation.
+"""
+input DeleteAppUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `AppUser` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `AppUser` mutation.
+"""
+type DeleteAppUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` that was deleted by this mutation.
+  """
+  appUser: AppUser
+  deletedAppUserId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+All input for the `deleteCalendarEventBatch` mutation.
+"""
+input DeleteCalendarEventBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  calendarEventIds: [TemporalIdInput]
+}
+
+"""
+The output of our `deleteCalendarEventBatch` mutation.
+"""
+type DeleteCalendarEventBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  temporalIds: [TemporalId]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the `deleteCalendarEventByEntityIdAndValidUntil` mutation.
+"""
+input DeleteCalendarEventByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteCalendarEventById` mutation.
+"""
+input DeleteCalendarEventByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteCalendarEventByVersionId` mutation.
+"""
+input DeleteCalendarEventByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteCalendarEvent` mutation.
+"""
+input DeleteCalendarEventInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `CalendarEvent` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `CalendarEvent` mutation.
+"""
+type DeleteCalendarEventPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` that was deleted by this mutation.
+  """
+  calendarEvent: CalendarEvent
+  deletedCalendarEventId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+
+  """
+  An edge for our `CalendarEvent`. May be used by Relay 1.
+  """
+  calendarEventEdge(
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CalendarEventsEdge
+}
+
+"""
+All input for the `deleteGoogleUserByAppUserId` mutation.
+"""
+input DeleteGoogleUserByAppUserIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  appUserId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteGoogleUserById` mutation.
+"""
+input DeleteGoogleUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: String!
+}
+
+"""
+All input for the `deleteGoogleUser` mutation.
+"""
+input DeleteGoogleUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `GoogleUser` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `GoogleUser` mutation.
+"""
+type DeleteGoogleUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` that was deleted by this mutation.
+  """
+  googleUser: GoogleUser
+  deletedGoogleUserId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `GoogleUser`. May be used by Relay 1.
+  """
+  googleUserEdge(
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GoogleUsersEdge
+}
+
+"""
+All input for the `deleteMetricByEntityIdAndValidUntil` mutation.
+"""
+input DeleteMetricByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteMetricById` mutation.
+"""
+input DeleteMetricByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteMetricByVersionId` mutation.
+"""
+input DeleteMetricByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteMetric` mutation.
+"""
+input DeleteMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Metric` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `Metric` mutation.
+"""
+type DeleteMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` that was deleted by this mutation.
+  """
+  metric: Metric
+  deletedMetricId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Metric`. May be used by Relay 1.
+  """
+  metricEdge(
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricsEdge
+}
+
+"""
+All input for the `deleteMetricRecordByEntityIdAndValidUntil` mutation.
+"""
+input DeleteMetricRecordByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteMetricRecordById` mutation.
+"""
+input DeleteMetricRecordByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntil` mutation.
+"""
+input DeleteMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  metricVersionId: TemporalIdInput!
+  parentTaskRecordId: TemporalIdInput!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteMetricRecordByVersionId` mutation.
+"""
+input DeleteMetricRecordByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteMetricRecord` mutation.
+"""
+input DeleteMetricRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `MetricRecord` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `MetricRecord` mutation.
+"""
+type DeleteMetricRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` that was deleted by this mutation.
+  """
+  metricRecord: MetricRecord
+  deletedMetricRecordId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+
+  """
+  An edge for our `MetricRecord`. May be used by Relay 1.
+  """
+  metricRecordEdge(
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricRecordsEdge
+}
+
+"""
+All input for the `deleteTaskByEntityIdAndValidUntil` mutation.
+"""
+input DeleteTaskByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteTaskById` mutation.
+"""
+input DeleteTaskByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTaskByVersionId` mutation.
+"""
+input DeleteTaskByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTask` mutation.
+"""
+input DeleteTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Task` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+All input for the `deleteTaskMetricBatch` mutation.
+"""
+input DeleteTaskMetricBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  taskMetricIds: [TemporalIdInput]
+}
+
+"""
+The output of our `deleteTaskMetricBatch` mutation.
+"""
+type DeleteTaskMetricBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  temporalIds: [TemporalId]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+All input for the `deleteTaskMetricByEntityIdAndValidUntil` mutation.
+"""
+input DeleteTaskMetricByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteTaskMetricById` mutation.
+"""
+input DeleteTaskMetricByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTaskMetricByTaskIdAndMetricIdAndValidUntil` mutation.
+"""
+input DeleteTaskMetricByTaskIdAndMetricIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  taskId: TemporalIdInput!
+  metricId: TemporalIdInput!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteTaskMetricByVersionId` mutation.
+"""
+input DeleteTaskMetricByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTaskMetric` mutation.
+"""
+input DeleteTaskMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TaskMetric` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `TaskMetric` mutation.
+"""
+type DeleteTaskMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` that was deleted by this mutation.
+  """
+  taskMetric: TaskMetric
+  deletedTaskMetricId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+
+  """
+  An edge for our `TaskMetric`. May be used by Relay 1.
+  """
+  taskMetricEdge(
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskMetricsEdge
+}
+
+"""
+The output of our delete `Task` mutation.
+"""
+type DeleteTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` that was deleted by this mutation.
+  """
+  task: Task
+  deletedTaskId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Task`. May be used by Relay 1.
+  """
+  taskEdge(
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""
+All input for the `deleteTaskRecordByEntityIdAndValidUntil` mutation.
+"""
+input DeleteTaskRecordByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `deleteTaskRecordById` mutation.
+"""
+input DeleteTaskRecordByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTaskRecordByVersionId` mutation.
+"""
+input DeleteTaskRecordByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `deleteTaskRecord` mutation.
+"""
+input DeleteTaskRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TaskRecord` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""
+The output of our delete `TaskRecord` mutation.
+"""
+type DeleteTaskRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` that was deleted by this mutation.
+  """
+  taskRecord: TaskRecord
+  deletedTaskRecordId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  An edge for our `TaskRecord`. May be used by Relay 1.
+  """
+  taskRecordEdge(
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskRecordsEdge
+}
+
+type EventOccurrence {
+  appUserId: TemporalId
+  occurrence: FiniteDatetime
+  taskId: TemporalId
+  start: FiniteDatetime
+  end: FiniteDatetime
+  recurrenceRule: Rrule
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+  versionId: TemporalId
+  id: TemporalId
+  sourceTask: Task
+}
+
+"""
+A condition to be used against `EventOccurrence` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input EventOccurrenceCondition {
+  """
+  Checks for equality with the object’s `appUserId` field.
+  """
+  appUserId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `occurrence` field.
+  """
+  occurrence: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `taskId` field.
+  """
+  taskId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `start` field.
+  """
+  start: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `end` field.
+  """
+  end: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `recurrenceRule` field.
+  """
+  recurrenceRule: Rrule
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+A connection to a list of `EventOccurrence` values.
+"""
+type EventOccurrencesConnection {
+  """
+  A list of `EventOccurrence` objects.
+  """
+  nodes: [EventOccurrence]!
+
+  """
+  A list of edges which contains the `EventOccurrence` and cursor to aid in pagination.
+  """
+  edges: [EventOccurrencesEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `EventOccurrence` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `EventOccurrence` edge in the connection.
+"""
+type EventOccurrencesEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `EventOccurrence` at the end of the edge.
+  """
+  node: EventOccurrence
+}
+
+"""
+Methods to use when ordering `EventOccurrence`.
+"""
+enum EventOccurrencesOrderBy {
+  NATURAL
+  APP_USER_ID_ASC
+  APP_USER_ID_DESC
+  OCCURRENCE_ASC
+  OCCURRENCE_DESC
+  TASK_ID_ASC
+  TASK_ID_DESC
+  START_ASC
+  START_DESC
+  END_ASC
+  END_DESC
+  RECURRENCE_RULE_ASC
+  RECURRENCE_RULE_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+}
+
+scalar FiniteDatetime
+
+type GoogleSignIn {
+  id: String
+  email: String
+  emailVerified: String
+  name: String
+  picture: String
+  givenName: String
+  familyName: String
+  locale: String
+}
+
+"""
+An input for mutations affecting `GoogleSignIn`
+"""
+input GoogleSignInInput {
+  id: String
+  email: String
+  emailVerified: String
+  name: String
+  picture: String
+  givenName: String
+  familyName: String
+  locale: String
+}
+
+type GoogleUser implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: String!
+  data: GoogleSignIn
+  appUserId: TemporalId!
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+}
+
+"""
+A condition to be used against `GoogleUser` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input GoogleUserCondition {
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: String
+
+  """
+  Checks for equality with the object’s `data` field.
+  """
+  data: GoogleSignInInput
+
+  """
+  Checks for equality with the object’s `appUserId` field.
+  """
+  appUserId: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `GoogleUser`
+"""
+input GoogleUserInput {
+  id: String!
+  data: GoogleSignInInput
+  appUserId: TemporalIdInput!
+}
+
+"""
+Represents an update to a `GoogleUser`. Fields that are set will be updated.
+"""
+input GoogleUserPatch {
+  id: String
+  data: GoogleSignInInput
+  appUserId: TemporalIdInput
+}
+
+"""
+A connection to a list of `GoogleUser` values.
+"""
+type GoogleUsersConnection {
+  """
+  A list of `GoogleUser` objects.
+  """
+  nodes: [GoogleUser]!
+
+  """
+  A list of edges which contains the `GoogleUser` and cursor to aid in pagination.
+  """
+  edges: [GoogleUsersEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `GoogleUser` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `GoogleUser` edge in the connection.
+"""
+type GoogleUsersEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `GoogleUser` at the end of the edge.
+  """
+  node: GoogleUser
+}
+
+"""
+Methods to use when ordering `GoogleUser`.
+"""
+enum GoogleUsersOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  DATA_ASC
+  DATA_DESC
+  APP_USER_ID_ASC
+  APP_USER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A JavaScript object encoded in the JSON format as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Metric implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  appUserId: TemporalId!
+  description: String!
+  icon: String
+  definition: MetricDefinition
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  Reads and enables pagination through a set of `TaskMetric`.
+  """
+  taskMetricsByMetricId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskMetricCondition
+  ): TaskMetricsConnection!
+
+  """
+  Reads and enables pagination through a set of `MetricRecord`.
+  """
+  metricRecordsByMetricVersionId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: MetricRecordCondition
+  ): MetricRecordsConnection!
+}
+
+"""
+A condition to be used against `Metric` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input MetricCondition {
+  """
+  Checks for equality with the object’s `appUserId` field.
+  """
+  appUserId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `description` field.
+  """
+  description: String
+
+  """
+  Checks for equality with the object’s `icon` field.
+  """
+  icon: String
+
+  """
+  Checks for equality with the object’s `definition` field.
+  """
+  definition: MetricDefinitionInput
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+type MetricDefinition {
+  type: MetricType
+  parameters: JSON
+  defaultValue: JSON
+}
+
+"""
+An input for mutations affecting `MetricDefinition`
+"""
+input MetricDefinitionInput {
+  type: MetricType
+  parameters: JSON
+  defaultValue: JSON
+}
+
+"""
+An input for mutations affecting `Metric`
+"""
+input MetricInput {
+  description: String!
+  icon: String
+  definition: MetricDefinitionInput
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+Represents an update to a `Metric`. Fields that are set will be updated.
+"""
+input MetricPatch {
+  description: String
+  icon: String
+  definition: MetricDefinitionInput
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+type MetricRecord implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  metricVersionId: TemporalId!
+  parentTaskRecordId: TemporalId!
+  value: JSON!
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+}
+
+"""
+A condition to be used against `MetricRecord` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input MetricRecordCondition {
+  """
+  Checks for equality with the object’s `metricVersionId` field.
+  """
+  metricVersionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `parentTaskRecordId` field.
+  """
+  parentTaskRecordId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `value` field.
+  """
+  value: JSON
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `MetricRecord`
+"""
+input MetricRecordInput {
+  metricVersionId: TemporalIdInput!
+  parentTaskRecordId: TemporalIdInput!
+  value: JSON!
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+Represents an update to a `MetricRecord`. Fields that are set will be updated.
+"""
+input MetricRecordPatch {
+  metricVersionId: TemporalIdInput
+  parentTaskRecordId: TemporalIdInput
+  value: JSON
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+A connection to a list of `MetricRecord` values.
+"""
+type MetricRecordsConnection {
+  """
+  A list of `MetricRecord` objects.
+  """
+  nodes: [MetricRecord]!
+
+  """
+  A list of edges which contains the `MetricRecord` and cursor to aid in pagination.
+  """
+  edges: [MetricRecordsEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `MetricRecord` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `MetricRecord` edge in the connection.
+"""
+type MetricRecordsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `MetricRecord` at the end of the edge.
+  """
+  node: MetricRecord
+}
+
+"""
+Methods to use when ordering `MetricRecord`.
+"""
+enum MetricRecordsOrderBy {
+  NATURAL
+  METRIC_VERSION_ID_ASC
+  METRIC_VERSION_ID_DESC
+  PARENT_TASK_RECORD_ID_ASC
+  PARENT_TASK_RECORD_ID_DESC
+  VALUE_ASC
+  VALUE_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A connection to a list of `Metric` values.
+"""
+type MetricsConnection {
+  """
+  A list of `Metric` objects.
+  """
+  nodes: [Metric]!
+
+  """
+  A list of edges which contains the `Metric` and cursor to aid in pagination.
+  """
+  edges: [MetricsEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `Metric` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `Metric` edge in the connection.
+"""
+type MetricsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `Metric` at the end of the edge.
+  """
+  node: Metric
+}
+
+"""
+Methods to use when ordering `Metric`.
+"""
+enum MetricsOrderBy {
+  NATURAL
+  APP_USER_ID_ASC
+  APP_USER_ID_DESC
+  DESCRIPTION_ASC
+  DESCRIPTION_DESC
+  ICON_ASC
+  ICON_DESC
+  DEFINITION_ASC
+  DEFINITION_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+enum MetricType {
+  SINGLE_SELECT
+  MULTIPLE_SELECT
+  NOTE
+  RATING
+  NUMBER
+  TIMER
+  STOPWATCH
+  LOCATION
+  IMPLICIT
+}
+
+"""
+The root mutation type which contains root level fields which mutate data.
+"""
+type Mutation {
+  """
+  Creates a single `AppUser`.
+  """
+  createAppUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateAppUserInput!
+  ): CreateAppUserPayload
+
+  """
+  Creates a single `CalendarEvent`.
+  """
+  createCalendarEvent(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateCalendarEventInput!
+  ): CreateCalendarEventPayload
+
+  """
+  Creates a single `GoogleUser`.
+  """
+  createGoogleUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateGoogleUserInput!
+  ): CreateGoogleUserPayload
+
+  """
+  Creates a single `Metric`.
+  """
+  createMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateMetricInput!
+  ): CreateMetricPayload
+
+  """
+  Creates a single `MetricRecord`.
+  """
+  createMetricRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateMetricRecordInput!
+  ): CreateMetricRecordPayload
+
+  """
+  Creates a single `Task`.
+  """
+  createTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskInput!
+  ): CreateTaskPayload
+
+  """
+  Creates a single `TaskMetric`.
+  """
+  createTaskMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskMetricInput!
+  ): CreateTaskMetricPayload
+
+  """
+  Creates a single `TaskRecord`.
+  """
+  createTaskRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskRecordInput!
+  ): CreateTaskRecordPayload
+
+  """
+  Updates a single `AppUser` using its globally unique id and a patch.
+  """
+  updateAppUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateAppUserInput!
+  ): UpdateAppUserPayload
+
+  """
+  Updates a single `AppUser` using a unique key and a patch.
+  """
+  updateAppUserByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateAppUserByEntityIdAndValidUntilInput!
+  ): UpdateAppUserPayload
+
+  """
+  Updates a single `AppUser` using a unique key and a patch.
+  """
+  updateAppUserByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateAppUserByVersionIdInput!
+  ): UpdateAppUserPayload
+
+  """
+  Updates a single `AppUser` using a unique key and a patch.
+  """
+  updateAppUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateAppUserByIdInput!
+  ): UpdateAppUserPayload
+
+  """
+  Updates a single `CalendarEvent` using its globally unique id and a patch.
+  """
+  updateCalendarEvent(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateCalendarEventInput!
+  ): UpdateCalendarEventPayload
+
+  """
+  Updates a single `CalendarEvent` using a unique key and a patch.
+  """
+  updateCalendarEventByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateCalendarEventByEntityIdAndValidUntilInput!
+  ): UpdateCalendarEventPayload
+
+  """
+  Updates a single `CalendarEvent` using a unique key and a patch.
+  """
+  updateCalendarEventByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateCalendarEventByVersionIdInput!
+  ): UpdateCalendarEventPayload
+
+  """
+  Updates a single `CalendarEvent` using a unique key and a patch.
+  """
+  updateCalendarEventById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateCalendarEventByIdInput!
+  ): UpdateCalendarEventPayload
+
+  """
+  Updates a single `GoogleUser` using its globally unique id and a patch.
+  """
+  updateGoogleUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGoogleUserInput!
+  ): UpdateGoogleUserPayload
+
+  """
+  Updates a single `GoogleUser` using a unique key and a patch.
+  """
+  updateGoogleUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGoogleUserByIdInput!
+  ): UpdateGoogleUserPayload
+
+  """
+  Updates a single `GoogleUser` using a unique key and a patch.
+  """
+  updateGoogleUserByAppUserId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateGoogleUserByAppUserIdInput!
+  ): UpdateGoogleUserPayload
+
+  """
+  Updates a single `Metric` using its globally unique id and a patch.
+  """
+  updateMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricInput!
+  ): UpdateMetricPayload
+
+  """
+  Updates a single `Metric` using a unique key and a patch.
+  """
+  updateMetricByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricByEntityIdAndValidUntilInput!
+  ): UpdateMetricPayload
+
+  """
+  Updates a single `Metric` using a unique key and a patch.
+  """
+  updateMetricByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricByVersionIdInput!
+  ): UpdateMetricPayload
+
+  """
+  Updates a single `Metric` using a unique key and a patch.
+  """
+  updateMetricById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricByIdInput!
+  ): UpdateMetricPayload
+
+  """
+  Updates a single `MetricRecord` using its globally unique id and a patch.
+  """
+  updateMetricRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricRecordInput!
+  ): UpdateMetricRecordPayload
+
+  """
+  Updates a single `MetricRecord` using a unique key and a patch.
+  """
+  updateMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntilInput!
+  ): UpdateMetricRecordPayload
+
+  """
+  Updates a single `MetricRecord` using a unique key and a patch.
+  """
+  updateMetricRecordByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricRecordByEntityIdAndValidUntilInput!
+  ): UpdateMetricRecordPayload
+
+  """
+  Updates a single `MetricRecord` using a unique key and a patch.
+  """
+  updateMetricRecordByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricRecordByVersionIdInput!
+  ): UpdateMetricRecordPayload
+
+  """
+  Updates a single `MetricRecord` using a unique key and a patch.
+  """
+  updateMetricRecordById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateMetricRecordByIdInput!
+  ): UpdateMetricRecordPayload
+
+  """
+  Updates a single `Task` using its globally unique id and a patch.
+  """
+  updateTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskInput!
+  ): UpdateTaskPayload
+
+  """
+  Updates a single `Task` using a unique key and a patch.
+  """
+  updateTaskByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskByEntityIdAndValidUntilInput!
+  ): UpdateTaskPayload
+
+  """
+  Updates a single `Task` using a unique key and a patch.
+  """
+  updateTaskByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskByVersionIdInput!
+  ): UpdateTaskPayload
+
+  """
+  Updates a single `Task` using a unique key and a patch.
+  """
+  updateTaskById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskByIdInput!
+  ): UpdateTaskPayload
+
+  """
+  Updates a single `TaskMetric` using its globally unique id and a patch.
+  """
+  updateTaskMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskMetricInput!
+  ): UpdateTaskMetricPayload
+
+  """
+  Updates a single `TaskMetric` using a unique key and a patch.
+  """
+  updateTaskMetricByTaskIdAndMetricIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskMetricByTaskIdAndMetricIdAndValidUntilInput!
+  ): UpdateTaskMetricPayload
+
+  """
+  Updates a single `TaskMetric` using a unique key and a patch.
+  """
+  updateTaskMetricByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskMetricByEntityIdAndValidUntilInput!
+  ): UpdateTaskMetricPayload
+
+  """
+  Updates a single `TaskMetric` using a unique key and a patch.
+  """
+  updateTaskMetricByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskMetricByVersionIdInput!
+  ): UpdateTaskMetricPayload
+
+  """
+  Updates a single `TaskMetric` using a unique key and a patch.
+  """
+  updateTaskMetricById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskMetricByIdInput!
+  ): UpdateTaskMetricPayload
+
+  """
+  Updates a single `TaskRecord` using its globally unique id and a patch.
+  """
+  updateTaskRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskRecordInput!
+  ): UpdateTaskRecordPayload
+
+  """
+  Updates a single `TaskRecord` using a unique key and a patch.
+  """
+  updateTaskRecordByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskRecordByEntityIdAndValidUntilInput!
+  ): UpdateTaskRecordPayload
+
+  """
+  Updates a single `TaskRecord` using a unique key and a patch.
+  """
+  updateTaskRecordByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskRecordByVersionIdInput!
+  ): UpdateTaskRecordPayload
+
+  """
+  Updates a single `TaskRecord` using a unique key and a patch.
+  """
+  updateTaskRecordById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskRecordByIdInput!
+  ): UpdateTaskRecordPayload
+
+  """
+  Deletes a single `AppUser` using its globally unique id.
+  """
+  deleteAppUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteAppUserInput!
+  ): DeleteAppUserPayload
+
+  """
+  Deletes a single `AppUser` using a unique key.
+  """
+  deleteAppUserByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteAppUserByEntityIdAndValidUntilInput!
+  ): DeleteAppUserPayload
+
+  """
+  Deletes a single `AppUser` using a unique key.
+  """
+  deleteAppUserByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteAppUserByVersionIdInput!
+  ): DeleteAppUserPayload
+
+  """
+  Deletes a single `AppUser` using a unique key.
+  """
+  deleteAppUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteAppUserByIdInput!
+  ): DeleteAppUserPayload
+
+  """
+  Deletes a single `CalendarEvent` using its globally unique id.
+  """
+  deleteCalendarEvent(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteCalendarEventInput!
+  ): DeleteCalendarEventPayload
+
+  """
+  Deletes a single `CalendarEvent` using a unique key.
+  """
+  deleteCalendarEventByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteCalendarEventByEntityIdAndValidUntilInput!
+  ): DeleteCalendarEventPayload
+
+  """
+  Deletes a single `CalendarEvent` using a unique key.
+  """
+  deleteCalendarEventByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteCalendarEventByVersionIdInput!
+  ): DeleteCalendarEventPayload
+
+  """
+  Deletes a single `CalendarEvent` using a unique key.
+  """
+  deleteCalendarEventById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteCalendarEventByIdInput!
+  ): DeleteCalendarEventPayload
+
+  """
+  Deletes a single `GoogleUser` using its globally unique id.
+  """
+  deleteGoogleUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGoogleUserInput!
+  ): DeleteGoogleUserPayload
+
+  """
+  Deletes a single `GoogleUser` using a unique key.
+  """
+  deleteGoogleUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGoogleUserByIdInput!
+  ): DeleteGoogleUserPayload
+
+  """
+  Deletes a single `GoogleUser` using a unique key.
+  """
+  deleteGoogleUserByAppUserId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteGoogleUserByAppUserIdInput!
+  ): DeleteGoogleUserPayload
+
+  """
+  Deletes a single `Metric` using its globally unique id.
+  """
+  deleteMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricInput!
+  ): DeleteMetricPayload
+
+  """
+  Deletes a single `Metric` using a unique key.
+  """
+  deleteMetricByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricByEntityIdAndValidUntilInput!
+  ): DeleteMetricPayload
+
+  """
+  Deletes a single `Metric` using a unique key.
+  """
+  deleteMetricByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricByVersionIdInput!
+  ): DeleteMetricPayload
+
+  """
+  Deletes a single `Metric` using a unique key.
+  """
+  deleteMetricById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricByIdInput!
+  ): DeleteMetricPayload
+
+  """
+  Deletes a single `MetricRecord` using its globally unique id.
+  """
+  deleteMetricRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricRecordInput!
+  ): DeleteMetricRecordPayload
+
+  """
+  Deletes a single `MetricRecord` using a unique key.
+  """
+  deleteMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntilInput!
+  ): DeleteMetricRecordPayload
+
+  """
+  Deletes a single `MetricRecord` using a unique key.
+  """
+  deleteMetricRecordByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricRecordByEntityIdAndValidUntilInput!
+  ): DeleteMetricRecordPayload
+
+  """
+  Deletes a single `MetricRecord` using a unique key.
+  """
+  deleteMetricRecordByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricRecordByVersionIdInput!
+  ): DeleteMetricRecordPayload
+
+  """
+  Deletes a single `MetricRecord` using a unique key.
+  """
+  deleteMetricRecordById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteMetricRecordByIdInput!
+  ): DeleteMetricRecordPayload
+
+  """
+  Deletes a single `Task` using its globally unique id.
+  """
+  deleteTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskInput!
+  ): DeleteTaskPayload
+
+  """
+  Deletes a single `Task` using a unique key.
+  """
+  deleteTaskByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskByEntityIdAndValidUntilInput!
+  ): DeleteTaskPayload
+
+  """
+  Deletes a single `Task` using a unique key.
+  """
+  deleteTaskByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskByVersionIdInput!
+  ): DeleteTaskPayload
+
+  """
+  Deletes a single `Task` using a unique key.
+  """
+  deleteTaskById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskByIdInput!
+  ): DeleteTaskPayload
+
+  """
+  Deletes a single `TaskMetric` using its globally unique id.
+  """
+  deleteTaskMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricInput!
+  ): DeleteTaskMetricPayload
+
+  """
+  Deletes a single `TaskMetric` using a unique key.
+  """
+  deleteTaskMetricByTaskIdAndMetricIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricByTaskIdAndMetricIdAndValidUntilInput!
+  ): DeleteTaskMetricPayload
+
+  """
+  Deletes a single `TaskMetric` using a unique key.
+  """
+  deleteTaskMetricByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricByEntityIdAndValidUntilInput!
+  ): DeleteTaskMetricPayload
+
+  """
+  Deletes a single `TaskMetric` using a unique key.
+  """
+  deleteTaskMetricByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricByVersionIdInput!
+  ): DeleteTaskMetricPayload
+
+  """
+  Deletes a single `TaskMetric` using a unique key.
+  """
+  deleteTaskMetricById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricByIdInput!
+  ): DeleteTaskMetricPayload
+
+  """
+  Deletes a single `TaskRecord` using its globally unique id.
+  """
+  deleteTaskRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskRecordInput!
+  ): DeleteTaskRecordPayload
+
+  """
+  Deletes a single `TaskRecord` using a unique key.
+  """
+  deleteTaskRecordByEntityIdAndValidUntil(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskRecordByEntityIdAndValidUntilInput!
+  ): DeleteTaskRecordPayload
+
+  """
+  Deletes a single `TaskRecord` using a unique key.
+  """
+  deleteTaskRecordByVersionId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskRecordByVersionIdInput!
+  ): DeleteTaskRecordPayload
+
+  """
+  Deletes a single `TaskRecord` using a unique key.
+  """
+  deleteTaskRecordById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskRecordByIdInput!
+  ): DeleteTaskRecordPayload
+  createCalendarEventBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateCalendarEventBatchInput!
+  ): CreateCalendarEventBatchPayload
+  createMetricBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateMetricBatchInput!
+  ): CreateMetricBatchPayload
+  createMetricRecordBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateMetricRecordBatchInput!
+  ): CreateMetricRecordBatchPayload
+  createTaskBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskBatchInput!
+  ): CreateTaskBatchPayload
+  createTaskMetricBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskMetricBatchInput!
+  ): CreateTaskMetricBatchPayload
+  currentAppUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CurrentAppUserInput!
+  ): CurrentAppUserPayload
+  deleteCalendarEventBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteCalendarEventBatchInput!
+  ): DeleteCalendarEventBatchPayload
+  deleteTaskMetricBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskMetricBatchInput!
+  ): DeleteTaskMetricBatchPayload
+
+  """
+  Upserts a single `AppUser`.
+  """
+  upsertAppUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertAppUserInput!
+  ): UpsertAppUserPayload
+
+  """
+  Upserts a single `CalendarEvent`.
+  """
+  upsertCalendarEvent(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertCalendarEventInput!
+  ): UpsertCalendarEventPayload
+
+  """
+  Upserts a single `GoogleUser`.
+  """
+  upsertGoogleUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertGoogleUserInput!
+  ): UpsertGoogleUserPayload
+
+  """
+  Upserts a single `Metric`.
+  """
+  upsertMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertMetricInput!
+  ): UpsertMetricPayload
+
+  """
+  Upserts a single `MetricRecord`.
+  """
+  upsertMetricRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertMetricRecordInput!
+  ): UpsertMetricRecordPayload
+
+  """
+  Upserts a single `Task`.
+  """
+  upsertTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskInput!
+  ): UpsertTaskPayload
+
+  """
+  Upserts a single `TaskMetric`.
+  """
+  upsertTaskMetric(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskMetricInput!
+  ): UpsertTaskMetricPayload
+
+  """
+  Upserts a single `TaskRecord`.
+  """
+  upsertTaskRecord(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskRecordInput!
+  ): UpsertTaskRecordPayload
+
+  """
+  Upserts a batch of `AppUsers`.
+  """
+  upsertAppUserBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertAppUserBatchInput!
+  ): UpsertAppUserBatchPayload
+
+  """
+  Upserts a batch of `CalendarEvents`.
+  """
+  upsertCalendarEventBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertCalendarEventBatchInput!
+  ): UpsertCalendarEventBatchPayload
+
+  """
+  Upserts a batch of `GoogleUsers`.
+  """
+  upsertGoogleUserBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertGoogleUserBatchInput!
+  ): UpsertGoogleUserBatchPayload
+
+  """
+  Upserts a batch of `Metrics`.
+  """
+  upsertMetricBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertMetricBatchInput!
+  ): UpsertMetricBatchPayload
+
+  """
+  Upserts a batch of `MetricRecords`.
+  """
+  upsertMetricRecordBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertMetricRecordBatchInput!
+  ): UpsertMetricRecordBatchPayload
+
+  """
+  Upserts a batch of `Tasks`.
+  """
+  upsertTaskBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskBatchInput!
+  ): UpsertTaskBatchPayload
+
+  """
+  Upserts a batch of `TaskMetrics`.
+  """
+  upsertTaskMetricBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskMetricBatchInput!
+  ): UpsertTaskMetricBatchPayload
+
+  """
+  Upserts a batch of `TaskRecords`.
+  """
+  upsertTaskRecordBatch(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpsertTaskRecordBatchInput!
+  ): UpsertTaskRecordBatchPayload
+}
+
+"""
+An object with a globally unique `ID`.
+"""
+interface Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: Cursor
+
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: Cursor
+}
+
+"""
+The root query type which gives access points into the data universe.
+"""
+type Query implements Node {
+  """
+  Exposes the root query type nested one level down. This is helpful for Relay 1
+  which can only query top level fields if they are in a particular form.
+  """
+  query: Query!
+
+  """
+  The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`.
+  """
+  nodeId: ID!
+
+  """
+  Fetches an object given its globally unique `ID`.
+  """
+  node(
+    """
+    The globally unique `ID`.
+    """
+    nodeId: ID!
+  ): Node
+
+  """
+  Reads and enables pagination through a set of `AppUser`.
+  """
+  allAppUsers(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: AppUserCondition
+  ): AppUsersConnection
+
+  """
+  Reads and enables pagination through a set of `CalendarEvent`.
+  """
+  allCalendarEvents(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: CalendarEventCondition
+  ): CalendarEventsConnection
+
+  """
+  Reads and enables pagination through a set of `EventOccurrence`.
+  """
+  allEventOccurrences(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `EventOccurrence`.
+    """
+    orderBy: [EventOccurrencesOrderBy!] = [NATURAL]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: EventOccurrenceCondition
+  ): EventOccurrencesConnection
+
+  """
+  Reads and enables pagination through a set of `GoogleUser`.
+  """
+  allGoogleUsers(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: GoogleUserCondition
+  ): GoogleUsersConnection
+
+  """
+  Reads and enables pagination through a set of `Metric`.
+  """
+  allMetrics(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: MetricCondition
+  ): MetricsConnection
+
+  """
+  Reads and enables pagination through a set of `MetricRecord`.
+  """
+  allMetricRecords(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: MetricRecordCondition
+  ): MetricRecordsConnection
+
+  """
+  Reads and enables pagination through a set of `Task`.
+  """
+  allTasks(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskCondition
+  ): TasksConnection
+
+  """
+  Reads and enables pagination through a set of `TaskMetric`.
+  """
+  allTaskMetrics(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskMetricCondition
+  ): TaskMetricsConnection
+
+  """
+  Reads and enables pagination through a set of `TaskRecord`.
+  """
+  allTaskRecords(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskRecordCondition
+  ): TaskRecordsConnection
+  appUserByEntityIdAndValidUntil(
+    entityId: UUID!
+    validUntil: Datetime!
+  ): AppUser
+  appUserByVersionId(versionId: TemporalIdInput!): AppUser
+  appUserById(id: TemporalIdInput!): AppUser
+  calendarEventByEntityIdAndValidUntil(
+    entityId: UUID!
+    validUntil: Datetime!
+  ): CalendarEvent
+  calendarEventByVersionId(versionId: TemporalIdInput!): CalendarEvent
+  calendarEventById(id: TemporalIdInput!): CalendarEvent
+  googleUserById(id: String!): GoogleUser
+  googleUserByAppUserId(appUserId: TemporalIdInput!): GoogleUser
+  metricByEntityIdAndValidUntil(entityId: UUID!, validUntil: Datetime!): Metric
+  metricByVersionId(versionId: TemporalIdInput!): Metric
+  metricById(id: TemporalIdInput!): Metric
+  metricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntil(
+    metricVersionId: TemporalIdInput!
+    parentTaskRecordId: TemporalIdInput!
+    validUntil: Datetime!
+  ): MetricRecord
+  metricRecordByEntityIdAndValidUntil(
+    entityId: UUID!
+    validUntil: Datetime!
+  ): MetricRecord
+  metricRecordByVersionId(versionId: TemporalIdInput!): MetricRecord
+  metricRecordById(id: TemporalIdInput!): MetricRecord
+  taskByEntityIdAndValidUntil(entityId: UUID!, validUntil: Datetime!): Task
+  taskByVersionId(versionId: TemporalIdInput!): Task
+  taskById(id: TemporalIdInput!): Task
+  taskMetricByTaskIdAndMetricIdAndValidUntil(
+    taskId: TemporalIdInput!
+    metricId: TemporalIdInput!
+    validUntil: Datetime!
+  ): TaskMetric
+  taskMetricByEntityIdAndValidUntil(
+    entityId: UUID!
+    validUntil: Datetime!
+  ): TaskMetric
+  taskMetricByVersionId(versionId: TemporalIdInput!): TaskMetric
+  taskMetricById(id: TemporalIdInput!): TaskMetric
+  taskRecordByEntityIdAndValidUntil(
+    entityId: UUID!
+    validUntil: Datetime!
+  ): TaskRecord
+  taskRecordByVersionId(versionId: TemporalIdInput!): TaskRecord
+  taskRecordById(id: TemporalIdInput!): TaskRecord
+  currentSignIn: GoogleSignIn
+  currentUserId: TemporalId
+
+  """
+  Reads and enables pagination through a set of `Task`.
+  """
+  getFreeforms(
+    appUserId: TemporalIdInput
+
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+  ): TasksConnection!
+
+  """
+  Reads and enables pagination through a set of `EventOccurrence`.
+  """
+  getSchedule(
+    appUserId: TemporalIdInput
+    day: Datetime
+
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+  ): EventOccurrencesConnection!
+
+  """
+  Reads and enables pagination through a set of `TaskRecord`.
+  """
+  getUserTaskRecords(
+    appUserId: TemporalIdInput
+
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+  ): TaskRecordsConnection!
+  implicitUserId: TemporalId
+
+  """
+  Reads and enables pagination through a set of `Metric`.
+  """
+  userMetrics(
+    appUserId: TemporalIdInput
+
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+  ): MetricsConnection!
+
+  """
+  Reads a single `AppUser` using its globally unique `ID`.
+  """
+  appUser(
+    """
+    The globally unique `ID` to be used in selecting a single `AppUser`.
+    """
+    nodeId: ID!
+  ): AppUser
+
+  """
+  Reads a single `CalendarEvent` using its globally unique `ID`.
+  """
+  calendarEvent(
+    """
+    The globally unique `ID` to be used in selecting a single `CalendarEvent`.
+    """
+    nodeId: ID!
+  ): CalendarEvent
+
+  """
+  Reads a single `GoogleUser` using its globally unique `ID`.
+  """
+  googleUser(
+    """
+    The globally unique `ID` to be used in selecting a single `GoogleUser`.
+    """
+    nodeId: ID!
+  ): GoogleUser
+
+  """
+  Reads a single `Metric` using its globally unique `ID`.
+  """
+  metric(
+    """
+    The globally unique `ID` to be used in selecting a single `Metric`.
+    """
+    nodeId: ID!
+  ): Metric
+
+  """
+  Reads a single `MetricRecord` using its globally unique `ID`.
+  """
+  metricRecord(
+    """
+    The globally unique `ID` to be used in selecting a single `MetricRecord`.
+    """
+    nodeId: ID!
+  ): MetricRecord
+
+  """
+  Reads a single `Task` using its globally unique `ID`.
+  """
+  task(
+    """
+    The globally unique `ID` to be used in selecting a single `Task`.
+    """
+    nodeId: ID!
+  ): Task
+
+  """
+  Reads a single `TaskMetric` using its globally unique `ID`.
+  """
+  taskMetric(
+    """
+    The globally unique `ID` to be used in selecting a single `TaskMetric`.
+    """
+    nodeId: ID!
+  ): TaskMetric
+
+  """
+  Reads a single `TaskRecord` using its globally unique `ID`.
+  """
+  taskRecord(
+    """
+    The globally unique `ID` to be used in selecting a single `TaskRecord`.
+    """
+    nodeId: ID!
+  ): TaskRecord
+}
+
+scalar Rrule
+
+type Task implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  appUserId: TemporalId!
+  icon: String
+  title: String
+  description: String
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  Reads and enables pagination through a set of `CalendarEvent`.
+  """
+  calendarEventsByTaskId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: CalendarEventCondition
+  ): CalendarEventsConnection!
+
+  """
+  Reads and enables pagination through a set of `TaskMetric`.
+  """
+  taskMetricsByTaskId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskMetricCondition
+  ): TaskMetricsConnection!
+
+  """
+  Reads and enables pagination through a set of `TaskRecord`.
+  """
+  taskRecordsByTaskVersionId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskRecordCondition
+  ): TaskRecordsConnection!
+}
+
+"""
+A condition to be used against `Task` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TaskCondition {
+  """
+  Checks for equality with the object’s `appUserId` field.
+  """
+  appUserId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `icon` field.
+  """
+  icon: String
+
+  """
+  Checks for equality with the object’s `title` field.
+  """
+  title: String
+
+  """
+  Checks for equality with the object’s `description` field.
+  """
+  description: String
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `Task`
+"""
+input TaskInput {
+  icon: String
+  title: String
+  description: String
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+type TaskMetric implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  taskId: TemporalId!
+  metricId: TemporalId!
+  order: Float!
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+}
+
+"""
+A condition to be used against `TaskMetric` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input TaskMetricCondition {
+  """
+  Checks for equality with the object’s `taskId` field.
+  """
+  taskId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `metricId` field.
+  """
+  metricId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `order` field.
+  """
+  order: Float
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `TaskMetric`
+"""
+input TaskMetricInput {
+  taskId: TemporalIdInput!
+  metricId: TemporalIdInput!
+  order: Float!
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+Represents an update to a `TaskMetric`. Fields that are set will be updated.
+"""
+input TaskMetricPatch {
+  taskId: TemporalIdInput
+  metricId: TemporalIdInput
+  order: Float
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+A connection to a list of `TaskMetric` values.
+"""
+type TaskMetricsConnection {
+  """
+  A list of `TaskMetric` objects.
+  """
+  nodes: [TaskMetric]!
+
+  """
+  A list of edges which contains the `TaskMetric` and cursor to aid in pagination.
+  """
+  edges: [TaskMetricsEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `TaskMetric` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `TaskMetric` edge in the connection.
+"""
+type TaskMetricsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `TaskMetric` at the end of the edge.
+  """
+  node: TaskMetric
+}
+
+"""
+Methods to use when ordering `TaskMetric`.
+"""
+enum TaskMetricsOrderBy {
+  NATURAL
+  TASK_ID_ASC
+  TASK_ID_DESC
+  METRIC_ID_ASC
+  METRIC_ID_DESC
+  ORDER_ASC
+  ORDER_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+Represents an update to a `Task`. Fields that are set will be updated.
+"""
+input TaskPatch {
+  icon: String
+  title: String
+  description: String
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+type TaskRecord implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  taskVersionId: TemporalId!
+  occurrence: FiniteDatetime
+  actualStart: FiniteDatetime
+  actualEnd: FiniteDatetime
+  lifecycle: TaskRecordLifecycle!
+  entityId: UUID!
+  validFrom: Datetime!
+  validUntil: Datetime!
+  versionId: TemporalId!
+  id: TemporalId!
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  Reads and enables pagination through a set of `MetricRecord`.
+  """
+  metricRecordsByParentTaskRecordId(
+    """
+    Only read the first `n` values of the set.
+    """
+    first: Int
+
+    """
+    Only read the last `n` values of the set.
+    """
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """
+    Read all values in the set before (above) this cursor.
+    """
+    before: Cursor
+
+    """
+    Read all values in the set after (below) this cursor.
+    """
+    after: Cursor
+
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: MetricRecordCondition
+  ): MetricRecordsConnection!
+}
+
+"""
+A condition to be used against `TaskRecord` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input TaskRecordCondition {
+  """
+  Checks for equality with the object’s `taskVersionId` field.
+  """
+  taskVersionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `occurrence` field.
+  """
+  occurrence: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `actualStart` field.
+  """
+  actualStart: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `actualEnd` field.
+  """
+  actualEnd: FiniteDatetime
+
+  """
+  Checks for equality with the object’s `lifecycle` field.
+  """
+  lifecycle: TaskRecordLifecycle
+
+  """
+  Checks for equality with the object’s `entityId` field.
+  """
+  entityId: UUID
+
+  """
+  Checks for equality with the object’s `validFrom` field.
+  """
+  validFrom: Datetime
+
+  """
+  Checks for equality with the object’s `validUntil` field.
+  """
+  validUntil: Datetime
+
+  """
+  Checks for equality with the object’s `versionId` field.
+  """
+  versionId: TemporalIdInput
+
+  """
+  Checks for equality with the object’s `id` field.
+  """
+  id: TemporalIdInput
+}
+
+"""
+An input for mutations affecting `TaskRecord`
+"""
+input TaskRecordInput {
+  taskVersionId: TemporalIdInput!
+  occurrence: FiniteDatetime
+  actualStart: FiniteDatetime
+  actualEnd: FiniteDatetime
+  lifecycle: TaskRecordLifecycle!
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+enum TaskRecordLifecycle {
+  ONGOING
+  SKIPPED
+  COMPLETED
+  CANCELLED
+}
+
+"""
+Represents an update to a `TaskRecord`. Fields that are set will be updated.
+"""
+input TaskRecordPatch {
+  taskVersionId: TemporalIdInput
+  occurrence: FiniteDatetime
+  actualStart: FiniteDatetime
+  actualEnd: FiniteDatetime
+  lifecycle: TaskRecordLifecycle
+  entityId: UUID
+  validFrom: Datetime
+  validUntil: Datetime
+}
+
+"""
+A connection to a list of `TaskRecord` values.
+"""
+type TaskRecordsConnection {
+  """
+  A list of `TaskRecord` objects.
+  """
+  nodes: [TaskRecord]!
+
+  """
+  A list of edges which contains the `TaskRecord` and cursor to aid in pagination.
+  """
+  edges: [TaskRecordsEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `TaskRecord` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `TaskRecord` edge in the connection.
+"""
+type TaskRecordsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `TaskRecord` at the end of the edge.
+  """
+  node: TaskRecord
+}
+
+"""
+Methods to use when ordering `TaskRecord`.
+"""
+enum TaskRecordsOrderBy {
+  NATURAL
+  TASK_VERSION_ID_ASC
+  TASK_VERSION_ID_DESC
+  OCCURRENCE_ASC
+  OCCURRENCE_DESC
+  ACTUAL_START_ASC
+  ACTUAL_START_DESC
+  ACTUAL_END_ASC
+  ACTUAL_END_DESC
+  LIFECYCLE_ASC
+  LIFECYCLE_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A connection to a list of `Task` values.
+"""
+type TasksConnection {
+  """
+  A list of `Task` objects.
+  """
+  nodes: [Task]!
+
+  """
+  A list of edges which contains the `Task` and cursor to aid in pagination.
+  """
+  edges: [TasksEdge!]!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `Task` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+"""
+A `Task` edge in the connection.
+"""
+type TasksEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: Cursor
+
+  """
+  The `Task` at the end of the edge.
+  """
+  node: Task
+}
+
+"""
+Methods to use when ordering `Task`.
+"""
+enum TasksOrderBy {
+  NATURAL
+  APP_USER_ID_ASC
+  APP_USER_ID_DESC
+  ICON_ASC
+  ICON_DESC
+  TITLE_ASC
+  TITLE_DESC
+  DESCRIPTION_ASC
+  DESCRIPTION_DESC
+  ENTITY_ID_ASC
+  ENTITY_ID_DESC
+  VALID_FROM_ASC
+  VALID_FROM_DESC
+  VALID_UNTIL_ASC
+  VALID_UNTIL_DESC
+  VERSION_ID_ASC
+  VERSION_ID_DESC
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+type TemporalId {
+  entityId: UUID
+  valid: Datetime
+}
+
+"""
+An input for mutations affecting `TemporalId`
+"""
+input TemporalIdInput {
+  entityId: UUID
+  valid: Datetime
+}
+
+"""
+All input for the `updateAppUserByEntityIdAndValidUntil` mutation.
+"""
+input UpdateAppUserByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `AppUser` being updated.
+  """
+  appUserPatch: AppUserPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateAppUserById` mutation.
+"""
+input UpdateAppUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `AppUser` being updated.
+  """
+  appUserPatch: AppUserPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateAppUserByVersionId` mutation.
+"""
+input UpdateAppUserByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `AppUser` being updated.
+  """
+  appUserPatch: AppUserPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateAppUser` mutation.
+"""
+input UpdateAppUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `AppUser` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `AppUser` being updated.
+  """
+  appUserPatch: AppUserPatch!
+}
+
+"""
+The output of our update `AppUser` mutation.
+"""
+type UpdateAppUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` that was updated by this mutation.
+  """
+  appUser: AppUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+All input for the `updateCalendarEventByEntityIdAndValidUntil` mutation.
+"""
+input UpdateCalendarEventByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `CalendarEvent` being updated.
+  """
+  calendarEventPatch: CalendarEventPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateCalendarEventById` mutation.
+"""
+input UpdateCalendarEventByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `CalendarEvent` being updated.
+  """
+  calendarEventPatch: CalendarEventPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateCalendarEventByVersionId` mutation.
+"""
+input UpdateCalendarEventByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `CalendarEvent` being updated.
+  """
+  calendarEventPatch: CalendarEventPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateCalendarEvent` mutation.
+"""
+input UpdateCalendarEventInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `CalendarEvent` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `CalendarEvent` being updated.
+  """
+  calendarEventPatch: CalendarEventPatch!
+}
+
+"""
+The output of our update `CalendarEvent` mutation.
+"""
+type UpdateCalendarEventPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` that was updated by this mutation.
+  """
+  calendarEvent: CalendarEvent
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+
+  """
+  An edge for our `CalendarEvent`. May be used by Relay 1.
+  """
+  calendarEventEdge(
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CalendarEventsEdge
+}
+
+"""
+All input for the `updateGoogleUserByAppUserId` mutation.
+"""
+input UpdateGoogleUserByAppUserIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `GoogleUser` being updated.
+  """
+  googleUserPatch: GoogleUserPatch!
+  appUserId: TemporalIdInput!
+}
+
+"""
+All input for the `updateGoogleUserById` mutation.
+"""
+input UpdateGoogleUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `GoogleUser` being updated.
+  """
+  googleUserPatch: GoogleUserPatch!
+  id: String!
+}
+
+"""
+All input for the `updateGoogleUser` mutation.
+"""
+input UpdateGoogleUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `GoogleUser` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `GoogleUser` being updated.
+  """
+  googleUserPatch: GoogleUserPatch!
+}
+
+"""
+The output of our update `GoogleUser` mutation.
+"""
+type UpdateGoogleUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` that was updated by this mutation.
+  """
+  googleUser: GoogleUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `GoogleUser`. May be used by Relay 1.
+  """
+  googleUserEdge(
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GoogleUsersEdge
+}
+
+"""
+All input for the `updateMetricByEntityIdAndValidUntil` mutation.
+"""
+input UpdateMetricByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Metric` being updated.
+  """
+  metricPatch: MetricPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateMetricById` mutation.
+"""
+input UpdateMetricByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Metric` being updated.
+  """
+  metricPatch: MetricPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateMetricByVersionId` mutation.
+"""
+input UpdateMetricByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Metric` being updated.
+  """
+  metricPatch: MetricPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateMetric` mutation.
+"""
+input UpdateMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Metric` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Metric` being updated.
+  """
+  metricPatch: MetricPatch!
+}
+
+"""
+The output of our update `Metric` mutation.
+"""
+type UpdateMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` that was updated by this mutation.
+  """
+  metric: Metric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Metric`. May be used by Relay 1.
+  """
+  metricEdge(
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricsEdge
+}
+
+"""
+All input for the `updateMetricRecordByEntityIdAndValidUntil` mutation.
+"""
+input UpdateMetricRecordByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `MetricRecord` being updated.
+  """
+  metricRecordPatch: MetricRecordPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateMetricRecordById` mutation.
+"""
+input UpdateMetricRecordByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `MetricRecord` being updated.
+  """
+  metricRecordPatch: MetricRecordPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntil` mutation.
+"""
+input UpdateMetricRecordByMetricVersionIdAndParentTaskRecordIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `MetricRecord` being updated.
+  """
+  metricRecordPatch: MetricRecordPatch!
+  metricVersionId: TemporalIdInput!
+  parentTaskRecordId: TemporalIdInput!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateMetricRecordByVersionId` mutation.
+"""
+input UpdateMetricRecordByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `MetricRecord` being updated.
+  """
+  metricRecordPatch: MetricRecordPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateMetricRecord` mutation.
+"""
+input UpdateMetricRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `MetricRecord` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `MetricRecord` being updated.
+  """
+  metricRecordPatch: MetricRecordPatch!
+}
+
+"""
+The output of our update `MetricRecord` mutation.
+"""
+type UpdateMetricRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` that was updated by this mutation.
+  """
+  metricRecord: MetricRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+
+  """
+  An edge for our `MetricRecord`. May be used by Relay 1.
+  """
+  metricRecordEdge(
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricRecordsEdge
+}
+
+"""
+All input for the `updateTaskByEntityIdAndValidUntil` mutation.
+"""
+input UpdateTaskByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Task` being updated.
+  """
+  taskPatch: TaskPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateTaskById` mutation.
+"""
+input UpdateTaskByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Task` being updated.
+  """
+  taskPatch: TaskPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateTaskByVersionId` mutation.
+"""
+input UpdateTaskByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Task` being updated.
+  """
+  taskPatch: TaskPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateTask` mutation.
+"""
+input UpdateTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Task` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Task` being updated.
+  """
+  taskPatch: TaskPatch!
+}
+
+"""
+All input for the `updateTaskMetricByEntityIdAndValidUntil` mutation.
+"""
+input UpdateTaskMetricByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskMetric` being updated.
+  """
+  taskMetricPatch: TaskMetricPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateTaskMetricById` mutation.
+"""
+input UpdateTaskMetricByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskMetric` being updated.
+  """
+  taskMetricPatch: TaskMetricPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateTaskMetricByTaskIdAndMetricIdAndValidUntil` mutation.
+"""
+input UpdateTaskMetricByTaskIdAndMetricIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskMetric` being updated.
+  """
+  taskMetricPatch: TaskMetricPatch!
+  taskId: TemporalIdInput!
+  metricId: TemporalIdInput!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateTaskMetricByVersionId` mutation.
+"""
+input UpdateTaskMetricByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskMetric` being updated.
+  """
+  taskMetricPatch: TaskMetricPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateTaskMetric` mutation.
+"""
+input UpdateTaskMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TaskMetric` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `TaskMetric` being updated.
+  """
+  taskMetricPatch: TaskMetricPatch!
+}
+
+"""
+The output of our update `TaskMetric` mutation.
+"""
+type UpdateTaskMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` that was updated by this mutation.
+  """
+  taskMetric: TaskMetric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+
+  """
+  An edge for our `TaskMetric`. May be used by Relay 1.
+  """
+  taskMetricEdge(
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskMetricsEdge
+}
+
+"""
+The output of our update `Task` mutation.
+"""
+type UpdateTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` that was updated by this mutation.
+  """
+  task: Task
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Task`. May be used by Relay 1.
+  """
+  taskEdge(
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""
+All input for the `updateTaskRecordByEntityIdAndValidUntil` mutation.
+"""
+input UpdateTaskRecordByEntityIdAndValidUntilInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskRecord` being updated.
+  """
+  taskRecordPatch: TaskRecordPatch!
+  entityId: UUID!
+  validUntil: Datetime!
+}
+
+"""
+All input for the `updateTaskRecordById` mutation.
+"""
+input UpdateTaskRecordByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskRecord` being updated.
+  """
+  taskRecordPatch: TaskRecordPatch!
+  id: TemporalIdInput!
+}
+
+"""
+All input for the `updateTaskRecordByVersionId` mutation.
+"""
+input UpdateTaskRecordByVersionIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TaskRecord` being updated.
+  """
+  taskRecordPatch: TaskRecordPatch!
+  versionId: TemporalIdInput!
+}
+
+"""
+All input for the `updateTaskRecord` mutation.
+"""
+input UpdateTaskRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TaskRecord` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `TaskRecord` being updated.
+  """
+  taskRecordPatch: TaskRecordPatch!
+}
+
+"""
+The output of our update `TaskRecord` mutation.
+"""
+type UpdateTaskRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` that was updated by this mutation.
+  """
+  taskRecord: TaskRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  An edge for our `TaskRecord`. May be used by Relay 1.
+  """
+  taskRecordEdge(
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskRecordsEdge
+}
+
+"""
+All input for the upsert `AppUser` batch mutation.
+"""
+input UpsertAppUserBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUsers` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  appUsers: [AppUserInput]!
+}
+
+"""
+The output of our upsert `AppUser` batch mutation.
+"""
+type UpsertAppUserBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUsers` that was upserted by this mutation.
+  """
+  appUsers: [AppUser]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+All input for the upsert `AppUser` mutation.
+"""
+input UpsertAppUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` to be upserted by this mutation.
+  """
+  appUser: AppUserInput!
+}
+
+"""
+The output of our upsert `AppUser` mutation.
+"""
+type UpsertAppUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `AppUser` that were upserted by this mutation.
+  """
+  appUser: AppUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  An edge for our `AppUser`. May be used by Relay 1.
+  """
+  appUserEdge(
+    """
+    The method to use when ordering `AppUser`.
+    """
+    orderBy: [AppUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): AppUsersEdge
+}
+
+"""
+All input for the upsert `CalendarEvent` batch mutation.
+"""
+input UpsertCalendarEventBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvents` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  calendarEvents: [CalendarEventInput]!
+}
+
+"""
+The output of our upsert `CalendarEvent` batch mutation.
+"""
+type UpsertCalendarEventBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvents` that was upserted by this mutation.
+  """
+  calendarEvents: [CalendarEvent]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+
+  """
+  An edge for our `CalendarEvent`. May be used by Relay 1.
+  """
+  calendarEventEdge(
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CalendarEventsEdge
+}
+
+"""
+All input for the upsert `CalendarEvent` mutation.
+"""
+input UpsertCalendarEventInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` to be upserted by this mutation.
+  """
+  calendarEvent: CalendarEventInput!
+}
+
+"""
+The output of our upsert `CalendarEvent` mutation.
+"""
+type UpsertCalendarEventPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `CalendarEvent` that were upserted by this mutation.
+  """
+  calendarEvent: CalendarEvent
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `CalendarEvent`.
+  """
+  taskByTaskId: Task
+
+  """
+  An edge for our `CalendarEvent`. May be used by Relay 1.
+  """
+  calendarEventEdge(
+    """
+    The method to use when ordering `CalendarEvent`.
+    """
+    orderBy: [CalendarEventsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): CalendarEventsEdge
+}
+
+"""
+All input for the upsert `GoogleUser` batch mutation.
+"""
+input UpsertGoogleUserBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUsers` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  googleUsers: [GoogleUserInput]!
+}
+
+"""
+The output of our upsert `GoogleUser` batch mutation.
+"""
+type UpsertGoogleUserBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUsers` that was upserted by this mutation.
+  """
+  googleUsers: [GoogleUser]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `GoogleUser`. May be used by Relay 1.
+  """
+  googleUserEdge(
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GoogleUsersEdge
+}
+
+"""
+All input for the upsert `GoogleUser` mutation.
+"""
+input UpsertGoogleUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` to be upserted by this mutation.
+  """
+  googleUser: GoogleUserInput!
+}
+
+"""
+The output of our upsert `GoogleUser` mutation.
+"""
+type UpsertGoogleUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `GoogleUser` that were upserted by this mutation.
+  """
+  googleUser: GoogleUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `GoogleUser`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `GoogleUser`. May be used by Relay 1.
+  """
+  googleUserEdge(
+    """
+    The method to use when ordering `GoogleUser`.
+    """
+    orderBy: [GoogleUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): GoogleUsersEdge
+}
+
+"""
+All input for the upsert `Metric` batch mutation.
+"""
+input UpsertMetricBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Metrics` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  metrics: [MetricInput]!
+}
+
+"""
+The output of our upsert `Metric` batch mutation.
+"""
+type UpsertMetricBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Metrics` that was upserted by this mutation.
+  """
+  metrics: [Metric]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Metric`. May be used by Relay 1.
+  """
+  metricEdge(
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricsEdge
+}
+
+"""
+All input for the upsert `Metric` mutation.
+"""
+input UpsertMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` to be upserted by this mutation.
+  """
+  metric: MetricInput!
+}
+
+"""
+The output of our upsert `Metric` mutation.
+"""
+type UpsertMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Metric` that were upserted by this mutation.
+  """
+  metric: Metric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Metric`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Metric`. May be used by Relay 1.
+  """
+  metricEdge(
+    """
+    The method to use when ordering `Metric`.
+    """
+    orderBy: [MetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricsEdge
+}
+
+"""
+All input for the upsert `MetricRecord` batch mutation.
+"""
+input UpsertMetricRecordBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecords` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  metricRecords: [MetricRecordInput]!
+}
+
+"""
+The output of our upsert `MetricRecord` batch mutation.
+"""
+type UpsertMetricRecordBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecords` that was upserted by this mutation.
+  """
+  metricRecords: [MetricRecord]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+
+  """
+  An edge for our `MetricRecord`. May be used by Relay 1.
+  """
+  metricRecordEdge(
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricRecordsEdge
+}
+
+"""
+All input for the upsert `MetricRecord` mutation.
+"""
+input UpsertMetricRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` to be upserted by this mutation.
+  """
+  metricRecord: MetricRecordInput!
+}
+
+"""
+The output of our upsert `MetricRecord` mutation.
+"""
+type UpsertMetricRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `MetricRecord` that were upserted by this mutation.
+  """
+  metricRecord: MetricRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Metric` that is related to this `MetricRecord`.
+  """
+  metricByMetricVersionId: Metric
+
+  """
+  Reads a single `TaskRecord` that is related to this `MetricRecord`.
+  """
+  taskRecordByParentTaskRecordId: TaskRecord
+
+  """
+  An edge for our `MetricRecord`. May be used by Relay 1.
+  """
+  metricRecordEdge(
+    """
+    The method to use when ordering `MetricRecord`.
+    """
+    orderBy: [MetricRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): MetricRecordsEdge
+}
+
+"""
+All input for the upsert `Task` batch mutation.
+"""
+input UpsertTaskBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Tasks` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  tasks: [TaskInput]!
+}
+
+"""
+The output of our upsert `Task` batch mutation.
+"""
+type UpsertTaskBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Tasks` that was upserted by this mutation.
+  """
+  tasks: [Task]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Task`. May be used by Relay 1.
+  """
+  taskEdge(
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""
+All input for the upsert `Task` mutation.
+"""
+input UpsertTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` to be upserted by this mutation.
+  """
+  task: TaskInput!
+}
+
+"""
+All input for the upsert `TaskMetric` batch mutation.
+"""
+input UpsertTaskMetricBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetrics` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  taskMetrics: [TaskMetricInput]!
+}
+
+"""
+The output of our upsert `TaskMetric` batch mutation.
+"""
+type UpsertTaskMetricBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetrics` that was upserted by this mutation.
+  """
+  taskMetrics: [TaskMetric]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+
+  """
+  An edge for our `TaskMetric`. May be used by Relay 1.
+  """
+  taskMetricEdge(
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskMetricsEdge
+}
+
+"""
+All input for the upsert `TaskMetric` mutation.
+"""
+input UpsertTaskMetricInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` to be upserted by this mutation.
+  """
+  taskMetric: TaskMetricInput!
+}
+
+"""
+The output of our upsert `TaskMetric` mutation.
+"""
+type UpsertTaskMetricPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskMetric` that were upserted by this mutation.
+  """
+  taskMetric: TaskMetric
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskMetric`.
+  """
+  taskByTaskId: Task
+
+  """
+  Reads a single `Metric` that is related to this `TaskMetric`.
+  """
+  metricByMetricId: Metric
+
+  """
+  An edge for our `TaskMetric`. May be used by Relay 1.
+  """
+  taskMetricEdge(
+    """
+    The method to use when ordering `TaskMetric`.
+    """
+    orderBy: [TaskMetricsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskMetricsEdge
+}
+
+"""
+The output of our upsert `Task` mutation.
+"""
+type UpsertTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `Task` that were upserted by this mutation.
+  """
+  task: Task
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `AppUser` that is related to this `Task`.
+  """
+  appUserByAppUserId: AppUser
+
+  """
+  An edge for our `Task`. May be used by Relay 1.
+  """
+  taskEdge(
+    """
+    The method to use when ordering `Task`.
+    """
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""
+All input for the upsert `TaskRecord` batch mutation.
+"""
+input UpsertTaskRecordBatchInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecords` to be upserted by this mutation. Expects all records to conform to the structure of the first.
+  """
+  taskRecords: [TaskRecordInput]!
+}
+
+"""
+The output of our upsert `TaskRecord` batch mutation.
+"""
+type UpsertTaskRecordBatchPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecords` that was upserted by this mutation.
+  """
+  taskRecords: [TaskRecord]
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  An edge for our `TaskRecord`. May be used by Relay 1.
+  """
+  taskRecordEdge(
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskRecordsEdge
+}
+
+"""
+All input for the upsert `TaskRecord` mutation.
+"""
+input UpsertTaskRecordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` to be upserted by this mutation.
+  """
+  taskRecord: TaskRecordInput!
+}
+
+"""
+The output of our upsert `TaskRecord` mutation.
+"""
+type UpsertTaskRecordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  The `TaskRecord` that were upserted by this mutation.
+  """
+  taskRecord: TaskRecord
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """
+  Reads a single `Task` that is related to this `TaskRecord`.
+  """
+  taskByTaskVersionId: Task
+
+  """
+  An edge for our `TaskRecord`. May be used by Relay 1.
+  """
+  taskRecordEdge(
+    """
+    The method to use when ordering `TaskRecord`.
+    """
+    orderBy: [TaskRecordsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TaskRecordsEdge
+}
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID

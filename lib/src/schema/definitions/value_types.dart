@@ -10,7 +10,7 @@
 // * ObjectField<Value>
 // * ObjectValue
 // * DefaultValue
-part of 'schema.dart';
+part of 'definitions.dart';
 
 @immutable
 abstract class Value extends GraphQLEntity {

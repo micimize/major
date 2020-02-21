@@ -7,7 +7,7 @@
 // * Directive
 // * TypeSystemDefinition
 // * TypeDefinition
-part of 'schema.dart';
+part of 'definitions.dart';
 
 @immutable
 abstract class GraphQLEntity {
@@ -113,8 +113,16 @@ abstract class TypeSystemDefinition extends GraphQLEntity {
   String get name => astNode.name.value;
 }
 
+/// same as GraphQLNamedType in the graphqljs implementation
+///
+/// Implementors:
+///   ScalarTypeDefinition
+///   ObjectTypeDefinition
+///   InterfaceTypeDefinition
+///   UnionTypeDefinition
+///   EnumTypeDefinition
+///   InputObjectTypeDefinition
 @immutable
-// same as GraphQLNamedType in the graphqljs implementation
 abstract class TypeDefinition extends TypeSystemDefinition {
   const TypeDefinition();
 
