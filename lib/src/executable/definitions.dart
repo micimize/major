@@ -13,16 +13,27 @@ import 'package:built_graphql/src/schema/definitions/definitions.dart'
 part 'selections.dart';
 
 @immutable
-abstract class GraphQLClientEntity extends GraphQLEntity {
-  const GraphQLClientEntity();
+abstract class ExecutableGraphQLEntity extends GraphQLEntity {
+  const ExecutableGraphQLEntity();
 }
 
 @immutable
-abstract class ExecutableDefinition extends GraphQLClientEntity {
+abstract class ExecutableDefinition extends ExecutableGraphQLEntity {
   const ExecutableDefinition();
 
   @override
   ExecutableDefinitionNode get astNode;
+
+  static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode) {
+    if (astNode is OperationDefinitionNode) {
+      return OperationDefinition.fromNode(astNode);
+    }
+    if (astNode is FragmentDefinitionNode) {
+      return FragmentDefinition.fromNode(astNode);
+    }
+
+    throw ArgumentError('$astNode is unsupported');
+  }
 }
 
 @immutable
@@ -44,20 +55,6 @@ class OperationDefinition extends ExecutableDefinition {
 }
 
 @immutable
-class SelectionSet extends GraphQLClientEntity {
-  const SelectionSet(this.astNode);
-
-  @override
-  final SelectionSetNode astNode;
-
-  List<Selection> get selections =>
-      astNode.selections.map(Selection.fromNode).toList();
-
-  static SelectionSet fromNode(SelectionSetNode astNode) =>
-      SelectionSet(astNode);
-}
-
-@immutable
 class FragmentDefinition extends ExecutableDefinition {
   const FragmentDefinition(this.astNode);
 
@@ -76,7 +73,7 @@ class FragmentDefinition extends ExecutableDefinition {
 }
 
 @immutable
-class TypeCondition extends GraphQLClientEntity {
+class TypeCondition extends ExecutableGraphQLEntity {
   const TypeCondition(this.astNode);
 
   @override
@@ -89,7 +86,7 @@ class TypeCondition extends GraphQLClientEntity {
 }
 
 @immutable
-class VariableDefinition extends GraphQLClientEntity {
+class VariableDefinition extends ExecutableGraphQLEntity {
   const VariableDefinition(this.astNode);
 
   @override

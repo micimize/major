@@ -1,7 +1,7 @@
-part of 'operations.dart';
+part of 'definitions.dart';
 
 @immutable
-class SelectionSet extends GraphQLClientEntity {
+class SelectionSet extends ExecutableGraphQLEntity {
   const SelectionSet(this.astNode);
 
   @override
@@ -15,7 +15,7 @@ class SelectionSet extends GraphQLClientEntity {
 }
 
 @immutable
-abstract class Selection extends GraphQLClientEntity {
+abstract class Selection extends ExecutableGraphQLEntity {
   const Selection();
 
   @override
