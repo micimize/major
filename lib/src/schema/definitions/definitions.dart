@@ -16,9 +16,26 @@ import 'package:gql/language.dart';
 part 'base_types.dart';
 part 'value_types.dart';
 
+/// Callback to dereference a type name into it's material version
+typedef ResolveType = TypeDefinition Function(String name);
+
+abstract class TypeResolver {
+  @protected
+  ResolveType get getType;
+
+  static TypeDefinition withoutContext(String name) => throw StateError(
+      'Cannot resolve type $name in a context without a type resolver!');
+}
+
 @immutable
-class FieldDefinition extends GraphQLEntity {
-  const FieldDefinition(this.astNode);
+class FieldDefinition extends GraphQLEntity implements TypeResolver {
+  const FieldDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : getType = getType ?? TypeResolver.withoutContext;
+
+  @override
+  final ResolveType getType;
 
   @override
   final FieldDefinitionNode astNode;
@@ -73,8 +90,20 @@ class InputValueDefinition extends GraphQLEntity {
 }
 
 @immutable
-class InterfaceTypeDefinition extends TypeDefinition with AbstractType {
-  const InterfaceTypeDefinition(this.astNode);
+class InterfaceTypeDefinition extends TypeDefinition
+    with AbstractType
+    implements TypeResolver {
+  const InterfaceTypeDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : getType = getType ?? TypeResolver.withoutContext;
+
+  @override
+  final ResolveType getType;
+
+  @override
+  List<FieldDefinition> get fields =>
+      astNode.fields.map((f) => FieldDefinition(f, schema)).toList();
 
   @override
   final InterfaceTypeDefinitionNode astNode;

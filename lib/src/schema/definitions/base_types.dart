@@ -44,8 +44,17 @@ abstract class GraphQLType extends GraphQLEntity {
 }
 
 @immutable
-class NamedType extends GraphQLType {
-  const NamedType(this.astNode) : super();
+class NamedType extends GraphQLType implements TypeResolver {
+  const NamedType(
+    this.astNode, [
+    ResolveType getType,
+  ])  : getType = getType ?? TypeResolver.withoutContext,
+        super();
+
+  @override
+  final ResolveType getType;
+
+  TypeDefinition get type => getType(name);
 
   @override
   final NamedTypeNode astNode;
