@@ -177,3 +177,17 @@ class DefaultValue extends GraphQLEntity {
   static DefaultValue fromNode(DefaultValueNode astNode) =>
       DefaultValue(astNode);
 }
+
+// While I don't believe VariableValues are possible in the schema definition,
+// I included this here so ValueNode.fromNode could be made complete
+@immutable
+class Variable extends Value {
+  const Variable(this.astNode);
+
+  @override
+  final VariableNode astNode;
+
+  String get name => astNode.name.value;
+
+  static Variable fromNode(VariableNode astNode) => Variable(astNode);
+}
