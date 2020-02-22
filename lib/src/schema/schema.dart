@@ -41,8 +41,9 @@ class GraphQLSchema extends TypeSystemDefinition {
   /// TODO saturating types with awareness before they make it to the end user is important
   final Map<String, TypeDefinition> typeMap;
 
-  TypeDefinition _withAwareness(TypeDefinition type) =>
-      withAwareness(type, this) ?? type;
+  /// Adds a type resolver to top-level
+  TypeDefinition _withAwareness(TypeDefinition definition) =>
+      TypeResolver.addedTo(definition, getType) ?? definition;
 
   TypeDefinition getType(String name) => _withAwareness(typeMap[name]);
 
@@ -55,11 +56,11 @@ class GraphQLSchema extends TypeSystemDefinition {
 
   final d.ObjectTypeDefinition _query;
   ObjectTypeDefinition get query =>
-      withAwareness(_query, this) as ObjectTypeDefinition;
+      _withAwareness(_query) as ObjectTypeDefinition;
 
   final d.ObjectTypeDefinition _subscription;
   ObjectTypeDefinition get subscription =>
-      withAwareness(_subscription, this) as ObjectTypeDefinition;
+      _withAwareness(_subscription) as ObjectTypeDefinition;
 
   List<InterfaceTypeDefinition> get interaces =>
       _getAll<InterfaceTypeDefinition>();

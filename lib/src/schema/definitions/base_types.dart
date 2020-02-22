@@ -32,12 +32,15 @@ abstract class GraphQLType extends GraphQLEntity {
 
   String get baseTypeName;
 
-  static GraphQLType fromNode(TypeNode astNode) {
+  static GraphQLType fromNode(
+    TypeNode astNode, [
+    ResolveType getType,
+  ]) {
     if (astNode is NamedTypeNode) {
-      return NamedType(astNode);
+      return NamedType(astNode, getType);
     }
     if (astNode is ListTypeNode) {
-      return ListType(astNode);
+      return ListType(astNode, getType);
     }
     throw ArgumentError('$astNode is unsupported');
   }
@@ -64,24 +67,39 @@ class NamedType extends GraphQLType implements TypeResolver {
   @override
   String get baseTypeName => name;
 
-  static NamedType fromNode(NamedTypeNode astNode) => NamedType(astNode);
+  static NamedType fromNode(
+    NamedTypeNode astNode, [
+    ResolveType getType,
+  ]) =>
+      NamedType(astNode, getType);
 
   static String nameFromNode(NamedTypeNode astNode) => astNode.name.value;
 }
 
 @immutable
-class ListType extends GraphQLType {
-  const ListType(this.astNode);
+class ListType extends GraphQLType implements TypeResolver {
+  const ListType(
+    this.astNode, [
+    ResolveType getType,
+  ])  : getType = getType ?? TypeResolver.withoutContext,
+        super();
+
+  @override
+  final ResolveType getType;
 
   @override
   final ListTypeNode astNode;
 
-  GraphQLType get type => GraphQLType.fromNode(astNode.type);
+  GraphQLType get type => GraphQLType.fromNode(astNode.type, getType);
 
   @override
   String get baseTypeName => type.baseTypeName;
 
-  static ListType fromNode(ListTypeNode astNode) => ListType(astNode);
+  static ListType fromNode(
+    ListTypeNode astNode, [
+    ResolveType getType,
+  ]) =>
+      ListType(astNode, getType);
 }
 
 @immutable

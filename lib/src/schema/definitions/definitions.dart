@@ -15,27 +15,21 @@ import 'package:gql/language.dart';
 
 part 'base_types.dart';
 part 'value_types.dart';
-
-/// Callback to dereference a type name into it's material version
-typedef ResolveType = TypeDefinition Function(String name);
-
-abstract class TypeResolver {
-  @protected
-  ResolveType get getType;
-
-  static TypeDefinition withoutContext(String name) => throw StateError(
-      'Cannot resolve type $name in a context without a type resolver!');
-}
+part 'type_resolver.dart';
 
 @immutable
 class FieldDefinition extends GraphQLEntity implements TypeResolver {
   const FieldDefinition(
     this.astNode, [
     ResolveType getType,
-  ]) : getType = getType ?? TypeResolver.withoutContext;
+    bool isOverride,
+  ])  : getType = getType ?? TypeResolver.withoutContext,
+        isOverride = isOverride ?? false;
 
   @override
   final ResolveType getType;
+
+  final bool isOverride;
 
   @override
   final FieldDefinitionNode astNode;
@@ -44,7 +38,7 @@ class FieldDefinition extends GraphQLEntity implements TypeResolver {
 
   String get description => astNode.description?.value;
 
-  GraphQLType get type => GraphQLType.fromNode(astNode.type);
+  GraphQLType get type => GraphQLType.fromNode(astNode.type, getType);
 
   List<Directive> get directive =>
       astNode.directives.map(Directive.fromNode).toList();
@@ -52,8 +46,9 @@ class FieldDefinition extends GraphQLEntity implements TypeResolver {
   List<InputValueDefinition> get args =>
       astNode.args.map(InputValueDefinition.fromNode).toList();
 
-  static FieldDefinition fromNode(FieldDefinitionNode astNode) =>
-      FieldDefinition(astNode);
+  static FieldDefinition fromNode(FieldDefinitionNode astNode,
+          [ResolveType getType]) =>
+      FieldDefinition(astNode, getType);
 }
 
 @immutable
@@ -101,50 +96,90 @@ class InterfaceTypeDefinition extends TypeDefinition
   @override
   final ResolveType getType;
 
-  @override
   List<FieldDefinition> get fields =>
-      astNode.fields.map((f) => FieldDefinition(f, schema)).toList();
+      astNode.fields.map((field) => FieldDefinition(field, getType)).toList();
 
   @override
   final InterfaceTypeDefinitionNode astNode;
 
-  List<FieldDefinition> get fields =>
-      astNode.fields.map(FieldDefinition.fromNode).toList();
-
-  static InterfaceTypeDefinition fromNode(
-          InterfaceTypeDefinitionNode astNode) =>
-      InterfaceTypeDefinition(astNode);
+  static InterfaceTypeDefinition fromNode(InterfaceTypeDefinitionNode astNode,
+          [ResolveType getType]) =>
+      InterfaceTypeDefinition(astNode, getType);
 }
 
 @immutable
-class ObjectTypeDefinition extends TypeDefinition {
-  const ObjectTypeDefinition(this.astNode);
+class ObjectTypeDefinition extends TypeDefinition implements TypeResolver {
+  const ObjectTypeDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : getType = getType ?? TypeResolver.withoutContext;
+
+  @override
+  final ResolveType getType;
 
   @override
   final ObjectTypeDefinitionNode astNode;
 
-  List<NamedType> get interfaceNames =>
-      astNode.interfaces.map(NamedType.fromNode).toList();
+  List<FieldDefinition> get fields {
+    final inherited = _inheritedFieldNames;
+    return astNode.fields
+        .map((fieldNode) => FieldDefinition(
+              fieldNode,
+              getType,
+              inherited.contains(fieldNode.name.value),
+            ))
+        .toList();
+  }
 
-  List<FieldDefinition> get fields =>
-      astNode.fields.map(FieldDefinition.fromNode).toList();
+  List<NamedType> get interfaceNames => astNode.interfaces
+      .map((name) => NamedType.fromNode(name, getType))
+      .toList();
 
-  static ObjectTypeDefinition fromNode(ObjectTypeDefinitionNode astNode) =>
-      ObjectTypeDefinition(astNode);
+  List<InterfaceTypeDefinition> get interfaces => interfaceNames
+      .map((i) => getType(i.name) as InterfaceTypeDefinition)
+      .toList();
+
+  Set<String> get _inheritedFieldNames {
+    var inherited = <String>{};
+    for (final face in interfaces) {
+      inherited.addAll(face.fields.map((f) => f.name));
+    }
+    return inherited;
+  }
+
+  static ObjectTypeDefinition fromNode(
+    ObjectTypeDefinitionNode astNode, [
+    ResolveType getType,
+  ]) =>
+      ObjectTypeDefinition(astNode, getType);
 }
 
 @immutable
-class UnionTypeDefinition extends TypeDefinition with AbstractType {
-  const UnionTypeDefinition(this.astNode);
+class UnionTypeDefinition extends TypeDefinition
+    with AbstractType
+    implements TypeResolver {
+  const UnionTypeDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : getType = getType ?? TypeResolver.withoutContext;
+
+  @override
+  final ResolveType getType;
 
   @override
   final UnionTypeDefinitionNode astNode;
 
   List<NamedType> get typeNames =>
-      astNode.types.map(NamedType.fromNode).toList();
+      astNode.types.map((name) => NamedType.fromNode(name, getType)).toList();
 
-  static UnionTypeDefinition fromNode(UnionTypeDefinitionNode astNode) =>
-      UnionTypeDefinition(astNode);
+  List<TypeDefinition> get types =>
+      typeNames.map((t) => getType(t.name)).toList();
+
+  static UnionTypeDefinition fromNode(
+    UnionTypeDefinitionNode astNode, [
+    ResolveType getType,
+  ]) =>
+      UnionTypeDefinition(astNode, getType);
 }
 
 @immutable
