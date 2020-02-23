@@ -8,7 +8,7 @@ class SelectionSet extends _Executable {
     ResolveType getType,
   ]) : super(getType);
 
-  final ObjectTypeDefinition schemaType;
+  final TypeDefinition schemaType;
 
   @override
   final SelectionSetNode astNode;
@@ -17,8 +17,12 @@ class SelectionSet extends _Executable {
       .map((selection) => Selection.fromNode(selection, schemaType, getType))
       .toList();
 
-  static SelectionSet fromNode(SelectionSetNode astNode) =>
-      SelectionSet(astNode);
+  static SelectionSet fromNode(
+    SelectionSetNode astNode, [
+    TypeDefinitionWithFieldSet schemaType,
+    ResolveType getType,
+  ]) =>
+      SelectionSet(astNode, schemaType, getType);
 }
 
 @immutable
@@ -38,8 +42,10 @@ abstract class Selection extends _Executable {
     ResolveType getType,
   ]) {
     if (astNode is FieldNode) {
+      // fields can only be seleted on Interface and Object types
       final fieldType = (schemaType != null)
-          ? (schemaType as ObjectTypeDefinition).getField(astNode.name.value)
+          ? (schemaType as TypeDefinitionWithFieldSet)
+              .getField(astNode.name.value)
           : null;
       return Field(astNode, fieldType, getType);
     }
@@ -74,13 +80,17 @@ class Field extends Selection {
   String get alias => astNode.alias.value;
   String get name => astNode.name.value;
 
+  GraphQLType get type => schemaType.type;
+
   List<Argument> get arguments =>
       astNode.arguments.map(Argument.fromNode).toList();
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
 
-  SelectionSet get selectionSet => SelectionSet.fromNode(astNode.selectionSet);
+  SelectionSet get selectionSet => astNode.selectionSet != null
+      ? SelectionSet(astNode.selectionSet, getType(type.baseTypeName), getType)
+      : null;
 
   static Field fromNode(FieldNode astNode) => Field(astNode);
 }

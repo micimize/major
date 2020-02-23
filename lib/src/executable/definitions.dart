@@ -58,10 +58,11 @@ class OperationDefinition extends ExecutableDefinition {
   List<VariableDefinition> get variables =>
       astNode.variableDefinitions.map(VariableDefinition.fromNode).toList();
 
-  SelectionSet get selectionSet {
-    final operation = getType(type.name) as ObjectTypeDefinition;
-    SelectionSet.fromNode(astNode.selectionSet);
-  }
+  SelectionSet get selectionSet => SelectionSet(
+        astNode.selectionSet,
+        getType(type.name) as ObjectTypeDefinition,
+        getType,
+      );
 
   static OperationDefinition fromNode(
     OperationDefinitionNode astNode, [
@@ -87,7 +88,7 @@ class FragmentDefinition extends ExecutableDefinition {
       astNode.directives.map(Directive.fromNode).toList();
 
   SelectionSet get selectionSet =>
-      SelectionSet.fromNode(astNode.selectionSet, getType);
+      SelectionSet(astNode.selectionSet, onType, getType);
 
   static FragmentDefinition fromNode(
     FragmentDefinitionNode astNode, [

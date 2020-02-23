@@ -69,19 +69,36 @@ class FieldDefinition extends GraphQLEntity implements TypeResolver {
 }
 
 @immutable
-class InterfaceTypeDefinition extends TypeDefinition
-    with AbstractType
+abstract class TypeDefinitionWithFieldSet extends TypeDefinition
     implements TypeResolver {
-  const InterfaceTypeDefinition(
-    this.astNode, [
+  const TypeDefinitionWithFieldSet([
     ResolveType getType,
-  ]) : getType = getType ?? TypeResolver.withoutContext;
+  ])  : getType = getType ?? TypeResolver.withoutContext,
+        super();
 
   @override
   final ResolveType getType;
 
+  List<FieldDefinition> get fields;
+
+  FieldDefinition getField(String fieldName);
+}
+
+@immutable
+class InterfaceTypeDefinition extends TypeDefinitionWithFieldSet
+    with AbstractType {
+  const InterfaceTypeDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : super(getType);
+
+  @override
   List<FieldDefinition> get fields =>
       astNode.fields.map((field) => FieldDefinition(field, getType)).toList();
+
+  @override
+  FieldDefinition getField(String fieldName) =>
+      fields.firstWhere((field) => field.name == fieldName);
 
   @override
   final InterfaceTypeDefinitionNode astNode;
@@ -91,20 +108,17 @@ class InterfaceTypeDefinition extends TypeDefinition
       InterfaceTypeDefinition(astNode, getType);
 }
 
-// TODO [StructuralTypeDefinition] for interface, objecttype, and union type
 @immutable
-class ObjectTypeDefinition extends TypeDefinition implements TypeResolver {
+class ObjectTypeDefinition extends TypeDefinitionWithFieldSet {
   const ObjectTypeDefinition(
     this.astNode, [
     ResolveType getType,
-  ]) : getType = getType ?? TypeResolver.withoutContext;
-
-  @override
-  final ResolveType getType;
+  ]) : super(getType);
 
   @override
   final ObjectTypeDefinitionNode astNode;
 
+  @override
   List<FieldDefinition> get fields {
     final inherited = _inheritedFieldNames;
     return astNode.fields
@@ -116,8 +130,9 @@ class ObjectTypeDefinition extends TypeDefinition implements TypeResolver {
         .toList();
   }
 
+  @override
   FieldDefinition getField(String fieldName) =>
-      fields.firstWhere((field) => field.name == name);
+      fields.firstWhere((field) => field.name == fieldName);
 
   List<NamedType> get interfaceNames => astNode.interfaces
       .map((name) => NamedType.fromNode(name, getType))
@@ -163,16 +178,6 @@ class UnionTypeDefinition extends TypeDefinition
   Iterable<String> get _typeNames => typeNames.map((t) => t.name);
 
   List<TypeDefinition> get types => _typeNames.map(getType).toList();
-
-  /* leaving this commented out as in selection sets we can just use the onType and worry about validation later
-  TypeDefinition getOnType(String typeName) {
-    assert(
-      _typeNames.contains(typeName),
-      '$typeName is not contained in $this',
-    );
-    return getType(typeName);
-  }
-  */
 
   static UnionTypeDefinition fromNode(
     UnionTypeDefinitionNode astNode, [
