@@ -3,8 +3,6 @@ import 'package:gql/ast.dart';
 
 import './defaults.dart';
 
-import './definitions/definitions.dart' as d;
-
 import './definitions.dart';
 export './definitions.dart';
 
@@ -15,12 +13,7 @@ class GraphQLSchema extends TypeSystemDefinition {
     this.fullDocumentAst,
     this.typeMap,
     this.directives,
-    d.ObjectTypeDefinition mutation,
-    d.ObjectTypeDefinition query,
-    d.ObjectTypeDefinition subscription,
-  })  : _mutation = mutation,
-        _query = query,
-        _subscription = subscription;
+  });
 
   @override
   final SchemaDefinitionNode astNode;
@@ -47,20 +40,15 @@ class GraphQLSchema extends TypeSystemDefinition {
 
   TypeDefinition getType(String name) => _withAwareness(typeMap[name]);
 
+  ObjectTypeDefinition _getObjectType(String name) =>
+      _withAwareness(typeMap[name]) as ObjectTypeDefinition;
+
   Iterable<TypeDefinition> get _allTypeDefinitions =>
       typeMap.values.map(_withAwareness);
 
-  final d.ObjectTypeDefinition _mutation;
-  ObjectTypeDefinition get mutation =>
-      _withAwareness(_mutation) as ObjectTypeDefinition;
-
-  final d.ObjectTypeDefinition _query;
-  ObjectTypeDefinition get query =>
-      _withAwareness(_query) as ObjectTypeDefinition;
-
-  final d.ObjectTypeDefinition _subscription;
-  ObjectTypeDefinition get subscription =>
-      _withAwareness(_subscription) as ObjectTypeDefinition;
+  ObjectTypeDefinition get query => _getObjectType('query');
+  ObjectTypeDefinition get mutation => _getObjectType('mutation');
+  ObjectTypeDefinition get subscription => _getObjectType('subscription');
 
   List<InterfaceTypeDefinition> get interaces =>
       _getAll<InterfaceTypeDefinition>();
@@ -131,6 +119,7 @@ GraphQLSchema buildSchema(
       _directiveDefs.add(def);
     }
   }
+
   final typeMap = Map.fromEntries(
     _typeDefs
         .map(TypeDefinition.fromNode)
@@ -142,33 +131,27 @@ GraphQLSchema buildSchema(
   // If specified directives were not explicitly declared, add them.
   directives.addAll(missingBuiltinDirectives(directives));
 
-  final getType = _operationGetter(typeMap, schemaDef);
-
   return GraphQLSchema(
     schemaDef,
-    query: getType(OperationType.query),
-    mutation: getType(OperationType.mutation),
-    subscription: getType(OperationType.subscription),
-    typeMap: typeMap,
+    typeMap: {
+      ...typeMap,
+      ..._operationTypeMap(typeMap, schemaDef),
+    },
     directives: directives,
   );
 }
 
-d.ObjectTypeDefinition Function(OperationType) _operationGetter(
+Map<String, ObjectTypeDefinition> _operationTypeMap(
   Map<String, TypeDefinition> typeMap,
   SchemaDefinitionNode schemaDef,
 ) {
   final operationTypeNames = _getOperationTypeNames(schemaDef);
-
-  d.ObjectTypeDefinition getType(OperationType rootType) {
-    final name = operationTypeNames[rootType];
-    if (name != null) {
-      return typeMap[name] as d.ObjectTypeDefinition;
-    }
-    return null;
-  }
-
-  return getType;
+  return operationTypeNames.map(
+    (type, name) => MapEntry(
+      type.name,
+      typeMap[name] as ObjectTypeDefinition,
+    ),
+  );
 }
 
 /// Resolve a map of { [OperationType]: [String] typeName }

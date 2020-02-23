@@ -1,14 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
-import 'package:built_graphql/src/schema/definitions/definitions.dart'
-    show
-        Variable,
-        GraphQLEntity,
-        Argument,
-        Directive,
-        NamedType,
-        GraphQLType,
-        DefaultValue;
+import 'package:built_graphql/src/schema/definitions/definitions.dart';
 
 part 'selections.dart';
 
@@ -18,11 +10,26 @@ abstract class ExecutableGraphQLEntity extends GraphQLEntity {
 }
 
 @immutable
-abstract class ExecutableDefinition extends ExecutableGraphQLEntity {
-  const ExecutableDefinition();
+class _Executable extends ExecutableGraphQLEntity implements TypeResolver {
+  const _Executable([ResolveType getType])
+      : getType = getType ?? TypeResolver.withoutContext,
+        super();
+
+  @override
+  final ResolveType getType;
+
+  @override
+  Node get astNode => throw UnimplementedError();
+}
+
+@immutable
+abstract class ExecutableDefinition extends _Executable {
+  const ExecutableDefinition([ResolveType getType]) : super(getType);
 
   @override
   ExecutableDefinitionNode get astNode;
+
+  String get name => astNode.name.value;
 
   static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode) {
     if (astNode is OperationDefinitionNode) {
@@ -38,7 +45,10 @@ abstract class ExecutableDefinition extends ExecutableGraphQLEntity {
 
 @immutable
 class OperationDefinition extends ExecutableDefinition {
-  const OperationDefinition(this.astNode);
+  const OperationDefinition(
+    this.astNode, [
+    ResolveType getType,
+  ]) : super(getType);
 
   @override
   final OperationDefinitionNode astNode;
@@ -48,28 +58,42 @@ class OperationDefinition extends ExecutableDefinition {
   List<VariableDefinition> get variables =>
       astNode.variableDefinitions.map(VariableDefinition.fromNode).toList();
 
-  SelectionSet get selectionSet => SelectionSet.fromNode(astNode.selectionSet);
+  SelectionSet get selectionSet {
+    final operation = getType(type.name) as ObjectTypeDefinition;
+    SelectionSet.fromNode(astNode.selectionSet);
+  }
 
-  static OperationDefinition fromNode(OperationDefinitionNode astNode) =>
-      OperationDefinition(astNode);
+  static OperationDefinition fromNode(
+    OperationDefinitionNode astNode, [
+    ResolveType getType,
+  ]) =>
+      OperationDefinition(astNode, getType);
 }
 
 @immutable
 class FragmentDefinition extends ExecutableDefinition {
-  const FragmentDefinition(this.astNode);
+  const FragmentDefinition(this.astNode, [ResolveType getType])
+      : super(getType);
 
   @override
   final FragmentDefinitionNode astNode;
 
-  TypeCondition get typeCondition =>
+  TypeCondition get _typeCondition =>
       TypeCondition.fromNode(astNode.typeCondition);
+
+  TypeDefinition get onType => getType(_typeCondition.on.name);
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
-  SelectionSet get selectionSet => SelectionSet.fromNode(astNode.selectionSet);
 
-  static FragmentDefinition fromNode(FragmentDefinitionNode astNode) =>
-      FragmentDefinition(astNode);
+  SelectionSet get selectionSet =>
+      SelectionSet.fromNode(astNode.selectionSet, getType);
+
+  static FragmentDefinition fromNode(
+    FragmentDefinitionNode astNode, [
+    ResolveType getType,
+  ]) =>
+      FragmentDefinition(astNode, getType);
 }
 
 @immutable

@@ -17,6 +17,23 @@ part 'base_types.dart';
 part 'value_types.dart';
 part 'type_resolver.dart';
 
+extension WithTypeName on OperationType {
+  String get name {
+    switch (this) {
+      case OperationType.query:
+        return 'query';
+      case OperationType.mutation:
+        return 'mutation';
+      case OperationType.subscription:
+        return 'subscription';
+    }
+    throw StateError('Impossible OperationType $this');
+  }
+}
+
+/*
+  Begin [TypeResolver]-enabled classes
+*/
 @immutable
 class FieldDefinition extends GraphQLEntity implements TypeResolver {
   const FieldDefinition(
@@ -52,39 +69,6 @@ class FieldDefinition extends GraphQLEntity implements TypeResolver {
 }
 
 @immutable
-class ScalarTypeDefinition extends TypeDefinition {
-  const ScalarTypeDefinition(this.astNode);
-
-  @override
-  final ScalarTypeDefinitionNode astNode;
-
-  static ScalarTypeDefinition fromNode(ScalarTypeDefinitionNode astNode) =>
-      ScalarTypeDefinition(astNode);
-}
-
-@immutable
-class InputValueDefinition extends GraphQLEntity {
-  const InputValueDefinition(this.astNode);
-
-  @override
-  final InputValueDefinitionNode astNode;
-
-  String get name => astNode.name.value;
-
-  String get description => astNode.description?.value;
-
-  GraphQLType get type => GraphQLType.fromNode(astNode.type);
-
-  Value get defaultValue => Value.fromNode(astNode.defaultValue);
-
-  List<Directive> get directives =>
-      astNode.directives.map(Directive.fromNode).toList();
-
-  static InputValueDefinition fromNode(InputValueDefinitionNode astNode) =>
-      InputValueDefinition(astNode);
-}
-
-@immutable
 class InterfaceTypeDefinition extends TypeDefinition
     with AbstractType
     implements TypeResolver {
@@ -107,6 +91,7 @@ class InterfaceTypeDefinition extends TypeDefinition
       InterfaceTypeDefinition(astNode, getType);
 }
 
+// TODO [StructuralTypeDefinition] for interface, objecttype, and union type
 @immutable
 class ObjectTypeDefinition extends TypeDefinition implements TypeResolver {
   const ObjectTypeDefinition(
@@ -130,6 +115,9 @@ class ObjectTypeDefinition extends TypeDefinition implements TypeResolver {
             ))
         .toList();
   }
+
+  FieldDefinition getField(String fieldName) =>
+      fields.firstWhere((field) => field.name == name);
 
   List<NamedType> get interfaceNames => astNode.interfaces
       .map((name) => NamedType.fromNode(name, getType))
@@ -172,14 +160,61 @@ class UnionTypeDefinition extends TypeDefinition
   List<NamedType> get typeNames =>
       astNode.types.map((name) => NamedType.fromNode(name, getType)).toList();
 
-  List<TypeDefinition> get types =>
-      typeNames.map((t) => getType(t.name)).toList();
+  Iterable<String> get _typeNames => typeNames.map((t) => t.name);
+
+  List<TypeDefinition> get types => _typeNames.map(getType).toList();
+
+  /* leaving this commented out as in selection sets we can just use the onType and worry about validation later
+  TypeDefinition getOnType(String typeName) {
+    assert(
+      _typeNames.contains(typeName),
+      '$typeName is not contained in $this',
+    );
+    return getType(typeName);
+  }
+  */
 
   static UnionTypeDefinition fromNode(
     UnionTypeDefinitionNode astNode, [
     ResolveType getType,
   ]) =>
       UnionTypeDefinition(astNode, getType);
+}
+
+/*
+  Begin simple/dumb classes
+*/
+@immutable
+class ScalarTypeDefinition extends TypeDefinition {
+  const ScalarTypeDefinition(this.astNode);
+
+  @override
+  final ScalarTypeDefinitionNode astNode;
+
+  static ScalarTypeDefinition fromNode(ScalarTypeDefinitionNode astNode) =>
+      ScalarTypeDefinition(astNode);
+}
+
+@immutable
+class InputValueDefinition extends GraphQLEntity {
+  const InputValueDefinition(this.astNode);
+
+  @override
+  final InputValueDefinitionNode astNode;
+
+  String get name => astNode.name.value;
+
+  String get description => astNode.description?.value;
+
+  GraphQLType get type => GraphQLType.fromNode(astNode.type);
+
+  Value get defaultValue => Value.fromNode(astNode.defaultValue);
+
+  List<Directive> get directives =>
+      astNode.directives.map(Directive.fromNode).toList();
+
+  static InputValueDefinition fromNode(InputValueDefinitionNode astNode) =>
+      InputValueDefinition(astNode);
 }
 
 @immutable

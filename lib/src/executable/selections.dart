@@ -1,46 +1,75 @@
 part of 'definitions.dart';
 
 @immutable
-class SelectionSet extends ExecutableGraphQLEntity {
-  const SelectionSet(this.astNode);
+class SelectionSet extends _Executable {
+  const SelectionSet(
+    this.astNode, [
+    this.schemaType,
+    ResolveType getType,
+  ]) : super(getType);
+
+  final ObjectTypeDefinition schemaType;
 
   @override
   final SelectionSetNode astNode;
 
-  List<Selection> get selections =>
-      astNode.selections.map(Selection.fromNode).toList();
+  List<Selection> get selections => astNode.selections
+      .map((selection) => Selection.fromNode(selection, schemaType, getType))
+      .toList();
 
   static SelectionSet fromNode(SelectionSetNode astNode) =>
       SelectionSet(astNode);
 }
 
 @immutable
-abstract class Selection extends ExecutableGraphQLEntity {
-  const Selection();
+abstract class Selection extends _Executable {
+  const Selection([ResolveType getType]) : super(getType);
+
+  GraphQLEntity get schemaType;
 
   @override
   SelectionNode get astNode;
 
-  static Selection fromNode(SelectionNode astNode) {
+  static Selection fromNode(
+    SelectionNode astNode, [
+
+    /// The [schemaType] of the containing element
+    TypeDefinition schemaType,
+    ResolveType getType,
+  ]) {
     if (astNode is FieldNode) {
-      return Field.fromNode(astNode);
+      final fieldType = (schemaType != null)
+          ? (schemaType as ObjectTypeDefinition).getField(astNode.name.value)
+          : null;
+      return Field(astNode, fieldType, getType);
     }
+
     if (astNode is FragmentSpreadNode) {
-      return FragmentSpread.fromNode(astNode);
+      // Fragments can be specified on object types, interfaces, and unions.
+      // TODO need another mechanism for saturating fragment spreads.
+      // Probably adding a fragmentSpread argument to the getType when within the executable context.
+      return FragmentSpread(astNode, schemaType, getType);
     }
     if (astNode is InlineFragmentNode) {
-      return InlineFragment.fromNode(astNode);
+      // inline fragments must always specify a type condition,
+      final onType = getType(astNode.typeCondition.on.name.value);
+      return InlineFragment(astNode, onType, getType);
     }
+
     throw ArgumentError('$astNode is unsupported');
   }
 }
 
 @immutable
 class Field extends Selection {
-  const Field(this.astNode);
+  const Field(this.astNode, [this.schemaType, ResolveType getType])
+      : super(getType);
 
   @override
   final FieldNode astNode;
+
+  @override
+  final FieldDefinition schemaType;
 
   String get alias => astNode.alias.value;
   String get name => astNode.name.value;
@@ -58,10 +87,14 @@ class Field extends Selection {
 
 @immutable
 class FragmentSpread extends Selection {
-  const FragmentSpread(this.astNode);
+  const FragmentSpread(this.astNode, [this.schemaType, ResolveType getType])
+      : super(getType);
 
   @override
   final FragmentSpreadNode astNode;
+
+  @override
+  final TypeDefinition schemaType;
 
   String get name => astNode.name.value;
 
@@ -74,13 +107,20 @@ class FragmentSpread extends Selection {
 
 @immutable
 class InlineFragment extends Selection {
-  const InlineFragment(this.astNode);
+  const InlineFragment(
+    this.astNode, [
+    this.schemaType,
+    ResolveType getType,
+  ]) : super(getType);
 
   @override
   final InlineFragmentNode astNode;
 
   TypeCondition get typeCondition =>
       TypeCondition.fromNode(astNode.typeCondition);
+
+  @override
+  final TypeDefinition schemaType;
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
