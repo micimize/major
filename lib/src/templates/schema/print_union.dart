@@ -1,5 +1,5 @@
 import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/templates/print_type.dart';
+import 'package:built_graphql/src/templates/schema/print_type.dart';
 import 'package:built_graphql/src/templates/utils.dart';
 
 String printUnion(UnionTypeDefinition unionType) {

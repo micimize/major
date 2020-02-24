@@ -1,7 +1,7 @@
 part of 'definitions.dart';
 
 @immutable
-class SelectionSet extends _Executable {
+class SelectionSet extends ExecutableWithResolver {
   const SelectionSet(
     this.astNode, [
     this.schemaType,
@@ -17,6 +17,14 @@ class SelectionSet extends _Executable {
       .map((selection) => Selection.fromNode(selection, schemaType, getType))
       .toList();
 
+  List<Field> get fields => selections.whereType<Field>().toList();
+
+  List<FragmentSpread> get fragmentSpreads =>
+      selections.whereType<FragmentSpread>().toList();
+
+  List<InlineFragment> get inlineFragments =>
+      selections.whereType<InlineFragment>().toList();
+
   static SelectionSet fromNode(
     SelectionSetNode astNode, [
     TypeDefinitionWithFieldSet schemaType,
@@ -26,7 +34,7 @@ class SelectionSet extends _Executable {
 }
 
 @immutable
-abstract class Selection extends _Executable {
+abstract class Selection extends ExecutableWithResolver {
   const Selection([ResolveType getType]) : super(getType);
 
   GraphQLEntity get schemaType;

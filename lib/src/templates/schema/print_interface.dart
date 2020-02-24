@@ -1,7 +1,7 @@
 import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/templates/print_type.dart';
+import 'package:built_graphql/src/templates/schema/print_type.dart';
 import 'package:built_graphql/src/templates/utils.dart';
-import './parametrized_field.dart';
+import './print_parametrized_field.dart';
 
 String printInterface(InterfaceTypeDefinition interfaceType) {
   final CLASS_NAME = className(interfaceType.name);
@@ -14,6 +14,14 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
             if (!field.type.isNonNull) '@nullable',
             printType(field.type),
             'get',
+            dartName(field.name),
+          ])
+      .semicolons;
+
+  final BUILDER_VARIABLES = fieldsTemplate
+      .map((field) => [
+            docstring(field.name),
+            printType(field.type),
             dartName(field.name),
           ])
       .semicolons;
@@ -35,6 +43,10 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
     ${docstring(interfaceType.description, '')}
     abstract class $CLASS_NAME {
       $GETTERS
+    }
+
+    abstract class ${CLASS_NAME}Builder {
+      $BUILDER_VARIABLES
     }
   ''');
 }

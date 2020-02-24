@@ -1,4 +1,4 @@
-import '../schema/definitions/definitions.dart' as d;
+import '../../schema/definitions/definitions.dart' as d;
 
 final defaultPrimitives = {
   'String': 'String',

@@ -10,8 +10,9 @@ abstract class ExecutableGraphQLEntity extends GraphQLEntity {
 }
 
 @immutable
-class _Executable extends ExecutableGraphQLEntity implements TypeResolver {
-  const _Executable([ResolveType getType])
+class ExecutableWithResolver extends ExecutableGraphQLEntity
+    implements TypeResolver {
+  const ExecutableWithResolver([ResolveType getType])
       : getType = getType ?? TypeResolver.withoutContext,
         super();
 
@@ -23,7 +24,7 @@ class _Executable extends ExecutableGraphQLEntity implements TypeResolver {
 }
 
 @immutable
-abstract class ExecutableDefinition extends _Executable {
+abstract class ExecutableDefinition extends ExecutableWithResolver {
   const ExecutableDefinition([ResolveType getType]) : super(getType);
 
   @override
@@ -31,12 +32,13 @@ abstract class ExecutableDefinition extends _Executable {
 
   String get name => astNode.name.value;
 
-  static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode) {
+  static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode,
+      [ResolveType getType]) {
     if (astNode is OperationDefinitionNode) {
-      return OperationDefinition.fromNode(astNode);
+      return OperationDefinition.fromNode(astNode, getType);
     }
     if (astNode is FragmentDefinitionNode) {
-      return FragmentDefinition.fromNode(astNode);
+      return FragmentDefinition.fromNode(astNode, getType);
     }
 
     throw ArgumentError('$astNode is unsupported');

@@ -12,6 +12,7 @@ const sourceExtension = '.graphql';
 const schemaExtension = '.schema.gql.dart';
 const astExtension = '.ast.gql.dart';
 
+/// Same concept as https://github.com/gql-dart/gql/blob/df752f577f824c233f33ce0cf31e5d9dc178741a/gql_code_builder/lib/source.dart
 @immutable
 class GraphQLDocument {
   GraphQLDocument({
