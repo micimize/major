@@ -1,6 +1,6 @@
 import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/templates/schema/print_type.dart';
-import 'package:built_graphql/src/templates/utils.dart';
+import 'package:built_graphql/src/builders/schema/print_type.dart';
+import 'package:built_graphql/src/builders/utils.dart';
 
 String printInputObjectType(InputObjectTypeDefinition inputType) {
   final CLASS_NAME = className(inputType.name);

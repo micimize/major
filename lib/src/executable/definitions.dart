@@ -57,6 +57,9 @@ class OperationDefinition extends ExecutableDefinition {
 
   OperationType get type => astNode.type;
 
+  ObjectTypeDefinition get schemaType =>
+      getType(type.name) as ObjectTypeDefinition;
+
   List<VariableDefinition> get variables =>
       astNode.variableDefinitions.map(VariableDefinition.fromNode).toList();
 
@@ -113,15 +116,18 @@ class TypeCondition extends ExecutableGraphQLEntity {
 }
 
 @immutable
-class VariableDefinition extends ExecutableGraphQLEntity {
-  const VariableDefinition(this.astNode);
+class VariableDefinition extends ExecutableWithResolver {
+  const VariableDefinition(this.astNode, [ResolveType getType])
+      : super(getType);
 
   @override
   final VariableDefinitionNode astNode;
 
+  String get name => astNode.variable.name.value;
+
   Variable get variable => Variable.fromNode(astNode.variable);
 
-  GraphQLType get type => GraphQLType.fromNode(astNode.type);
+  GraphQLType get schemaType => GraphQLType.fromNode(astNode.type, getType);
 
   DefaultValue get defaultValue => DefaultValue.fromNode(astNode.defaultValue);
 

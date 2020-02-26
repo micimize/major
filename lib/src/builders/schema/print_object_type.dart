@@ -1,7 +1,7 @@
 import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/templates/schema/print_type.dart';
-import 'package:built_graphql/src/templates/utils.dart';
-import 'package:built_graphql/src/templates/schema/print_parametrized_field.dart';
+import 'package:built_graphql/src/builders/schema/print_type.dart';
+import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql/src/builders/schema/print_parametrized_field.dart';
 
 String printObjectType(ObjectTypeDefinition objectType) {
   final CLASS_NAME = className(objectType.name);
