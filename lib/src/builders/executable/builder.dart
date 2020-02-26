@@ -9,12 +9,6 @@ import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/executable/executable.dart';
 import 'package:built_graphql/src/builders/executable/print_executable.dart';
 
-Builder executableBuilder(BuilderOptions options) {
-  return ExecutableDocumentBuilder(
-    schemaId: AssetId.parse(options.config['schema'] as String),
-  );
-}
-
 class ExecutableDocumentBuilder implements Builder {
   final AssetId schemaId;
 

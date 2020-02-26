@@ -7,10 +7,6 @@ import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/schema/schema.dart';
 import 'package:built_graphql/src/builders/schema/print_schema.dart';
 
-Builder schemaBuilder(BuilderOptions options) {
-  return SchemaBuilder();
-}
-
 class SchemaBuilder implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => extensions.forBuild;

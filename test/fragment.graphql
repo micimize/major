@@ -1,0 +1,27 @@
+mutation {
+  modifyHuman(id: "1001", data: { name: "Anikin" }) {
+    id
+    name
+    friends {
+      name
+    }
+  }
+}
+
+{
+  humans {
+    id
+    name
+    friends {
+      name
+    }
+  }
+}
+
+subscription reviewAdded {
+  reviewAdded {
+    stars
+    commentary
+    episode
+  }
+}

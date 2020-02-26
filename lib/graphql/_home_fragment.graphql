@@ -1,0 +1,4 @@
+fragment home on Human {
+  home: homePlanet
+  planet: homePlanet
+}

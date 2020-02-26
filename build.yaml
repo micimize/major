@@ -19,3 +19,5 @@ targets:
         enabled: true
       built_graphql|executable_builder:
         enabled: true
+        options:
+          schema: built_graphql|lib/schema.graphql
