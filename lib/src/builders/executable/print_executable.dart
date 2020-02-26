@@ -10,5 +10,3 @@ String printExecutable(ExecutableDocument document) {
   ${document.operations.map(printOperation).join('\n')}
   ''');
 }
-
-String printImport(String relativePath) => "import '${relativePath}';";

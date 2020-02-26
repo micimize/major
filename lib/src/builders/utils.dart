@@ -1,4 +1,7 @@
+import 'package:built_graphql/src/builders/config.dart';
+import 'package:built_graphql/src/reader.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:dart_style/dart_style.dart';
 
@@ -112,3 +115,26 @@ class ListPrinter<T> {
 }
 
 bool _defaultShouldTrailDivider(List<Object> items, String inner) => false;
+
+String generatedPartOf(String path) =>
+    p.basenameWithoutExtension(path) + extensions.generatedPart;
+
+String dartTargetOf(String path) =>
+    p.basenameWithoutExtension(path) + extensions.dartTarget;
+
+String printImport(String relativePath) =>
+    "import '${dartTargetOf(relativePath)}';";
+
+String printDirectives(
+  GraphQLDocumentAsset asset, {
+  List<String> additionalImports = const [],
+}) {
+  return format('''
+    import 'package:built_graphql/built_graphql.dart';
+    ${additionalImports.map(printImport).join(';\n')}
+    ${asset.imports.map(printImport).join(';\n')}
+
+    part '${generatedPartOf(asset.path)}';
+
+    ''');
+}
