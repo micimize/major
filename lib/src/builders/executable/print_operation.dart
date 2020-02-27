@@ -29,11 +29,9 @@ String printOperation(OperationDefinition operation) {
 
 String printVariables(
     String className, Iterable<VariableDefinition> variables) {
-  final CLASS_NAME = className;
-
   final variablesTemplate = u.ListPrinter(items: variables);
 
-  final GETTERS = variablesTemplate
+  final getters = variablesTemplate
       .copyWith(divider: '\n\n')
       .map((variable) => [
             if (!variable.schemaType.isNonNull) '@nullable',
@@ -43,15 +41,5 @@ String printVariables(
           ])
       .semicolons;
 
-  return u.format('''
-
-    abstract class $CLASS_NAME implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-      
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-
-      $GETTERS
-    }
-
-    ''');
+  return u.builtClass(className, body: getters.toString());
 }

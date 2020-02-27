@@ -14,8 +14,6 @@ String _parameterizedField(FieldDefinition field) {
     return '';
   }
 
-  final CLASS_NAME = className(field.name) + 'Results';
-
   final argsTemplate = ListPrinter(items: field.args);
 
   final ARGUMENTS = argsTemplate.braced.map(((arg) => [
@@ -39,17 +37,10 @@ String _parameterizedField(FieldDefinition field) {
     ];
   });
 
-  return format('''
-    ${docstring(field.description, '\n///')}
-    /// Results container of [$FIELD_CLASS_NAME]
-    abstract class $CLASS_NAME implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-
+  final built = builderClassFor(className(field.name) + 'Results', body: '''
       // static Serializer<FieldResults> get serializer => _\$fieldResultsSerializer;
 
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-
-      @protected
+      @${bgPrefix}.protected
       BuiltMap<$_ARG_MAP , $FIELD_CLASS_NAME> get results;
 
       $FIELD_CLASS_NAME operator []($_ARG_MAP args) => results[args];
@@ -60,8 +51,12 @@ String _parameterizedField(FieldDefinition field) {
 
       $FIELD_CLASS_NAME call($ARGUMENTS) =>
           results[args($ARGUMENT_PASSTHROUGH)];
-    }
+  ''');
 
+  return format('''
+
+    ${docstring(field.description, '\n///')}
+    ${built}
   ''');
 }
 

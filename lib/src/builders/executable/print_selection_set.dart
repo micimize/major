@@ -35,7 +35,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             u.docstring(field.schemaType.description),
-            if (!field.type.isNonNull) '@nullable',
+            if (!field.type.isNonNull) '@${u.bgPrefix}.nullable',
             printType(field.type),
             'get',
             u.dartName(field.alias),
@@ -58,7 +58,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
   final BUILDER_SETTERS = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
-            'set (${printType(field.type)} value)',
+            'set ${u.dartName(field.alias)} (${printType(field.type)} value)',
             '=>',
             '_fields.${u.dartName(field.name)} = value',
           ])
@@ -73,9 +73,9 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
           ])
   */
   return SelectionSetPrinters(
-    parentClass: '_bg.SelectionSetFocus<$SCHEMA_TYPE>',
+    parentClass: '${u.bgPrefix}.SelectionSetFocus<$SCHEMA_TYPE>',
     attributes: '''
-      $SCHEMA_TYPE get _fields => unfocus(this);
+      $SCHEMA_TYPE get _fields => ${u.bgPrefix}.unfocus(this);
 
       $GETTERS
     ''',

@@ -4,17 +4,9 @@ import 'package:built_graphql/src/builders/utils.dart';
 import 'package:built_graphql/src/builders/schema/print_parametrized_field.dart';
 
 String printObjectType(ObjectTypeDefinition objectType) {
-  final CLASS_NAME = className(objectType.name);
-
   final fieldsTemplate = ListPrinter(items: objectType.fields);
 
-  final interfaceTemplate = ListPrinter(
-    items: objectType.interfaceNames,
-    itemTemplate: (GraphQLType name) => [printType(name)],
-    trailing: ', ',
-  );
-
-  final GETTERS = fieldsTemplate
+  final getters = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
             docstring(field.description),
@@ -35,18 +27,17 @@ String printObjectType(ObjectTypeDefinition objectType) {
           ])
   */
 
+  final built = builtClass(
+    className(objectType.name),
+    implements: objectType.interfaceNames.map(printType),
+    body: getters.toString(),
+  );
+
   return format(objectType.fields.map(printField).join('') +
       '''
 
     ${docstring(objectType.description, '')}
-    abstract class $CLASS_NAME implements ${interfaceTemplate}Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-
-      $GETTERS
-
-    }
+    ${built}
 
   ''');
 }

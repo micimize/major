@@ -3,8 +3,6 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
 String printUnion(UnionTypeDefinition unionType) {
-  final CLASS_NAME = className(unionType.name);
-
   final optionsTemplate = ListPrinter(items: unionType.typeNames);
 
   final GETTERS = optionsTemplate
@@ -29,20 +27,16 @@ String printUnion(UnionTypeDefinition unionType) {
           ])
   */
 
+  final built = builtClass(className(unionType.name), body: '''
+      $GETTERS
+
+      Object get value => $VALUE;
+  ''');
+
   return format('''
 
     ${docstring(unionType.description, '')}
     /// Union Type of${optionsTemplate.map((o) => [' [${printType(o)}]'])}
-    abstract class $CLASS_NAME implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-
-      $GETTERS
-
-      Object get value => $VALUE;
-
-    }
-
+    ${built}
   ''');
 }

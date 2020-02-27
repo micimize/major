@@ -6,10 +6,11 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:dart_style/dart_style.dart';
 
-final _bgPrefix = '_bg';
+/// The prefix the `built_graphql` is imported into generated files as
+final bgPrefix = '_bg';
 
 String _abstractClass(String className,
-        {List<String> implements = const [], @required String body}) =>
+        {Iterable<String> implements = const [], @required String body}) =>
     format('''
     abstract class ${className} ${implements.isNotEmpty ? 'implements' : ''} ${implements.join(', ')} {
       $body
@@ -17,12 +18,12 @@ String _abstractClass(String className,
 ''');
 
 String builtClass(String className,
-        {List<String> implements = const [], @required String body}) =>
+        {Iterable<String> implements = const [], @required String body}) =>
     _abstractClass(
       className,
       implements: [
         ...implements,
-        '$_bgPrefix.Built<$className, ${className}Builder>',
+        '$bgPrefix.Built<$className, ${className}Builder>',
       ],
       body: '''
         $className._();
@@ -35,7 +36,7 @@ String builtClass(String className,
 String builderClassFor(String className, {@required String body}) =>
     _abstractClass(
       className,
-      implements: ['$_bgPrefix.<$className, ${className}Builder>'],
+      implements: ['$bgPrefix.<$className, ${className}Builder>'],
       body: '''
         factory ${className}Builder() = _\$${className}Builder;
         ${className}Builder._();
@@ -177,7 +178,7 @@ String printDirectives(GraphQLDocumentAsset asset,
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND
     /// 
-    import 'package:built_graphql/built_graphql.dart' as $_bgPrefix;
+    import 'package:built_graphql/built_graphql.dart' as $bgPrefix;
     ${additional}
     ${asset.imports.map(printImport).join('\n')}
 

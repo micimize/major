@@ -3,8 +3,6 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
 String printInputObjectType(InputObjectTypeDefinition inputType) {
-  final CLASS_NAME = className(inputType.name);
-
   final fieldsTemplate = ListPrinter(items: inputType.fields);
 
   /*
@@ -15,7 +13,7 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
   );
   */
 
-  final GETTERS = fieldsTemplate
+  final getters = fieldsTemplate
       .map((field) => [
             docstring(field.name),
             if (!field.type.isNonNull) '@nullable',
@@ -34,17 +32,12 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
           ])
   */
 
+  final built =
+      builderClassFor(className(inputType.name), body: getters.toString());
+
   return format('''
 
     ${docstring(inputType.description, '')}
-    abstract class $CLASS_NAME implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
-
-      $GETTERS
-
-    }
-
+    ${built}
   ''');
 }
