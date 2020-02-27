@@ -1,3 +1,5 @@
+import 'package:built_graphql/src/builders/utils.dart';
+
 import '../../schema/definitions/definitions.dart' as d;
 
 final defaultPrimitives = {
@@ -16,9 +18,9 @@ final defaultPrimitives = {
   'Date': 'DateTime'
 };
 
-String printType(d.GraphQLType type) {
+String printType(d.GraphQLType type, {String prefix = ''}) {
   if (type is d.NamedType) {
-    return defaultPrimitives[type.name] ?? type.name;
+    return defaultPrimitives[type.name] ?? prefix + className(type.name);
   }
   if (type is d.ListType) {
     return 'BuiltList<${printType(type.type)}>';

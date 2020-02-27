@@ -18,13 +18,13 @@ String printOperation(OperationDefinition operation) {
     selectionSet: operation.selectionSet,
   );
 
-  return '''
+  return u.format('''
   ${fieldClassesTemplate}
 
   ${printVariables(CLASS_NAME + 'Variables', operation.variables)}
 
   ${operationType}
-  ''';
+  ''');
 }
 
 String printVariables(
@@ -34,8 +34,8 @@ String printVariables(
   final getters = variablesTemplate
       .copyWith(divider: '\n\n')
       .map((variable) => [
-            if (!variable.schemaType.isNonNull) '@nullable',
-            printType(variable.schemaType),
+            u.nullable(variable.schemaType),
+            printType(variable.schemaType, prefix: '_schema.'),
             'get',
             u.dartName(variable.name),
           ])

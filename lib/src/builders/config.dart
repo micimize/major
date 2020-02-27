@@ -1,4 +1,4 @@
-import 'package:built_graphql/built_graphql.dart';
+import 'package:meta/meta.dart';
 
 const extensions = _Extensions(
   source: '.graphql',

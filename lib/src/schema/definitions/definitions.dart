@@ -9,6 +9,7 @@
 // * InterfaceTypeDefinition
 // * ObjectTypeDefinition
 // * UnionTypeDefinition
+import 'package:built_graphql/src/schema/defaults.dart';
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
 import 'package:gql/language.dart';
@@ -57,7 +58,7 @@ class FieldDefinition extends GraphQLEntity implements TypeResolver {
 
   GraphQLType get type => GraphQLType.fromNode(astNode.type, getType);
 
-  List<Directive> get directive =>
+  List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
 
   List<InputValueDefinition> get args =>
@@ -93,8 +94,10 @@ class InterfaceTypeDefinition extends TypeDefinitionWithFieldSet
   ]) : super(getType);
 
   @override
-  List<FieldDefinition> get fields =>
-      astNode.fields.map((field) => FieldDefinition(field, getType)).toList();
+  List<FieldDefinition> get fields => [
+        typeNameField,
+        ...astNode.fields.map((field) => FieldDefinition(field, getType)),
+      ];
 
   @override
   FieldDefinition getField(String fieldName) =>
@@ -122,13 +125,14 @@ class ObjectTypeDefinition extends TypeDefinitionWithFieldSet {
   @override
   List<FieldDefinition> get fields {
     final inherited = _inheritedFieldNames;
-    return astNode.fields
-        .map((fieldNode) => FieldDefinition(
-              fieldNode,
-              getType,
-              inherited.contains(fieldNode.name.value),
-            ))
-        .toList();
+    return [
+      typeNameField,
+      ...astNode.fields.map((fieldNode) => FieldDefinition(
+            fieldNode,
+            getType,
+            inherited.contains(fieldNode.name.value),
+          ))
+    ];
   }
 
   @override

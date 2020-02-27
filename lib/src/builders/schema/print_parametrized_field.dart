@@ -37,10 +37,10 @@ String _parameterizedField(FieldDefinition field) {
     ];
   });
 
-  final built = builderClassFor(className(field.name) + 'Results', body: '''
+  final built = builtClass(className(field.name) + 'Results', body: '''
       // static Serializer<FieldResults> get serializer => _\$fieldResultsSerializer;
 
-      @${bgPrefix}.protected
+      @protected
       BuiltMap<$_ARG_MAP , $FIELD_CLASS_NAME> get results;
 
       $FIELD_CLASS_NAME operator []($_ARG_MAP args) => results[args];

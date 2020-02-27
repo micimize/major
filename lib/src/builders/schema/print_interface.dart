@@ -11,7 +11,7 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
   final GETTERS = fieldsTemplate
       .map((field) => [
             docstring(field.name),
-            if (!field.type.isNonNull) '@nullable',
+            nullable(field.type),
             printType(field.type),
             'get',
             dartName(field.name),

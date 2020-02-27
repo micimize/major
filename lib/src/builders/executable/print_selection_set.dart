@@ -1,4 +1,4 @@
-import 'package:built_graphql/built_graphql.dart';
+import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart' as u;
@@ -35,12 +35,12 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             u.docstring(field.schemaType.description),
-            if (!field.type.isNonNull) '@${u.bgPrefix}.nullable',
+            u.nullable(field.type),
             printType(field.type),
             'get',
             u.dartName(field.alias),
             '=>',
-            '_fields.${u.dartName(field.alias)}'
+            '_fields.${u.dartName(field.name)}'
           ])
       .semicolons;
 

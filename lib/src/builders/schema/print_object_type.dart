@@ -10,7 +10,7 @@ String printObjectType(ObjectTypeDefinition objectType) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             docstring(field.description),
-            if (!field.type.isNonNull) '@nullable',
+            nullable(field.type),
             if (field.isOverride) '@override',
             printType(field.type),
             'get',

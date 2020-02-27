@@ -5,6 +5,42 @@ import 'package:gql/ast.dart';
 import './definitions/definitions.dart';
 
 @immutable
+class _BuiltInFieldDefinition extends FieldDefinition {
+  const _BuiltInFieldDefinition({
+    this.name,
+    this.description,
+    this.type,
+    this.directives,
+    this.args,
+  }) : super(null);
+
+  @override
+  final String name;
+
+  @override
+  final String description;
+
+  @override
+  final GraphQLType type;
+
+  @override
+  final List<Directive> directives;
+
+  @override
+  final List<InputValueDefinition> args;
+}
+
+const typeNameField = _BuiltInFieldDefinition(
+  name: '__typename',
+  type: NamedType(
+    NamedTypeNode(
+      name: NameNode(value: 'String'),
+      isNonNull: true,
+    ),
+  ),
+);
+
+@immutable
 class _BuiltInStringValue extends StringValue {
   const _BuiltInStringValue(this.value) : super(null);
   @override

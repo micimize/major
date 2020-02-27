@@ -72,11 +72,6 @@ enum Episode {
   JEDI
 }
 
-"""
-Droid | Human
-"""
-union Hero = Droid | Human
-
 type Human implements Character {
   id: String
   name: String
@@ -144,6 +139,11 @@ type ReviewResults {
   reviews: [Review!]
 }
 
+"""
+Droid | Human | Starship
+"""
+union SearchResult = Droid | Human | Starship
+
 type Starship {
   id: String
   name: String
@@ -170,7 +170,7 @@ type StarWarsMutation {
   """
   Updates a human in the database.
   """
-  updateHuman(id: ID!, date: HumanInput!): Human!
+  updateHuman(id: ID!, data: HumanInput!): Human!
 
   """
   Delete a human in the database.
@@ -205,7 +205,12 @@ type StarWarsQuery {
   """
   Finds a random hero within the known galaxy, whether a Droid or Human.
   """
-  hero(ep: Episode): Hero
+  hero(ep: Episode): Character
+
+  """
+  Finds a random starship, droid, or human
+  """
+  randomEntity: SearchResult
   reviews(
     """
     which page to get from the api

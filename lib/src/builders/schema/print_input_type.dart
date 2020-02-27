@@ -16,7 +16,7 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
   final getters = fieldsTemplate
       .map((field) => [
             docstring(field.name),
-            if (!field.type.isNonNull) '@nullable',
+            nullable(field.type),
             printType(field.type),
             'get',
             dartName(field.name),

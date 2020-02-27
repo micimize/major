@@ -1,6 +1,7 @@
 import 'package:build/build.dart' show AssetId;
 import 'package:built_graphql/src/builders/config.dart';
 import 'package:built_graphql/src/reader.dart';
+import 'package:built_graphql/src/schema/schema.dart' show GraphQLType;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
@@ -8,6 +9,12 @@ import 'package:dart_style/dart_style.dart';
 
 /// The prefix the `built_graphql` is imported into generated files as
 final bgPrefix = '_bg';
+
+// 1. Stop using "as" when importing "package:built_value/built_value.dart". It prevents the generated code from finding helper methods.
+// final builtPrefix = '_bg';
+
+String nullable([GraphQLType type]) =>
+    (type != null && type.isNonNull) ? '' : '@nullable';
 
 String _abstractClass(String className,
         {Iterable<String> implements = const [], @required String body}) =>
@@ -23,7 +30,7 @@ String builtClass(String className,
       className,
       implements: [
         ...implements,
-        '$bgPrefix.Built<$className, ${className}Builder>',
+        'Built<$className, ${className}Builder>',
       ],
       body: '''
         $className._();
@@ -36,7 +43,7 @@ String builtClass(String className,
 String builderClassFor(String className, {@required String body}) =>
     _abstractClass(
       className,
-      implements: ['$bgPrefix.<$className, ${className}Builder>'],
+      implements: ['<$className, ${className}Builder>'],
       body: '''
         factory ${className}Builder() = _\$${className}Builder;
         ${className}Builder._();
@@ -178,6 +185,10 @@ String printDirectives(GraphQLDocumentAsset asset,
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND
     /// 
+    import 'package:built_value/built_value.dart';
+    import 'package:meta/meta.dart';
+    import 'package:built_collection/built_collection.dart';
+
     import 'package:built_graphql/built_graphql.dart' as $bgPrefix;
     ${additional}
     ${asset.imports.map(printImport).join('\n')}
