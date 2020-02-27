@@ -1,9 +1,48 @@
+import 'package:build/build.dart' show AssetId;
 import 'package:built_graphql/src/builders/config.dart';
 import 'package:built_graphql/src/reader.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:dart_style/dart_style.dart';
+
+final _bgPrefix = '_bg';
+
+String _abstractClass(String className,
+        {List<String> implements = const [], @required String body}) =>
+    format('''
+    abstract class ${className} ${implements.isNotEmpty ? 'implements' : ''} ${implements.join(', ')} {
+      $body
+    }
+''');
+
+String builtClass(String className,
+        {List<String> implements = const [], @required String body}) =>
+    _abstractClass(
+      className,
+      implements: [
+        ...implements,
+        '$_bgPrefix.Built<$className, ${className}Builder>',
+      ],
+      body: '''
+        $className._();
+        factory $className([void Function(${className}Builder) updates]) = _\$${className};
+
+        $body
+      ''',
+    );
+
+String builderClassFor(String className, {@required String body}) =>
+    _abstractClass(
+      className,
+      implements: ['$_bgPrefix.<$className, ${className}Builder>'],
+      body: '''
+        factory ${className}Builder() = _\$${className}Builder;
+        ${className}Builder._();
+
+        $body
+      ''',
+    );
 
 final _dartfmt = DartFormatter();
 
@@ -119,20 +158,28 @@ bool _defaultShouldTrailDivider(List<Object> items, String inner) => false;
 String generatedPartOf(String path) =>
     p.basenameWithoutExtension(path) + extensions.generatedPart;
 
-String dartTargetOf(String path) =>
-    p.basenameWithoutExtension(path) + extensions.dartTarget;
+AssetId dartTargetOf(AssetId assetId) => assetId.changeExtension(
+      extensions.dartTarget,
+    );
 
-String printImport(String relativePath) =>
-    "import '${dartTargetOf(relativePath)}';";
+String printImport(AssetId asset, [String alias]) => [
+      'import',
+      "'${dartTargetOf(asset).uri}'",
+      if (alias != null) 'as ${alias}',
+      ';'
+    ].join(' ');
 
-String printDirectives(
-  GraphQLDocumentAsset asset, {
-  List<String> additionalImports = const [],
-}) {
+String printDirectives(GraphQLDocumentAsset asset,
+    {Map<AssetId, String> additionalImports = const {}}) {
+  final additional = additionalImports.entries
+      .map((imp) => printImport(imp.key, imp.value))
+      .join('\n');
   return format('''
-    import 'package:built_graphql/built_graphql.dart';
-    ${additionalImports.map(printImport).join(';\n')}
-    ${asset.imports.map(printImport).join(';\n')}
+    /// GENERATED CODE, DO NOT MODIFY BY HAND
+    /// 
+    import 'package:built_graphql/built_graphql.dart' as $_bgPrefix;
+    ${additional}
+    ${asset.imports.map(printImport).join('\n')}
 
     part '${generatedPartOf(asset.path)}';
 

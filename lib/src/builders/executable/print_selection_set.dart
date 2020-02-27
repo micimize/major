@@ -27,7 +27,7 @@ and inheret from it in our concrete object types
 */
 
 SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
-  final SCHEMA_TYPE = u.className(selectionSet.schemaType.name);
+  final SCHEMA_TYPE = '_schema.' + u.className(selectionSet.schemaType.name);
 
   final fieldsTemplate = u.ListPrinter(items: selectionSet.fields);
 
@@ -73,7 +73,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
           ])
   */
   return SelectionSetPrinters(
-    parentClass: 'SelectionSetFocus<$SCHEMA_TYPE>',
+    parentClass: '_bg.SelectionSetFocus<$SCHEMA_TYPE>',
     attributes: '''
       $SCHEMA_TYPE get _fields => unfocus(this);
 
@@ -98,29 +98,23 @@ String printSelectionSetClass({
 
   final ss = printSelectionSetFields(selectionSet);
 
+  final built = u.builtClass(
+    CLASS_NAME,
+    implements: [ss.parentClass],
+    body: ss.attributes,
+  );
+
+  final builder = u.builderClassFor(
+    CLASS_NAME,
+    body: ss.builderAttributes,
+  );
+
   return u.format('''
 
     ${u.docstring(description, '')}
-    abstract class $CLASS_NAME extends ${ss.parentClass}
-        implements Built<$CLASS_NAME, ${CLASS_NAME}Builder> {
-      
-      $CLASS_NAME._();
-      factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
+    ${built}
 
-      ${ss.attributes}
-    }
-
-    abstract class ${CLASS_NAME}Builder
-        implements Builder<$CLASS_NAME, ${CLASS_NAME}Builder> {
-
-      factory ${CLASS_NAME}Builder() = _\$${CLASS_NAME}Builder;
-      ${CLASS_NAME}Builder._();
-
-      ${ss.builderAttributes}
-
-    }
-
-
+    ${builder}
   ''');
 }
 

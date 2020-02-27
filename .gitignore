@@ -10,6 +10,8 @@ build/
 # Directory created by dartdoc
 doc/api/
 
+
+lib/graphql/*
 lib/schema.graphql.dart
 lib/schema.graphql.g.dart
 

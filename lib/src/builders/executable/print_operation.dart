@@ -5,7 +5,7 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart' as u;
 
 String printOperation(OperationDefinition operation) {
-  final CLASS_NAME = u.className(operation.name);
+  final CLASS_NAME = u.className(operation.name ?? 'Mutation');
 
   final fieldClassesTemplate = u.ListPrinter(
     items: operation.selectionSet.fields,

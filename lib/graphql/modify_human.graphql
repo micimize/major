@@ -1,9 +1,0 @@
-#import './_human_fragments.graphql'
-
-mutation changeName($id: ID!, $name: String!) {
-  modifyHuman(id: $name, data: { name: $name }) {
-    id
-    name
-    ...relationships
-  }
-}

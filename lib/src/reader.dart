@@ -27,7 +27,7 @@ class GraphQLDocumentAsset {
   String get path => id.path;
 
   /// List of recursively collected imports.
-  final List<String> imports;
+  final List<AssetId> imports;
 
   /// The parsed contents of the document. Does not include import contents
   final DocumentNode ast;
@@ -73,7 +73,7 @@ class _ContentCollector {
   final AssetId rootId;
 
   /// Map of import paths to content
-  final Map<String, String> _importMap = {};
+  final Map<AssetId, String> _importMap = {};
 
   /// All seen import paths
   final Set<String> _seenImports = {};
@@ -81,14 +81,14 @@ class _ContentCollector {
   /// Collect all import paths and content.
   ///
   /// We do this recursively to avoid broken references to nested definitions
-  void collectDependencies([AssetId id]) async {
-    id ??= rootId;
-    _importMap[id.path] = await buildStep.readAsString(id);
-    final segments = id.pathSegments..removeLast();
+  void collectDependencies([AssetId assetId]) async {
+    assetId ??= rootId;
+    _importMap[assetId] = await buildStep.readAsString(assetId);
+    final segments = assetId.pathSegments..removeLast();
 
-    final imports = _allRelativeImports(_importMap[id.path])
+    final imports = _allRelativeImports(_importMap[assetId])
         .map((i) => p.normalize(p.joinAll([...segments, i])))
-        .where((i) => !_importMap.containsKey(i)) // avoid duplicates/cycles
+        .where((i) => !_seenImports.contains(i)) // avoid duplicates/cycles
         .toSet();
 
     _seenImports.addAll(imports);
@@ -111,16 +111,17 @@ class _ContentCollector {
   String get concatenated => _importMap.values.join('\n\n');
 
   /// All collected asset paths, excluding the root import
-  List<String> get imports {
+  List<AssetId> get imports {
+    final seenPaths = _importMap.keys.map((assetId) => assetId.path).toSet();
     final unresolvedImports = _seenImports.where(
-      (i) => !_importMap.containsKey(i),
+      (i) => !seenPaths.contains(i),
     );
 
     for (final missing in unresolvedImports) {
       log.warning('Could not import missing file $missing.');
     }
 
-    return _importMap.keys.where((imp) => imp != rootId.path).toList();
+    return _importMap.keys.where((imp) => imp.path != rootId.path).toList();
   }
 }
 

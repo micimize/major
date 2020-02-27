@@ -85,7 +85,7 @@ class Field extends Selection {
   @override
   final FieldDefinition schemaType;
 
-  String get alias => astNode.alias.value;
+  String get alias => astNode.alias?.value ?? name;
   String get name => astNode.name.value;
 
   GraphQLType get type => schemaType.type;
@@ -137,13 +137,17 @@ class InlineFragment extends Selection {
   TypeCondition get typeCondition =>
       TypeCondition.fromNode(astNode.typeCondition);
 
+  TypeDefinitionWithFieldSet get onType =>
+      getType(typeCondition.on.name) as TypeDefinitionWithFieldSet;
+
   @override
   final TypeDefinition schemaType;
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
 
-  SelectionSet get selectionSet => SelectionSet.fromNode(astNode.selectionSet);
+  SelectionSet get selectionSet =>
+      SelectionSet.fromNode(astNode.selectionSet, onType, getType);
 
   static InlineFragment fromNode(InlineFragmentNode astNode) =>
       InlineFragment(astNode);

@@ -98,7 +98,8 @@ class InterfaceTypeDefinition extends TypeDefinitionWithFieldSet
 
   @override
   FieldDefinition getField(String fieldName) =>
-      fields.firstWhere((field) => field.name == fieldName);
+      fields.firstWhere((field) => field.name == fieldName,
+          orElse: () => throw StateError('No such field $fieldName on $this'));
 
   @override
   final InterfaceTypeDefinitionNode astNode;
@@ -132,7 +133,8 @@ class ObjectTypeDefinition extends TypeDefinitionWithFieldSet {
 
   @override
   FieldDefinition getField(String fieldName) =>
-      fields.firstWhere((field) => field.name == fieldName);
+      fields.firstWhere((field) => field.name == fieldName,
+          orElse: () => throw StateError('No such field $fieldName on $this'));
 
   List<NamedType> get interfaceNames => astNode.interfaces
       .map((name) => NamedType.fromNode(name, getType))

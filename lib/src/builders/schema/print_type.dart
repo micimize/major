@@ -12,7 +12,8 @@ final defaultPrimitives = {
   'num': 'num',
   'dynamic': 'dynamic',
   'Object': 'Object',
-  'DateTime': 'DateTime'
+  'DateTime': 'DateTime',
+  'Date': 'DateTime'
 };
 
 String printType(d.GraphQLType type) {

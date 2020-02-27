@@ -30,7 +30,7 @@ abstract class ExecutableDefinition extends ExecutableWithResolver {
   @override
   ExecutableDefinitionNode get astNode;
 
-  String get name => astNode.name.value;
+  String get name => astNode.name?.value;
 
   static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode,
       [ResolveType getType]) {
