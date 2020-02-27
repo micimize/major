@@ -20,29 +20,32 @@ class ExecutableDocumentBuilder implements Builder {
   Map<String, List<String>> get buildExtensions => extensions.forBuild;
 
   @override
-  FutureOr<void> build(BuildStep buildStep) async {
-    final schema = GraphQLSchema.fromNode(
-      (await GraphQLDocumentAsset.read(
-        buildStep,
-        assetId: schemaId,
-        inlineImports: true,
-      ))
-          .ast,
-    );
+  FutureOr<void> build(BuildStep buildStep) =>
+      buildExecutable(buildStep, schemaId);
+}
 
-    final doc = await GraphQLDocumentAsset.read(buildStep);
+FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
+  final schema = GraphQLSchema.fromNode(
+    (await GraphQLDocumentAsset.read(
+      buildStep,
+      assetId: schemaId,
+      inlineImports: true,
+    ))
+        .ast,
+  );
 
-    final targetAsset = buildStep.inputId.changeExtension(
-      extensions.dartTarget,
-    );
+  final doc = await GraphQLDocumentAsset.read(buildStep);
 
-    return buildStep.writeAsString(
-        targetAsset,
-        //_dartfmt.format(
-        printDirectives(doc, additionalImports: [schemaId.path]) +
-            '\n' +
-            printExecutable(ExecutableDocument(doc.ast, schema.getType))
-        //),
-        );
-  }
+  final targetAsset = buildStep.inputId.changeExtension(
+    extensions.dartTarget,
+  );
+
+  return buildStep.writeAsString(
+      targetAsset,
+      //_dartfmt.format(
+      printDirectives(doc, additionalImports: [schemaId.path]) +
+          '\n' +
+          printExecutable(ExecutableDocument(doc.ast, schema.getType))
+      //),
+      );
 }

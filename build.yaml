@@ -1,13 +1,7 @@
 builders:
-  schema_builder:
-    import: "package:built_graphql/builders.dart"
-    builder_factories: ["schemaBuilder"]
-    build_extensions: { ".graphql": [".graphql.dart"] }
-    auto_apply: none
-    build_to: source
-  executable_builder:
-    import: "package:built_graphql/builders.dart"
-    builder_factories: ["executableBuilder"]
+  builder:
+    import: "package:built_graphql/builder.dart"
+    builder_factories: ["builtGraphQLBuilder"]
     build_extensions: { ".graphql": [".graphql.dart"] }
     auto_apply: none
     build_to: source
@@ -15,9 +9,7 @@ builders:
 targets:
   $default:
     builders:
-      built_graphql|schema_builder:
-        enabled: true
-      built_graphql|executable_builder:
+      built_graphql|builder:
         enabled: true
         options:
           schema: built_graphql|lib/schema.graphql

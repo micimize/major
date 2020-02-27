@@ -12,20 +12,20 @@ class SchemaBuilder implements Builder {
   Map<String, List<String>> get buildExtensions => extensions.forBuild;
 
   @override
-  FutureOr<void> build(BuildStep buildStep) async {
-    final doc = await GraphQLDocumentAsset.read(buildStep);
+  FutureOr<void> build(BuildStep buildStep) => buildSchema(buildStep);
+}
 
-    final targetAsset = buildStep.inputId.changeExtension(
-      extensions.dartTarget,
-    );
+FutureOr<void> buildSchema(BuildStep buildStep) async {
+  final doc = await GraphQLDocumentAsset.read(buildStep);
 
-    return buildStep.writeAsString(
-        targetAsset,
-        //_dartfmt.format(
-        printDirectives(doc) +
-            '\n' +
-            printSchema(GraphQLSchema.fromNode(doc.ast))
-        //),
-        );
-  }
+  final targetAsset = buildStep.inputId.changeExtension(
+    extensions.dartTarget,
+  );
+
+  return buildStep.writeAsString(
+      targetAsset,
+      //_dartfmt.format(
+      printDirectives(doc) + '\n' + printSchema(GraphQLSchema.fromNode(doc.ast))
+      //),
+      );
 }
