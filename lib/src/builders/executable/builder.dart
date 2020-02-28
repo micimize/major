@@ -49,7 +49,10 @@ FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
             importBg: true,
           ) +
           '\n' +
-          printExecutable(ExecutableDocument(doc.ast, schema.getType))
+          printExecutable(
+            ExecutableDocument(doc.ast, schema.getType),
+            //PathFocus.root(),
+          )
       //),
       );
 }

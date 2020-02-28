@@ -1,7 +1,9 @@
 import 'package:build/build.dart' show AssetId;
+import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart';
 import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/schema/schema.dart' show GraphQLType;
+import 'package:gql/ast.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
@@ -65,6 +67,72 @@ String format(String source) {
 
 String dartName(String name) => ReCase(name).camelCase;
 String className(String name) => ReCase(name).pascalCase;
+
+String pathClassName(Iterable<String> path) => path.map(className).join('\$');
+
+typedef GetClassName = String Function(Iterable<String> path);
+
+class ClassNameManager {
+  ClassNameManager([this._className = pathClassName]);
+
+  final GetClassName _className;
+
+  final Map<BuiltList<String>, String> _nameRegistry = {};
+
+  Set<String> get usedNames => _nameRegistry.values.toSet();
+
+  String className(Iterable<String> selectionPath) {
+    final path = selectionPath.toBuiltList();
+
+    if (_nameRegistry.containsKey(path)) {
+      return _nameRegistry[path];
+    }
+    final defaultName = _className(path);
+    final _usedNames = usedNames;
+    if (!_usedNames.contains(defaultName)) {
+      return defaultName;
+    }
+    var collision = 2;
+    while (!_usedNames.contains('$defaultName\$$collision')) {
+      collision += 1;
+    }
+    _nameRegistry[path] = '$defaultName\$$collision';
+    return '$defaultName\$$collision';
+  }
+}
+
+class PathFocus {
+  PathFocus._(this._manager, Iterable<String> path)
+      : path = BuiltList<String>(path);
+
+  PathFocus.root([Iterable<String> path])
+      : _manager = ClassNameManager(),
+        path = BuiltList<String>(path ?? <String>[]);
+
+  final ClassNameManager _manager;
+  final BuiltList<String> path;
+
+  PathFocus append(String name) => PathFocus._(
+        _manager,
+        path.followedBy([name]),
+      );
+  PathFocus operator +(Object other) {
+    if (other is String) {
+      return append(other);
+    }
+    if (other is Iterable<String>) {
+      return PathFocus._(_manager, path.followedBy(other));
+    }
+    if (other is PathFocus) {
+      return PathFocus._(_manager, path.followedBy(other.path));
+    }
+    throw StateError(
+      'Cannot add ${other.runtimeType} $other to PathFocus $this',
+    );
+  }
+
+  String get className => _manager.className(path);
+}
 
 String docstring(String description, [String trailing = '\n']) {
   if (description != null && description.trim().isNotEmpty) {
@@ -144,7 +212,7 @@ class ListPrinter<T> {
   /// Alias for `copyWith(divider: ';\n', shouldTrailDivider: (items) => true,);`
   ListPrinter<T> get semicolons => copyWith(
         divider: ';\n',
-        shouldTrailDivider: (items, inner) => true,
+        shouldTrailDivider: (items, inner) => inner.isNotEmpty,
       );
 
   //trailingCommaWhen({ int length =  }): (items, inner) => true,

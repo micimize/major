@@ -58,7 +58,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
   final BUILDER_SETTERS = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
-            'set ${u.dartName(field.alias)} (${printType(field.type)} value)',
+            'set ${u.dartName(field.alias)}(${printType(field.type)} value)',
             '=>',
             '_fields.${u.dartName(field.name)} = value',
           ])
@@ -90,20 +90,20 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
 }
 
 String printSelectionSetClass({
-  @required String className,
+  @required u.PathFocus path,
   @required String description,
   @required SelectionSet selectionSet,
 }) {
   final ss = printSelectionSetFields(selectionSet);
 
   final built = u.builtClass(
-    className,
+    path.className,
     implements: [ss.parentClass],
     body: ss.attributes,
   );
 
   final builder = u.builderClassFor(
-    className,
+    path.className,
     body: ss.builderAttributes,
   );
 
@@ -116,12 +116,12 @@ String printSelectionSetClass({
   ''');
 }
 
-String printFieldSelectionSet(Field field) {
+String printFieldSelectionSet(Field field, u.PathFocus path) {
   if (field.selectionSet == null) {
     return '';
   }
   return printSelectionSetClass(
-    className: u.className(field.name),
+    path: path + field.alias,
     description: field.schemaType.description,
     selectionSet: field.selectionSet,
   );
