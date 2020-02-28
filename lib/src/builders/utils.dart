@@ -3,7 +3,6 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart';
 import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/schema/schema.dart' show GraphQLType;
-import 'package:gql/ast.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
@@ -18,18 +17,32 @@ final bgPrefix = '_bg';
 String nullable([GraphQLType type]) =>
     (type != null && type.isNonNull) ? '' : '@nullable';
 
-String _abstractClass(String className,
-        {Iterable<String> implements = const [], @required String body}) =>
+String keyword(String keyword, Iterable<String> _items) {
+  final items = _items.where((i) => i != null);
+  return items.isEmpty ? '' : '$keyword ${items.join(", ")}';
+}
+
+String _abstractClass(
+  String className, {
+  Iterable<String> mixins = const [],
+  Iterable<String> implements = const [],
+  @required String body,
+}) =>
     format('''
-    abstract class ${className} ${implements.isNotEmpty ? 'implements' : ''} ${implements.join(', ')} {
+    abstract class ${className} ${keyword('with', mixins)} ${keyword('implements', implements)} {
       $body
     }
 ''');
 
-String builtClass(String className,
-        {Iterable<String> implements = const [], @required String body}) =>
+String builtClass(
+  String className, {
+  Iterable<String> mixins = const [],
+  Iterable<String> implements = const [],
+  @required String body,
+}) =>
     _abstractClass(
       className,
+      mixins: mixins,
       implements: [
         ...implements,
         'Built<$className, ${className}Builder>',
@@ -42,10 +55,17 @@ String builtClass(String className,
       ''',
     );
 
-String builderClassFor(String className, {@required String body}) =>
+String builderClassFor(
+  String className, {
+  Iterable<String> implements = const [],
+  @required String body,
+}) =>
     _abstractClass(
       className + 'Builder',
-      implements: ['Builder<$className, ${className}Builder>'],
+      implements: [
+        ...implements,
+        'Builder<$className, ${className}Builder>',
+      ],
       body: '''
         factory ${className}Builder() = _\$${className}Builder;
         ${className}Builder._();
@@ -68,7 +88,12 @@ String format(String source) {
 String dartName(String name) => ReCase(name).camelCase;
 String className(String name) => ReCase(name).pascalCase;
 
-String pathClassName(Iterable<String> path) => path.map(className).join('\$');
+/// Default class name builder
+///
+/// TODO: I'm using '' because built_value doesn't escape the conventional $ delimiter,
+/// but I don't really like either solution. IMO, generated classes should be named similarly to what a user would name them,
+/// and have generated docs that specify their place in the heirachy
+String pathClassName(Iterable<String> path) => path.map(className).join('');
 
 typedef GetClassName = String Function(Iterable<String> path);
 
@@ -93,11 +118,12 @@ class ClassNameManager {
       return defaultName;
     }
     var collision = 2;
-    while (!_usedNames.contains('$defaultName\$$collision')) {
+    String newName() => _className([defaultName, collision.toString()]);
+    while (!_usedNames.contains(newName())) {
       collision += 1;
     }
-    _nameRegistry[path] = '$defaultName\$$collision';
-    return '$defaultName\$$collision';
+    _nameRegistry[path] = newName();
+    return newName();
   }
 }
 

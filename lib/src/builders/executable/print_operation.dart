@@ -10,7 +10,7 @@ String printOperation(OperationDefinition operation, PathFocus root) {
   final fieldClassesTemplate = ListPrinter(
     items: operation.selectionSet.fields,
     divider: '\n',
-  ).map((field) => [printFieldSelectionSet(field, path)]);
+  ).map((field) => [printFieldSelectionSet(field, path + 'Result')]);
 
   final operationType = printSelectionSetClass(
     path: path + 'Result',

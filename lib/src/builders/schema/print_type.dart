@@ -18,12 +18,15 @@ final defaultPrimitives = {
   'Date': 'DateTime'
 };
 
-String printType(d.GraphQLType type, {String prefix = ''}) {
+String printType(d.GraphQLType type, {String prefix, PathFocus path}) {
+  prefix ??= '';
   if (type is d.NamedType) {
-    return defaultPrimitives[type.name] ?? prefix + className(type.name);
+    return defaultPrimitives[type.name] ??
+        path?.className ??
+        prefix + className(type.name);
   }
   if (type is d.ListType) {
-    return 'BuiltList<${printType(type.type)}>';
+    return 'BuiltList<${printType(type.type, prefix: prefix, path: path)}>';
   }
 
   throw ArgumentError('$type is unsupported');

@@ -11,7 +11,7 @@ class SelectionSetPrinters {
     @required this.builderAttributes,
   });
 
-  /// Parent class the [Built] class should `extends` from
+  /// Parent class the [Built] class should `implement`
   final String parentClass;
 
   /// Attributes that should be added to the [Built] class
@@ -26,7 +26,10 @@ We probably want to define an interface when we're selecting from an interface,
 and inheret from it in our concrete object types
 */
 
-SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
+SelectionSetPrinters printSelectionSetFields(
+  SelectionSet selectionSet,
+  u.PathFocus path,
+) {
   final SCHEMA_TYPE = '_schema.' + u.className(selectionSet.schemaType.name);
 
   final fieldsTemplate = u.ListPrinter(items: selectionSet.fields);
@@ -36,7 +39,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
       .map((field) => [
             u.docstring(field.schemaType.description),
             u.nullable(field.type),
-            printType(field.type),
+            printType(field.type, path: path + field.alias),
             'get',
             u.dartName(field.alias),
             '=>',
@@ -48,7 +51,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             u.docstring(field.schemaType.description),
-            printType(field.type),
+            printType(field.type, path: path + field.alias),
             'get',
             u.dartName(field.alias),
             '=> _fields.${u.dartName(field.name)}',
@@ -58,7 +61,7 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
   final BUILDER_SETTERS = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
-            'set ${u.dartName(field.alias)}(${printType(field.type)} value)',
+            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
             '=>',
             '_fields.${u.dartName(field.name)} = value',
           ])
@@ -73,14 +76,16 @@ SelectionSetPrinters printSelectionSetFields(SelectionSet selectionSet) {
           ])
   */
   return SelectionSetPrinters(
-    parentClass: '${u.bgPrefix}.SelectionSetFocus<$SCHEMA_TYPE>',
+    parentClass: '${u.bgPrefix}.Focus<$SCHEMA_TYPE>',
     attributes: '''
-      $SCHEMA_TYPE get _fields => ${u.bgPrefix}.unfocus(this);
+      $SCHEMA_TYPE get _fields => \$fields ?? $SCHEMA_TYPE();
 
       $GETTERS
     ''',
     builderAttributes: '''
-      ${SCHEMA_TYPE}Builder _fields;
+      ${SCHEMA_TYPE}Builder \$fields;
+
+      ${SCHEMA_TYPE}Builder get _fields => \$fields ?? ${SCHEMA_TYPE}Builder();
 
       ${BUILDER_GETTERS}
 
@@ -94,11 +99,11 @@ String printSelectionSetClass({
   @required String description,
   @required SelectionSet selectionSet,
 }) {
-  final ss = printSelectionSetFields(selectionSet);
+  final ss = printSelectionSetFields(selectionSet, path);
 
   final built = u.builtClass(
     path.className,
-    implements: [ss.parentClass],
+    mixins: [ss.parentClass],
     body: ss.attributes,
   );
 
