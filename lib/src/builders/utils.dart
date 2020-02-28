@@ -42,8 +42,8 @@ String builtClass(String className,
 
 String builderClassFor(String className, {@required String body}) =>
     _abstractClass(
-      className,
-      implements: ['<$className, ${className}Builder>'],
+      className + 'Builder',
+      implements: ['Builder<$className, ${className}Builder>'],
       body: '''
         factory ${className}Builder() = _\$${className}Builder;
         ${className}Builder._();
@@ -178,18 +178,21 @@ String printImport(AssetId asset, [String alias]) => [
     ].join(' ');
 
 String printDirectives(GraphQLDocumentAsset asset,
-    {Map<AssetId, String> additionalImports = const {}}) {
-  final additional = additionalImports.entries
+    {Map<AssetId, String> additionalImports = const {},
+    bool importBg = false}) {
+  var additional = additionalImports.entries
       .map((imp) => printImport(imp.key, imp.value))
       .join('\n');
+  if (importBg) {
+    additional +=
+        "\nimport 'package:built_graphql/built_graphql.dart' as $bgPrefix;";
+  }
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND
-    /// 
     import 'package:built_value/built_value.dart';
     import 'package:meta/meta.dart';
     import 'package:built_collection/built_collection.dart';
 
-    import 'package:built_graphql/built_graphql.dart' as $bgPrefix;
     ${additional}
     ${asset.imports.map(printImport).join('\n')}
 

@@ -43,7 +43,11 @@ FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
   return buildStep.writeAsString(
       targetAsset,
       //_dartfmt.format(
-      printDirectives(doc, additionalImports: {schemaId: '_schema'}) +
+      printDirectives(
+            doc,
+            additionalImports: {schemaId: '_schema'},
+            importBg: true,
+          ) +
           '\n' +
           printExecutable(ExecutableDocument(doc.ast, schema.getType))
       //),

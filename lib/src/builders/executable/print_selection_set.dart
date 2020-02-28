@@ -94,18 +94,16 @@ String printSelectionSetClass({
   @required String description,
   @required SelectionSet selectionSet,
 }) {
-  final CLASS_NAME = className;
-
   final ss = printSelectionSetFields(selectionSet);
 
   final built = u.builtClass(
-    CLASS_NAME,
+    className,
     implements: [ss.parentClass],
     body: ss.attributes,
   );
 
   final builder = u.builderClassFor(
-    CLASS_NAME,
+    className,
     body: ss.builderAttributes,
   );
 

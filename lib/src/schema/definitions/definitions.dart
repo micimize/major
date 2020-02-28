@@ -82,6 +82,8 @@ abstract class TypeDefinitionWithFieldSet extends TypeDefinition
 
   List<FieldDefinition> get fields;
 
+  List<FieldDefinition> get _fields => [typeNameField, ...fields];
+
   FieldDefinition getField(String fieldName);
 }
 
@@ -94,14 +96,12 @@ class InterfaceTypeDefinition extends TypeDefinitionWithFieldSet
   ]) : super(getType);
 
   @override
-  List<FieldDefinition> get fields => [
-        typeNameField,
-        ...astNode.fields.map((field) => FieldDefinition(field, getType)),
-      ];
+  List<FieldDefinition> get fields =>
+      astNode.fields.map((field) => FieldDefinition(field, getType)).toList();
 
   @override
   FieldDefinition getField(String fieldName) =>
-      fields.firstWhere((field) => field.name == fieldName,
+      _fields.firstWhere((field) => field.name == fieldName,
           orElse: () => throw StateError('No such field $fieldName on $this'));
 
   @override
@@ -125,19 +125,18 @@ class ObjectTypeDefinition extends TypeDefinitionWithFieldSet {
   @override
   List<FieldDefinition> get fields {
     final inherited = _inheritedFieldNames;
-    return [
-      typeNameField,
-      ...astNode.fields.map((fieldNode) => FieldDefinition(
-            fieldNode,
-            getType,
-            inherited.contains(fieldNode.name.value),
-          ))
-    ];
+    return astNode.fields
+        .map((fieldNode) => FieldDefinition(
+              fieldNode,
+              getType,
+              inherited.contains(fieldNode.name.value),
+            ))
+        .toList();
   }
 
   @override
   FieldDefinition getField(String fieldName) =>
-      fields.firstWhere((field) => field.name == fieldName,
+      _fields.firstWhere((field) => field.name == fieldName,
           orElse: () => throw StateError('No such field $fieldName on $this'));
 
   List<NamedType> get interfaceNames => astNode.interfaces
@@ -151,7 +150,7 @@ class ObjectTypeDefinition extends TypeDefinitionWithFieldSet {
   Set<String> get _inheritedFieldNames {
     var inherited = <String>{};
     for (final face in interfaces) {
-      inherited.addAll(face.fields.map((f) => f.name));
+      inherited.addAll(face._fields.map((f) => f.name));
     }
     return inherited;
   }

@@ -32,8 +32,7 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
           ])
   */
 
-  final built =
-      builderClassFor(className(inputType.name), body: getters.toString());
+  final built = builtClass(className(inputType.name), body: getters.toString());
 
   return format('''
 

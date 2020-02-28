@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
 
@@ -44,7 +45,7 @@ class GraphQLSchema extends TypeSystemDefinition {
       _withAwareness(typeMap[name]) as ObjectTypeDefinition;
 
   Iterable<TypeDefinition> get _allTypeDefinitions =>
-      typeMap.values.map(_withAwareness);
+      BuiltSet<TypeDefinition>(typeMap.values).map(_withAwareness);
 
   ObjectTypeDefinition get query => _getObjectType('query');
   ObjectTypeDefinition get mutation => _getObjectType('mutation');
@@ -62,7 +63,9 @@ class GraphQLSchema extends TypeSystemDefinition {
   List<InputObjectTypeDefinition> get inputObjectTypes =>
       _getAll<InputObjectTypeDefinition>();
 
-  /// Collect all
+  /// Collect all definitions of a given subtype.
+  ///
+  /// We use `BuiltSet` for uniqueness and ordering properties
   List<T> _getAll<T extends TypeDefinition>() =>
       _allTypeDefinitions.whereType<T>().toList();
 
