@@ -1,6 +1,7 @@
 import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
+import 'package:built_graphql/src/schema/definitions.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart' as u;
 
@@ -8,12 +9,16 @@ import 'package:built_graphql/src/builders/utils.dart' as u;
 class SelectionSetPrinters {
   const SelectionSetPrinters({
     @required this.parentClass,
+    @required this.builderParentClass,
     @required this.attributes,
     @required this.builderAttributes,
   });
 
   /// Parent class the [Built] class should `implement`
   final String parentClass;
+
+  /// Parent class the [Builder] class should `implement`
+  final String builderParentClass;
 
   /// Attributes that should be added to the [Built] class
   final String attributes;
@@ -33,6 +38,9 @@ SelectionSetPrinters printSelectionSetFields(
   List<Field> additionalFields = const [],
 }) {
   final SCHEMA_TYPE = u.className(selectionSet.schemaType.name); // '_schema.' +
+  final SCHEMA_BUILDER_TYPE = selectionSet.schemaType is InterfaceTypeDefinition
+      ? SCHEMA_TYPE
+      : SCHEMA_TYPE + 'Builder';
 
   final fieldsTemplate = u.ListPrinter(
     items: selectionSet.fields + (additionalFields ?? []),
@@ -82,6 +90,7 @@ SelectionSetPrinters printSelectionSetFields(
   */
   return SelectionSetPrinters(
     parentClass: '${u.bgPrefix}.Focus<$SCHEMA_TYPE>',
+    builderParentClass: '${u.bgPrefix}.Focus<$SCHEMA_BUILDER_TYPE>',
     attributes: '''
       @override
       $SCHEMA_TYPE get \$fields;
@@ -90,7 +99,7 @@ SelectionSetPrinters printSelectionSetFields(
     ''',
     builderAttributes: '''
       @protected
-      ${SCHEMA_TYPE}Builder \$fields;
+      ${SCHEMA_BUILDER_TYPE} \$fields;
 
       ${BUILDER_GETTERS}
     ''',
@@ -139,6 +148,7 @@ String printSelectionSetClass({
 
   final builder = u.builderClassFor(
     path.className,
+    implements: [ss.builderParentClass],
     body: '''
       ${ss.builderAttributes}
     ''',

@@ -87,8 +87,10 @@ TypeTemplate printBuilderType(d.GraphQLType type,
     {String prefix, PathFocus path}) {
   prefix ??= '';
   if (type is d.NamedType) {
-    final builderName =
-        (path?.className ?? prefix + className(type.name)) + 'Builder';
+    var builderName = (path?.className ?? prefix + className(type.name));
+    if (!(type.hasResolver && type.type is d.InterfaceTypeDefinition)) {
+      builderName += 'Builder';
+    }
     return _printPrimitive(type) ??
         _printEnum(type) ??
         TypeTemplate(
