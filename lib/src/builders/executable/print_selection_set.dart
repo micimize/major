@@ -1,3 +1,4 @@
+import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
@@ -38,9 +39,8 @@ SelectionSetPrinters printSelectionSetFields(
   List<Field> additionalFields = const [],
 }) {
   final SCHEMA_TYPE = u.className(selectionSet.schemaType.name); // '_schema.' +
-  final SCHEMA_BUILDER_TYPE = selectionSet.schemaType is InterfaceTypeDefinition
-      ? SCHEMA_TYPE
-      : SCHEMA_TYPE + 'Builder';
+  final SCHEMA_BUILDER_TYPE =
+      config.nestedBuilders ? SCHEMA_TYPE + 'Builder' : SCHEMA_TYPE;
 
   final fieldsTemplate = u.ListPrinter(
     items: selectionSet.fields + (additionalFields ?? []),
@@ -55,7 +55,7 @@ SelectionSetPrinters printSelectionSetFields(
       'get',
       u.dartName(field.alias),
       '=>',
-      type.cast('\$fields.${u.dartName(field.name)}')
+      type.cast('${config.protectedFields}.${u.dartName(field.name)}')
     ];
   }).semicolons;
 
@@ -67,7 +67,7 @@ SelectionSetPrinters printSelectionSetFields(
       'get',
       u.dartName(field.alias),
       '=>',
-      type.cast('\$fields.${u.dartName(field.name)}'),
+      type.cast('${config.protectedFields}.${u.dartName(field.name)}'),
     ];
   }).semicolons;
 
@@ -76,7 +76,7 @@ SelectionSetPrinters printSelectionSetFields(
       .map((field) => [
             'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
             '=>',
-            '\$fields.${u.dartName(field.name)} = value',
+            '${config.protectedFields}.${u.dartName(field.name)} = value',
           ])
       .semicolons;
 
@@ -93,13 +93,13 @@ SelectionSetPrinters printSelectionSetFields(
     builderParentClass: '${u.bgPrefix}.Focus<$SCHEMA_BUILDER_TYPE>',
     attributes: '''
       @override
-      $SCHEMA_TYPE get \$fields;
+      $SCHEMA_TYPE get ${config.protectedFields};
 
       $GETTERS
     ''',
     builderAttributes: '''
       @protected
-      ${SCHEMA_BUILDER_TYPE} \$fields;
+      ${SCHEMA_BUILDER_TYPE} ${config.protectedFields};
 
       ${BUILDER_GETTERS}
     ''',
@@ -139,8 +139,8 @@ String printSelectionSetClass({
     path.className,
     implements: [ss.parentClass],
     body: '''
-      factory ${path.className}.from(${ss.parentClass} focus) => _\$${path.className}._(\$fields: focus.\$fields);
-      factory ${path.className}.of(${schemaType} objectType) => _\$${path.className}._(\$fields: objectType);
+      factory ${path.className}.from(${ss.parentClass} focus) => _\$${path.className}._(${config.protectedFields}: focus.${config.protectedFields});
+      factory ${path.className}.of(${schemaType} objectType) => _\$${path.className}._(${config.protectedFields}: objectType);
 
       ${ss.attributes}
     ''',

@@ -1,3 +1,4 @@
+import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
@@ -59,7 +60,8 @@ TypeTemplate _printList(
     '$listType<${innerTemplate.type}>',
     innerTemplate.cast == identity
         ? identity
-        : (inner) => '$listType($inner.map((i) => ${innerCast}))',
+        : (inner) =>
+            '$listType($inner.map<${innerTemplate.type}>((i) => ${innerCast}))',
   );
 }
 
@@ -87,24 +89,32 @@ TypeTemplate printBuilderType(d.GraphQLType type,
     {String prefix, PathFocus path}) {
   prefix ??= '';
   if (type is d.NamedType) {
-    var builderName = (path?.className ?? prefix + className(type.name));
-    if (!(type.hasResolver && type.type is d.InterfaceTypeDefinition)) {
-      builderName += 'Builder';
-    }
     return _printPrimitive(type) ??
         _printEnum(type) ??
-        TypeTemplate(
-          builderName,
-          (String value) => '$builderName()..\$fields = $value',
-        );
+        _printNestedBuilder(type, prefix: prefix, path: path);
   }
   if (type is d.ListType) {
     return _printList(
       type,
-      'ListBuilder',
+      config.nestedBuilders ? 'ListBuilder' : 'BuiltList',
       (type) => printBuilderType(type, prefix: prefix, path: path),
     );
   }
 
   throw ArgumentError('$type is unsupported');
+}
+
+TypeTemplate _printNestedBuilder(d.NamedType type,
+    {String prefix, PathFocus path}) {
+  var builderName = (path?.className ?? prefix + className(type.name));
+  if (config.nestedBuilders) {
+    builderName += 'Builder';
+
+    return TypeTemplate(
+      builderName,
+      (String value) => '$builderName()..\$fields = $value',
+    );
+  } else {
+    return TypeTemplate.of(builderName);
+  }
 }

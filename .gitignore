@@ -16,3 +16,4 @@ lib/schema.graphql.dart
 lib/schema.graphql.g.dart
 
 .history/
+.vscode/

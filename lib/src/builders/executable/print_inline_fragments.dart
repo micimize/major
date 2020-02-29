@@ -1,3 +1,4 @@
+import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
@@ -50,8 +51,8 @@ String printInlineFragments({
     return [
       _path.className,
       'get on${fragment.onTypeName} =>'
-          '\$fields is ${fragment.onTypeName} ?',
-      '${_path.className}.of(\$fields as ${fragment.onTypeName}) : null'
+          '${config.protectedFields} is ${fragment.onTypeName} ?',
+      '${_path.className}.of(${config.protectedFields} as ${fragment.onTypeName}) : null'
     ];
   }).semicolons;
 
@@ -71,7 +72,7 @@ String printInlineFragments({
       'get',
       u.dartName(field.alias),
       '=>',
-      type.cast('\$fields?.${u.dartName(field.name)}')
+      type.cast('${config.protectedFields}?.${u.dartName(field.name)}')
     ];
   }).semicolons;
 
@@ -79,8 +80,8 @@ String printInlineFragments({
     path.className,
     implements: [focusClass],
     body: '''
-      factory ${path.className}.from(${focusClass} focus) => _\$${path.className}._(\$fields: focus.\$fields);
-      factory ${path.className}.of($schemaClass objectType) => _\$${path.className}._(\$fields: objectType);
+      factory ${path.className}.from(${focusClass} focus) => _\$${path.className}._(${config.protectedFields}: focus.${config.protectedFields});
+      factory ${path.className}.of($schemaClass objectType) => _\$${path.className}._(${config.protectedFields}: objectType);
 
       $sharedGetters
 

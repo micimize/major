@@ -27,3 +27,7 @@ class _Extensions {
         extensions.source: [extensions.dartTarget],
       };
 }
+
+const nestedBuilders = false;
+
+const protectedFields = '\$fields';
