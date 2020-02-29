@@ -71,6 +71,7 @@ SelectionSetPrinters printSelectionSetFields(
     ];
   }).semicolons;
 
+  /*
   final BUILDER_SETTERS = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
@@ -80,7 +81,6 @@ SelectionSetPrinters printSelectionSetFields(
           ])
       .semicolons;
 
-  /*
   final ARGUMENTS = fieldsTemplate
       .map((field) => [
             if (field.type.isNonNull) '@required',
@@ -98,7 +98,7 @@ SelectionSetPrinters printSelectionSetFields(
       $GETTERS
     ''',
     builderAttributes: '''
-      @protected
+      @override
       ${SCHEMA_BUILDER_TYPE} ${config.protectedFields};
 
       ${BUILDER_GETTERS}
@@ -137,6 +137,9 @@ String printSelectionSetClass({
 
   final built = u.builtClass(
     path.className,
+    mixins: selectionSet.fragmentSpreads.map(
+      (spread) => u.className(spread.name),
+    ),
     implements: [ss.parentClass],
     body: '''
       factory ${path.className}.from(${ss.parentClass} focus) => _\$${path.className}._(${config.protectedFields}: focus.${config.protectedFields});
@@ -148,6 +151,9 @@ String printSelectionSetClass({
 
   final builder = u.builderClassFor(
     path.className,
+    mixins: selectionSet.fragmentSpreads.map(
+      (spread) => u.className(spread.name) + 'Builder',
+    ),
     implements: [ss.builderParentClass],
     body: '''
       ${ss.builderAttributes}

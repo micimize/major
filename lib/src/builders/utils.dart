@@ -57,11 +57,13 @@ String builtClass(
 
 String builderClassFor(
   String className, {
+  Iterable<String> mixins = const [],
   Iterable<String> implements = const [],
   @required String body,
 }) =>
     _abstractClass(
       className + 'Builder',
+      mixins: mixins,
       implements: [
         ...implements,
         'Builder<$className, ${className}Builder>',

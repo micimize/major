@@ -13,7 +13,8 @@ String printFragment(FragmentDefinition fragment, PathFocus root) {
   final ss = printSelectionSetFields(fragment.selectionSet, path);
   final built = builtClass(
     (path + 'SelectionSet').className,
-    implements: [path.className, ss.parentClass],
+    mixins: [path.className],
+    implements: [ss.parentClass],
     body: ss.attributes,
   );
 
@@ -26,7 +27,7 @@ String printFragment(FragmentDefinition fragment, PathFocus root) {
   return format('''
     $fieldClassesTemplate
 
-    mixin ${path.className} on ${ss.parentClass} {
+    mixin ${path.className} implements ${ss.parentClass} {
       ${ss.attributes}
     }
 

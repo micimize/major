@@ -72,7 +72,7 @@ String printInlineFragments({
       'get',
       u.dartName(field.alias),
       '=>',
-      type.cast('${config.protectedFields}?.${u.dartName(field.name)}')
+      type.cast('${config.protectedFields}.${u.dartName(field.name)}')
     ];
   }).semicolons;
 
