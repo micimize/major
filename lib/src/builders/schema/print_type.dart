@@ -34,26 +34,73 @@ class TypeTemplate {
   String toString() => type;
 }
 
+TypeTemplate _printPrimitive(d.NamedType type) {
+  if (defaultPrimitives.containsKey(type.name)) {
+    return TypeTemplate(defaultPrimitives[type.name]);
+  }
+  return null;
+}
+
+TypeTemplate _printEnum(d.NamedType type) {
+  if (type.hasResolver && type.type is d.EnumTypeDefinition) {
+    return TypeTemplate(type.name);
+  }
+  return null;
+}
+
+TypeTemplate _printList(
+  d.ListType type,
+  String listType,
+  TypeTemplate Function(d.GraphQLType type) innerCallback,
+) {
+  final innerTemplate = innerCallback(type.type);
+  final innerCast = innerTemplate.cast('i');
+  return TypeTemplate(
+    '$listType<${innerTemplate.type}>',
+    innerTemplate.cast == identity
+        ? identity
+        : (inner) => '$listType($inner.map((i) => ${innerCast}))',
+  );
+}
+
 TypeTemplate printType(d.GraphQLType type, {String prefix, PathFocus path}) {
   prefix ??= '';
   if (type is d.NamedType) {
-    if (defaultPrimitives.containsKey(type.name)) {
-      return TypeTemplate(defaultPrimitives[type.name]);
-    }
-    if (type.hasResolver && type.type is d.EnumTypeDefinition) {
-      return TypeTemplate(type.name);
-    }
-
-    return TypeTemplate.of(path?.className ?? prefix + className(type.name));
+    return _printPrimitive(type) ??
+        _printEnum(type) ??
+        TypeTemplate.of(
+          path?.className ?? prefix + className(type.name),
+        );
   }
   if (type is d.ListType) {
-    final innerTemplate = printType(type.type, prefix: prefix, path: path);
-    final innerCast = innerTemplate.cast('i');
-    return TypeTemplate(
-      'BuiltList<${innerTemplate.type}>',
-      innerTemplate.cast == identity
-          ? identity
-          : (inner) => 'BuiltList($inner.map((i) => ${innerCast}))',
+    return _printList(
+      type,
+      'BuiltList',
+      (type) => printType(type, prefix: prefix, path: path),
+    );
+  }
+
+  throw ArgumentError('$type is unsupported');
+}
+
+TypeTemplate printBuilderType(d.GraphQLType type,
+    {String prefix, PathFocus path}) {
+  prefix ??= '';
+  if (type is d.NamedType) {
+    final builderName =
+        (path?.className ?? prefix + className(type.name)) + 'Builder';
+    return _printPrimitive(type) ??
+        _printEnum(type) ??
+        TypeTemplate(
+          builderName,
+          (String value) => '$builderName()..\$fields = $value',
+        );
+  }
+  if (type is d.ListType) {
+    return _printList(
+      type,
+      'ListBuilder',
+      (type) => printBuilderType(type, prefix: prefix, path: path),
     );
   }
 

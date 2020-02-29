@@ -41,12 +41,17 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
   return format(interfaceType.fields.map(printField).join('') +
       '''
     ${docstring(interfaceType.description, '')}
+    @BuiltValue(instantiable: false)
     abstract class $CLASS_NAME {
       $GETTERS
+
+      $CLASS_NAME rebuild(void Function(${CLASS_NAME}Builder) updates);
+      ${CLASS_NAME}Builder toBuilder();
     }
 
-    abstract class ${CLASS_NAME}Builder {
-      $BUILDER_VARIABLES
-    }
-  ''');
+    ''');
+
+  ///abstract class ${CLASS_NAME}Builder {
+  ///  $BUILDER_VARIABLES
+  ///}
 }

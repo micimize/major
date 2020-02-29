@@ -52,7 +52,7 @@ SelectionSetPrinters printSelectionSetFields(
   }).semicolons;
 
   final BUILDER_GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
-    final type = printType(field.type, path: path + field.alias);
+    final type = printBuilderType(field.type, path: path + field.alias);
     return [
       u.docstring(field.schemaType.description),
       type.type,
@@ -139,7 +139,9 @@ String printSelectionSetClass({
 
   final builder = u.builderClassFor(
     path.className,
-    body: ss.builderAttributes,
+    body: '''
+      ${ss.builderAttributes}
+    ''',
   );
 
   return u.format('''
