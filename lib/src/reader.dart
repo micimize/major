@@ -17,6 +17,7 @@ class GraphQLDocumentAsset {
   GraphQLDocumentAsset(
     this.id, {
     this.imports = const [],
+    this.importedAsts = const [],
     @required this.ast,
   });
 
@@ -28,6 +29,9 @@ class GraphQLDocumentAsset {
 
   /// List of recursively collected imports.
   final List<AssetId> imports;
+
+  /// List of recursively collected & parsed imports.
+  final List<DocumentNode> importedAsts;
 
   /// The parsed contents of the document. Does not include import contents
   final DocumentNode ast;
@@ -60,6 +64,9 @@ class GraphQLDocumentAsset {
     return GraphQLDocumentAsset(
       rootAssetId,
       imports: collector.imports,
+      importedAsts: collector.importMap.entries
+          .map((entry) => _parse(entry.value, entry.key))
+          .toList(),
       ast: _parse(
         collector.content,
         rootAssetId,
@@ -113,6 +120,9 @@ class _ContentCollector {
   /// All import and root content concatenated together with blank lines
   String get concatenated => _importMap.values.join('\n\n');
 
+  Map<AssetId, String> get importMap => Map.fromEntries(
+      _importMap.entries.where((entry) => entry.key.path != rootId.path));
+
   /// All collected asset paths, excluding the root import
   List<AssetId> get imports {
     final seenPaths = _importMap.keys.map((assetId) => assetId.path).toSet();
@@ -124,7 +134,7 @@ class _ContentCollector {
       log.warning('Could not import missing file $missing.');
     }
 
-    return _importMap.keys.where((imp) => imp.path != rootId.path).toList();
+    return importMap.keys.toList();
   }
 }
 

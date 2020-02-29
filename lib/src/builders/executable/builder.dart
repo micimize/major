@@ -52,7 +52,7 @@ FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
           ) +
           '\n' +
           printExecutable(
-            ExecutableDocument(doc.ast, schema.getType),
+            ExecutableDocument(doc.ast, schema.getType, doc.importedAsts),
             //PathFocus.root(),
           )
       //),
