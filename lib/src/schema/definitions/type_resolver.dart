@@ -11,6 +11,9 @@ abstract class TypeResolver {
     TypeDefinition definition,
     ResolveType getType,
   ) {
+    if (definition == null) {
+      return null;
+    }
     if (definition is InterfaceTypeDefinition) {
       return InterfaceTypeDefinition(definition.astNode, getType);
     }

@@ -3,6 +3,7 @@ import 'package:gql/ast.dart';
 import 'package:built_graphql/src/schema/definitions/definitions.dart';
 
 part 'selections.dart';
+part 'type_resolver.dart';
 
 @immutable
 abstract class ExecutableGraphQLEntity extends GraphQLEntity {
@@ -11,13 +12,13 @@ abstract class ExecutableGraphQLEntity extends GraphQLEntity {
 
 @immutable
 class ExecutableWithResolver extends ExecutableGraphQLEntity
-    implements TypeResolver {
-  const ExecutableWithResolver([ResolveType getType])
-      : getType = getType ?? TypeResolver.withoutContext,
+    implements ExecutableTypeResolver {
+  const ExecutableWithResolver([GetExecutableType getType])
+      : getType = getType ?? GetExecutableType.withoutContext,
         super();
 
   @override
-  final ResolveType getType;
+  final GetExecutableType getType;
 
   @override
   Node get astNode => throw UnimplementedError();
@@ -25,7 +26,7 @@ class ExecutableWithResolver extends ExecutableGraphQLEntity
 
 @immutable
 abstract class ExecutableDefinition extends ExecutableWithResolver {
-  const ExecutableDefinition([ResolveType getType]) : super(getType);
+  const ExecutableDefinition([GetExecutableType getType]) : super(getType);
 
   @override
   ExecutableDefinitionNode get astNode;
@@ -33,7 +34,7 @@ abstract class ExecutableDefinition extends ExecutableWithResolver {
   String get name => astNode.name?.value;
 
   static ExecutableDefinition fromNode(ExecutableDefinitionNode astNode,
-      [ResolveType getType]) {
+      [GetExecutableType getType]) {
     if (astNode is OperationDefinitionNode) {
       return OperationDefinition.fromNode(astNode, getType);
     }
@@ -49,7 +50,7 @@ abstract class ExecutableDefinition extends ExecutableWithResolver {
 class OperationDefinition extends ExecutableDefinition {
   const OperationDefinition(
     this.astNode, [
-    ResolveType getType,
+    GetExecutableType getType,
   ]) : super(getType);
 
   @override
@@ -58,27 +59,27 @@ class OperationDefinition extends ExecutableDefinition {
   OperationType get type => astNode.type;
 
   ObjectTypeDefinition get schemaType =>
-      getType(type.name) as ObjectTypeDefinition;
+      getType.fromSchema(type.name) as ObjectTypeDefinition;
 
   List<VariableDefinition> get variables =>
       astNode.variableDefinitions.map(VariableDefinition.fromNode).toList();
 
   SelectionSet get selectionSet => SelectionSet(
         astNode.selectionSet,
-        getType(type.name) as ObjectTypeDefinition,
+        getType.fromSchema(type.name) as ObjectTypeDefinition,
         getType,
       );
 
   static OperationDefinition fromNode(
     OperationDefinitionNode astNode, [
-    ResolveType getType,
+    GetExecutableType getType,
   ]) =>
       OperationDefinition(astNode, getType);
 }
 
 @immutable
 class FragmentDefinition extends ExecutableDefinition {
-  const FragmentDefinition(this.astNode, [ResolveType getType])
+  const FragmentDefinition(this.astNode, [GetExecutableType getType])
       : super(getType);
 
   @override
@@ -87,7 +88,7 @@ class FragmentDefinition extends ExecutableDefinition {
   TypeCondition get _typeCondition =>
       TypeCondition.fromNode(astNode.typeCondition);
 
-  TypeDefinition get onType => getType(_typeCondition.on.name);
+  TypeDefinition get onType => getType.fromSchema(_typeCondition.on.name);
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
@@ -97,7 +98,7 @@ class FragmentDefinition extends ExecutableDefinition {
 
   static FragmentDefinition fromNode(
     FragmentDefinitionNode astNode, [
-    ResolveType getType,
+    GetExecutableType getType,
   ]) =>
       FragmentDefinition(astNode, getType);
 }
@@ -117,7 +118,7 @@ class TypeCondition extends ExecutableGraphQLEntity {
 
 @immutable
 class VariableDefinition extends ExecutableWithResolver {
-  const VariableDefinition(this.astNode, [ResolveType getType])
+  const VariableDefinition(this.astNode, [GetExecutableType getType])
       : super(getType);
 
   @override
@@ -127,7 +128,8 @@ class VariableDefinition extends ExecutableWithResolver {
 
   Variable get variable => Variable.fromNode(astNode.variable);
 
-  GraphQLType get schemaType => GraphQLType.fromNode(astNode.type, getType);
+  GraphQLType get schemaType =>
+      GraphQLType.fromNode(astNode.type, getType.fromSchema);
 
   DefaultValue get defaultValue => DefaultValue.fromNode(astNode.defaultValue);
 

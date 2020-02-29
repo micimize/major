@@ -5,7 +5,7 @@ class SelectionSet extends ExecutableWithResolver {
   const SelectionSet(
     this.astNode, [
     this.schemaType,
-    ResolveType getType,
+    GetExecutableType getType,
   ]) : super(getType);
 
   final TypeDefinition schemaType;
@@ -28,14 +28,14 @@ class SelectionSet extends ExecutableWithResolver {
   static SelectionSet fromNode(
     SelectionSetNode astNode, [
     TypeDefinitionWithFieldSet schemaType,
-    ResolveType getType,
+    GetExecutableType getType,
   ]) =>
       SelectionSet(astNode, schemaType, getType);
 }
 
 @immutable
 abstract class Selection extends ExecutableWithResolver {
-  const Selection([ResolveType getType]) : super(getType);
+  const Selection([GetExecutableType getType]) : super(getType);
 
   GraphQLEntity get schemaType;
 
@@ -47,7 +47,7 @@ abstract class Selection extends ExecutableWithResolver {
 
     /// The [schemaType] of the containing element
     TypeDefinition schemaType,
-    ResolveType getType,
+    GetExecutableType getType,
   ]) {
     if (astNode is FieldNode) {
       // fields can only be seleted on Interface and Object types
@@ -66,7 +66,7 @@ abstract class Selection extends ExecutableWithResolver {
     }
     if (astNode is InlineFragmentNode) {
       // inline fragments must always specify a type condition,
-      final onType = getType(astNode.typeCondition.on.name.value);
+      final onType = getType.fromSchema(astNode.typeCondition.on.name.value);
       return InlineFragment(astNode, onType, getType);
     }
 
@@ -76,7 +76,7 @@ abstract class Selection extends ExecutableWithResolver {
 
 @immutable
 class Field extends Selection {
-  const Field(this.astNode, [this.schemaType, ResolveType getType])
+  const Field(this.astNode, [this.schemaType, GetExecutableType getType])
       : super(getType);
 
   @override
@@ -97,7 +97,11 @@ class Field extends Selection {
       astNode.directives.map(Directive.fromNode).toList();
 
   SelectionSet get selectionSet => astNode.selectionSet != null
-      ? SelectionSet(astNode.selectionSet, getType(type.baseTypeName), getType)
+      ? SelectionSet(
+          astNode.selectionSet,
+          getType.fromSchema(type.baseTypeName),
+          getType,
+        )
       : null;
 
   static Field fromNode(FieldNode astNode) => Field(astNode);
@@ -105,7 +109,8 @@ class Field extends Selection {
 
 @immutable
 class FragmentSpread extends Selection {
-  const FragmentSpread(this.astNode, [this.schemaType, ResolveType getType])
+  const FragmentSpread(this.astNode,
+      [this.schemaType, GetExecutableType getType])
       : super(getType);
 
   @override
@@ -115,6 +120,8 @@ class FragmentSpread extends Selection {
   final TypeDefinition schemaType;
 
   String get name => astNode.name.value;
+
+  FragmentDefinition get fragment => getType.fromFragments(name);
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
@@ -128,7 +135,7 @@ class InlineFragment extends Selection {
   const InlineFragment(
     this.astNode, [
     this.schemaType,
-    ResolveType getType,
+    GetExecutableType getType,
   ]) : super(getType);
 
   @override
@@ -138,7 +145,7 @@ class InlineFragment extends Selection {
       TypeCondition.fromNode(astNode.typeCondition);
 
   TypeDefinitionWithFieldSet get onType =>
-      getType(onTypeName) as TypeDefinitionWithFieldSet;
+      getType.fromSchema(onTypeName) as TypeDefinitionWithFieldSet;
 
   String get onTypeName => typeCondition.on.name;
 
