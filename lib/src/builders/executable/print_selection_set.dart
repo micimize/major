@@ -1,3 +1,4 @@
+import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
@@ -28,42 +29,46 @@ and inheret from it in our concrete object types
 
 SelectionSetPrinters printSelectionSetFields(
   SelectionSet selectionSet,
-  u.PathFocus path,
-) {
-  final SCHEMA_TYPE = '_schema.' + u.className(selectionSet.schemaType.name);
+  u.PathFocus path, {
+  List<Field> additionalFields = const [],
+}) {
+  final SCHEMA_TYPE = u.className(selectionSet.schemaType.name); // '_schema.' +
 
-  final fieldsTemplate = u.ListPrinter(items: selectionSet.fields);
+  final fieldsTemplate = u.ListPrinter(
+    items: selectionSet.fields + (additionalFields ?? []),
+  );
 
-  final GETTERS = fieldsTemplate
-      .copyWith(divider: '\n\n')
-      .map((field) => [
-            u.docstring(field.schemaType.description),
-            u.nullable(field.type),
-            printType(field.type, path: path + field.alias),
-            'get',
-            u.dartName(field.alias),
-            '=>',
-            '_fields.${u.dartName(field.name)}'
-          ])
-      .semicolons;
+  final GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
+    final type = printType(field.type, path: path + field.alias);
+    return [
+      u.docstring(field.schemaType.description),
+      u.nullable(field.type),
+      type.type,
+      'get',
+      u.dartName(field.alias),
+      '=>',
+      type.cast('\$fields.${u.dartName(field.name)}')
+    ];
+  }).semicolons;
 
-  final BUILDER_GETTERS = fieldsTemplate
-      .copyWith(divider: '\n\n')
-      .map((field) => [
-            u.docstring(field.schemaType.description),
-            printType(field.type, path: path + field.alias),
-            'get',
-            u.dartName(field.alias),
-            '=> _fields.${u.dartName(field.name)}',
-          ])
-      .semicolons;
+  final BUILDER_GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
+    final type = printType(field.type, path: path + field.alias);
+    return [
+      u.docstring(field.schemaType.description),
+      type.type,
+      'get',
+      u.dartName(field.alias),
+      '=>',
+      type.cast('\$fields.${u.dartName(field.name)}'),
+    ];
+  }).semicolons;
 
   final BUILDER_SETTERS = fieldsTemplate
       .copyWith(divider: '\n\n')
       .map((field) => [
             'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
             '=>',
-            '_fields.${u.dartName(field.name)} = value',
+            '\$fields.${u.dartName(field.name)} = value',
           ])
       .semicolons;
 
@@ -78,19 +83,19 @@ SelectionSetPrinters printSelectionSetFields(
   return SelectionSetPrinters(
     parentClass: '${u.bgPrefix}.Focus<$SCHEMA_TYPE>',
     attributes: '''
-      $SCHEMA_TYPE get _fields => \$fields ?? $SCHEMA_TYPE();
+      @override
+      $SCHEMA_TYPE get \$fields;
 
       $GETTERS
     ''',
     builderAttributes: '''
+      @protected
       ${SCHEMA_TYPE}Builder \$fields;
 
-      ${SCHEMA_TYPE}Builder get _fields => \$fields ?? ${SCHEMA_TYPE}Builder();
-
       ${BUILDER_GETTERS}
-
-      ${BUILDER_SETTERS}
     ''',
+
+    /*BUILDER_SETTERS dont think we even need them*/
   );
 }
 
@@ -98,13 +103,38 @@ String printSelectionSetClass({
   @required u.PathFocus path,
   @required String description,
   @required SelectionSet selectionSet,
+  List<Field> additionalFields = const [],
 }) {
-  final ss = printSelectionSetFields(selectionSet, path);
+  if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
+    return printInlineFragments(
+      path: path,
+      description: description,
+      selectionSet: selectionSet,
+    );
+  }
+
+  final fieldClassesTemplate = u.ListPrinter(
+    items: selectionSet.fields,
+    divider: '\n',
+  ).map((field) => [printFieldSelectionSet(field, path)]);
+
+  final schemaType = u.className(selectionSet.schemaType.name); // '_schema.' +
+
+  final ss = printSelectionSetFields(
+    selectionSet,
+    path,
+    additionalFields: additionalFields,
+  );
 
   final built = u.builtClass(
     path.className,
-    mixins: [ss.parentClass],
-    body: ss.attributes,
+    implements: [ss.parentClass],
+    body: '''
+      factory ${path.className}.from(${ss.parentClass} focus) => _\$${path.className}._(\$fields: focus.\$fields);
+      factory ${path.className}.of(${schemaType} objectType) => _\$${path.className}._(\$fields: objectType);
+
+      ${ss.attributes}
+    ''',
   );
 
   final builder = u.builderClassFor(
@@ -113,6 +143,7 @@ String printSelectionSetClass({
   );
 
   return u.format('''
+    ${fieldClassesTemplate}
 
     ${u.docstring(description, '')}
     ${built}

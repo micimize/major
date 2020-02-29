@@ -7,11 +7,6 @@ import 'package:built_graphql/src/builders/utils.dart';
 String printOperation(OperationDefinition operation, PathFocus root) {
   final path = root + (operation.name ?? 'Mutation');
 
-  final fieldClassesTemplate = ListPrinter(
-    items: operation.selectionSet.fields,
-    divider: '\n',
-  ).map((field) => [printFieldSelectionSet(field, path + 'Result')]);
-
   final operationType = printSelectionSetClass(
     path: path + 'Result',
     description: operation.schemaType.description,
@@ -19,8 +14,6 @@ String printOperation(OperationDefinition operation, PathFocus root) {
   );
 
   return format('''
-  ${fieldClassesTemplate}
-
   ${printVariables(path + 'Variables', operation.variables)}
 
   ${operationType}
@@ -37,7 +30,7 @@ String printVariables(
       .copyWith(divider: '\n\n')
       .map((variable) => [
             nullable(variable.schemaType),
-            printType(variable.schemaType, prefix: '_schema.'),
+            printType(variable.schemaType).type, //, prefix: '_schema.'),
             'get',
             dartName(variable.name),
           ])

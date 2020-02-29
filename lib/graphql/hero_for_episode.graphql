@@ -15,19 +15,19 @@ query HeroForEpisode($ep: Episode!) {
     }
   }
 
-  __heroCopyForTesting: hero(episode: $ep) {
-    # without typename we can't really tell which fragments to parse
-    __typename
-    name
-    ... on Droid {
-      id
-      primaryFunction
-    }
-    ... on Human {
-      id
-      appearsIn
-      ...info
-      ...relationships
-    }
-  }
+  # __heroCopyForTesting: hero(episode: $ep) {
+  #   # without typename we can't really tell which fragments to parse
+  #   __typename
+  #   name
+  #   ... on Droid {
+  #     id
+  #     primaryFunction
+  #   }
+  #   ... on Human {
+  #     id
+  #     appearsIn
+  #     ...info
+  #     ...relationships
+  #   }
+  # }
 }

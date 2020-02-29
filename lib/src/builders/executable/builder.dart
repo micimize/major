@@ -45,7 +45,9 @@ FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
       //_dartfmt.format(
       printDirectives(
             doc,
-            additionalImports: {schemaId: '_schema'},
+            additionalImports: {
+              schemaId: null
+            }, // '_schema'}, TODO built_value doesn't seem to handle import prefixes
             importBg: true,
           ) +
           '\n' +

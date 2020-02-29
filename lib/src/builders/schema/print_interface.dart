@@ -12,7 +12,7 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
       .map((field) => [
             docstring(field.name),
             nullable(field.type),
-            printType(field.type),
+            printType(field.type).type,
             'get',
             dartName(field.name),
           ])
@@ -21,7 +21,7 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
   final BUILDER_VARIABLES = fieldsTemplate
       .map((field) => [
             docstring(field.name),
-            printType(field.type),
+            printType(field.type).type,
             dartName(field.name),
           ])
       .semicolons;

@@ -138,7 +138,9 @@ class InlineFragment extends Selection {
       TypeCondition.fromNode(astNode.typeCondition);
 
   TypeDefinitionWithFieldSet get onType =>
-      getType(typeCondition.on.name) as TypeDefinitionWithFieldSet;
+      getType(onTypeName) as TypeDefinitionWithFieldSet;
+
+  String get onTypeName => typeCondition.on.name;
 
   @override
   final TypeDefinition schemaType;

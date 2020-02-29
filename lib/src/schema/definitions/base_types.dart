@@ -58,6 +58,7 @@ class NamedType extends GraphQLType implements TypeResolver {
   final ResolveType getType;
 
   TypeDefinition get type => getType(name);
+  bool get hasResolver => getType != TypeResolver.withoutContext;
 
   @override
   final NamedTypeNode astNode;

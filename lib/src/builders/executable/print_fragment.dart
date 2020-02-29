@@ -13,8 +13,7 @@ String printFragment(FragmentDefinition fragment, PathFocus root) {
   final ss = printSelectionSetFields(fragment.selectionSet, path);
   final built = builtClass(
     (path + 'SelectionSet').className,
-    mixins: [path.className],
-    implements: [ss.parentClass],
+    implements: [path.className, ss.parentClass],
     body: ss.attributes,
   );
 

@@ -10,7 +10,7 @@ String _parameterizedField(FieldDefinition field) {
   final FIELD_CLASS_NAME = printType(field.type);
 
   // only generated field classes once
-  if (!_seenFields.add(FIELD_CLASS_NAME)) {
+  if (!_seenFields.add(FIELD_CLASS_NAME.type)) {
     return '';
   }
 
@@ -18,7 +18,7 @@ String _parameterizedField(FieldDefinition field) {
 
   final ARGUMENTS = argsTemplate.braced.map(((arg) => [
         if (arg.type.isNonNull) '@required',
-        printType(arg.type),
+        printType(arg.type).type,
         dartName(arg.name),
       ]));
 
@@ -41,7 +41,7 @@ String _parameterizedField(FieldDefinition field) {
       // static Serializer<FieldResults> get serializer => _\$fieldResultsSerializer;
 
       @protected
-      BuiltMap<$_ARG_MAP , $FIELD_CLASS_NAME> get results;
+      BuiltMap<$_ARG_MAP, $FIELD_CLASS_NAME> get results;
 
       $FIELD_CLASS_NAME operator []($_ARG_MAP args) => results[args];
 

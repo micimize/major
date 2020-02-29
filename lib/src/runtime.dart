@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// Use of the term focus is meant to reference functional lensing.
 /// In essence, we hide all our fields and expose them piece-meal in the selection set,
 /// which is essentially a composit lens of getters/setters
-mixin Focus<Fields> {
+abstract class Focus<Fields> {
   @protected
   Fields get $fields;
 }

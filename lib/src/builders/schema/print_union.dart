@@ -8,7 +8,7 @@ String printUnion(UnionTypeDefinition unionType) {
   final GETTERS = optionsTemplate
       .map((option) => [
             nullable(),
-            printType(option),
+            printType(option).type,
             'get',
             dartName('as ' + option.name),
           ])

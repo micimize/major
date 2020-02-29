@@ -17,7 +17,7 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
       .map((field) => [
             docstring(field.name),
             nullable(field.type),
-            printType(field.type),
+            printType(field.type).type,
             'get',
             dartName(field.name),
           ])
