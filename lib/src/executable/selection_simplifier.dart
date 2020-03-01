@@ -1,3 +1,5 @@
+import 'package:built_collection/built_collection.dart';
+
 /// Simplifies operation selection set structures into more easily/logically traversable forms.
 ///
 /// GraphQL Selection Sets can get fairly complicated, and resolve into structures that don't coorespond to the declaration graph.
@@ -46,155 +48,148 @@ abstract class Simplified implements Selection {
   Map<String, FragmentDefinition> get definedInFragments;
 
   PathFocus get path;
-
 }
 
-  Map<String, FragmentDefinition> _mergedFragments<S extends Selection>(S maybeSimple, FragmentDefinition maybeFragment,) =>
-   {
-    if(maybeSimple is Simplified) ...maybeSimple.definedInFragments,
-    if (maybeFragment != null)
-    maybeFragment.name: maybeFragment
+Map<String, FragmentDefinition> _mergedFragments<S extends Selection>(
+  S maybeSimple,
+  FragmentDefinition maybeFragment,
+) =>
+    {
+      if (maybeSimple is Simplified) ...maybeSimple.definedInFragments,
+      if (maybeFragment != null) maybeFragment.name: maybeFragment
     };
 
 class SimplifiedField extends Field with Simplified {
-  SimplifiedField(Field field, this.path, [FragmentDefinition fromFragment]): 
-  definedInFragments = _mergedFragments(field, fromFragment),
-  super(
-        field.astNode,
-         field.schemaType,
-        field.getType,
-  );
+  SimplifiedField(Field field, this._path, [FragmentDefinition fromFragment])
+      : definedInFragments = _mergedFragments(field, fromFragment),
+        super(
+          field.astNode,
+          field.schemaType,
+          field.getType,
+        );
+
+  final PathFocus _path;
 
   @override
-  final PathFocus path;
+  PathFocus get path => _path + alias;
 
   @override
   final Map<String, FragmentDefinition> definedInFragments;
-
 }
 
 class SimplifiedInlineFragment extends InlineFragment with Simplified {
-  SimplifiedInlineFragment(InlineFragment inlineFragment, this.path, [FragmentDefinition fromFragment]): 
-  definedInFragments = _mergedFragments(inlineFragment, fromFragment),
-  super(
-        inlineFragment.astNode,
-         inlineFragment.schemaType,
-        inlineFragment.getType,
-  );
+  SimplifiedInlineFragment(InlineFragment inlineFragment, this._path,
+      [FragmentDefinition fromFragment])
+      : definedInFragments = _mergedFragments(inlineFragment, fromFragment),
+        super(
+          inlineFragment.astNode,
+          inlineFragment.schemaType,
+          inlineFragment.getType,
+        );
+
+  final PathFocus _path;
 
   @override
-  final PathFocus path;
+  PathFocus get path => _path + 'on$onTypeName';
 
   @override
   final Map<String, FragmentDefinition> definedInFragments;
-
 }
 
+/// A composit selectionset that represents the merger of all selection sets defined at the same path
 class SimplifiedSelectionSet extends SelectionSet {
-  SimplifiedSelectionSet (SelectionSet selectionSet)
-  : super(
-        selectionSet.astNode,
-         selectionSet.schemaType,
-        selectionSet.getType,
-  );
+  SimplifiedSelectionSet._(
+    this.selectionSets,
+    this.selections,
+    this.path,
+  ) : super(
+          selectionSets.first.astNode,
+          selectionSets.first.schemaType,
+          selectionSets.first.getType,
+        );
 
-  List<Selection> get selections => astNode.selections
-      .map((selection) => Selection.fromNode(selection, schemaType, getType))
-      .toList();
-
-  /// selections with all fragment spreads inlined
-  _FlattenedSelectionSet get simplified => _FlattenedSelectionSet(selections);
-
-  List<Field> get fields => selections.whereType<Field>().toList();
-
-  /// we maintain fragmentSpreads so as to not lose info
-  @override
-  List<FragmentSpread> get fragmentSpreads =>
-      super.selections.whereType<FragmentSpread>().toList();
-
-  List<InlineFragment> get inlineFragments =>
-      selections.whereType<InlineFragment>().toList();
-
-}
-
-extension SimplifyHelpers on Selection {
-  static Iterable<Selection> simplify(Selection selection,
-PathFocus path, [FragmentDefinition fromFragment] 
-  ) sync*{
-    if (selection is InlineFragment) {
-      yield SimplifiedInlineFragment(selection, path, fromFragment);
-    }
-    if (selection is Field) {
-      yield SimplifiedField(selection, path, fromFragment);
-    }
-    if (selection is FragmentSpread) {
-      for (final s in selection.fragment.selectionSet.selections){
-        yield * simplify(s, path, selection.fragment);
-      }
-    }
-
-    throw StateError(
-      'cannot simplify selection ${selection.runtimeType} $selection',
-    );
-  }
-}
-
-class _FlattenedSelectionSet {
-  _FlattenedSelectionSet(Iterable<Selection> selections) {
-    _selections = List.unmodifiable(selections.expand<Selection>(_flatten));
-  }
-
-  final _fragmentSpreadNames = <String>{};
-  List<Selection> _selections;
-
-  List<Selection> get selections => _selections;
-
-  List<String> get fragmentSpreadNames =>
-      List.unmodifiable(_fragmentSpreadNames);
-
-  List<Field> get fields => selections.whereType<Field>().toList();
-
-  List<InlineFragment> get inlineFragments =>
-      selections.whereType<InlineFragment>().toList();
-
-  Iterable<Selection> _flatten(Selection selection) {
-    if (selection is FragmentSpread) {
-      _fragmentSpreadNames.add(selection.name);
-      final selections = selection.fragment.selectionSet.selections;
-      return selections.expand((innerSelection) {
-        // swallow already seen fragment spreads
-        if (innerSelection is FragmentSpread) {
-          return _fragmentSpreadNames.contains(selection.name)
-              ? []
-              : _flatten(innerSelection);
+  factory SimplifiedSelectionSet(
+      Iterable<SelectionSet> selectionSets, PathFocus path) {
+    // flatten other simplified selection sets
+    final _selectionSets =
+        selectionSets.where((ss) => ss != null).expand<SelectionSet>(
+      (ss) {
+        if (ss is SimplifiedSelectionSet) {
+          return ss.selectionSets;
         }
+        return [ss];
+      },
+    ).toList();
+    final selections = selectionSets
+        .expand((ss) => ss.selections
+            .expand((selection) => simplifySelection(selection, path)))
+        .toList();
+    return SimplifiedSelectionSet._(_selectionSets, selections, path);
+  }
 
-        // TODO flatten is a confusing name for a boolean flag
-        return [Selection._flatten(selection)];
-      });
-    }
+  final List<SelectionSet> selectionSets;
 
-    return [selection];
+  final PathFocus path;
+
+  @override
+  final List<Selection> selections;
+
+  /// Preserve fragmentSpreads so as to not lose useful info
+  @override
+  List<FragmentSpread> get fragmentSpreads {
+    final spreadNames = <String>{};
+    return selectionSets
+        .expand((s) => s.fragmentSpreads)
+        .where((spread) => spreadNames.add(spread.name))
+        .toList();
   }
 }
 
+/// Flatten any fragment spreads into simplified fields, and add paths to fields
+Iterable<Selection> simplifySelection(
+  Selection selection,
+  PathFocus path, [
+  FragmentDefinition fromFragment,
+]) sync* {
+  if (selection is InlineFragment) {
+    yield SimplifiedInlineFragment(selection, path, fromFragment);
+  }
+  if (selection is Field) {
+    yield SimplifiedField(selection, path, fromFragment);
+  }
+  if (selection is FragmentSpread) {
+    for (final s in selection.fragment.selectionSet.selections) {
+      yield* simplifySelection(s, path, selection.fragment);
+    }
+  }
 
+  throw StateError(
+    'cannot simplify selection ${selection.runtimeType} $selection',
+  );
+}
 
-class SelectionManager extends PathManager<> {
+class SelectionManager extends p.PathManager<SimplifiedSelectionSet> {
   SelectionManager();
 
+  void register(Iterable<String> selectionPath, SelectionSet selectionSet) {
+    final path = PathFocus(this, selectionPath);
+    registry[path.path] = SimplifiedSelectionSet(
+      [registry[path], selectionSet],
+      path,
+    );
+  }
+
   @override
-  String resolve(Iterable<String> selectionPath) => className(selectionPath);
+  SimplifiedSelectionSet resolve(path) => registry[path.path];
 }
 
 class PathFocus extends p.PathFocus<SelectionSet> {
-  PathFocus(ClassNameManager manager, Iterable<String> path)
+  PathFocus(SelectionManager manager, Iterable<String> path)
       : super(manager, path);
   PathFocus.root([Iterable<String> path = const []])
-      : super(ClassNameManager(), path);
+      : super(SelectionManager(), path);
 
-  @override
-  ClassNameManager get _manager => manager as ClassNameManager;
+  SelectionManager get _manager => manager as SelectionManager;
 
   @override
   PathFocus extend(Iterable<String> other) =>
@@ -215,6 +210,4 @@ class PathFocus extends p.PathFocus<SelectionSet> {
       'Cannot add ${other.runtimeType} $other to PathFocus $this',
     );
   }
-
-  String get className => resolved;
 }

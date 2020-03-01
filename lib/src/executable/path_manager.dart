@@ -9,7 +9,7 @@ abstract class PathManager<T> {
 
   T valueFor(Iterable<String> path) => registry[path.toBuiltList()];
 
-  T resolve(Iterable<String> selectionPath);
+  T resolve(PathFocus<T> selectionPath);
 }
 
 class PathFocus<T> {
@@ -37,5 +37,5 @@ class PathFocus<T> {
     );
   }
 
-  T get resolved => manager.resolve(path);
+  T get resolved => manager.resolve(this);
 }

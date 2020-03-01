@@ -128,7 +128,7 @@ class ClassNameManager extends p.PathManager<String> {
   }
 
   @override
-  String resolve(Iterable<String> selectionPath) => className(selectionPath);
+  String resolve(path) => className(path.path);
 }
 
 class PathFocus extends p.PathFocus<String> {
@@ -137,7 +137,6 @@ class PathFocus extends p.PathFocus<String> {
   PathFocus.root([Iterable<String> path = const []])
       : super(ClassNameManager(), path);
 
-  @override
   ClassNameManager get _manager => manager as ClassNameManager;
 
   @override
