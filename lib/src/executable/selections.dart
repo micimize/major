@@ -42,6 +42,8 @@ abstract class Selection extends ExecutableWithResolver {
   @override
   SelectionNode get astNode;
 
+  String get alias;
+
   static Selection fromNode(
     SelectionNode astNode, [
 
@@ -88,7 +90,9 @@ class Field extends Selection {
   @override
   final FieldDefinition schemaType;
 
+  @override
   String get alias => astNode.alias?.value ?? name;
+
   String get name => astNode.name.value;
 
   GraphQLType get type => schemaType.type;
@@ -124,6 +128,9 @@ class FragmentSpread extends Selection {
 
   String get name => astNode.name.value;
 
+  @override
+  String get alias => name;
+
   FragmentDefinition get fragment => getType.fromFragments(name);
 
   List<Directive> get directives =>
@@ -151,6 +158,9 @@ class InlineFragment extends Selection {
       getType.fromSchema(onTypeName) as TypeDefinitionWithFieldSet;
 
   String get onTypeName => typeCondition.on.name;
+
+  @override
+  String get alias => 'on$onTypeName';
 
   @override
   final TypeDefinition schemaType;
