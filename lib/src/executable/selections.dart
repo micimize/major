@@ -17,9 +17,6 @@ class SelectionSet extends ExecutableWithResolver {
       .map((selection) => Selection.fromNode(selection, schemaType, getType))
       .toList();
 
-  /// selections with all fragment spreads inlined
-  _FlattenedSelectionSet get flattened => _FlattenedSelectionSet(selections);
-
   List<Field> get fields => selections.whereType<Field>().toList();
 
   List<FragmentSpread> get fragmentSpreads =>
@@ -38,34 +35,12 @@ class SelectionSet extends ExecutableWithResolver {
 
 @immutable
 abstract class Selection extends ExecutableWithResolver {
-  const Selection([GetExecutableType getType])
-      : flattened = false,
-        super(getType);
-
-  const Selection._flattened([GetExecutableType getType])
-      : flattened = true,
-        super(getType);
+  const Selection([GetExecutableType getType]) : super(getType);
 
   GraphQLEntity get schemaType;
 
-  /// Whether this selection is was pulled from a fragment spread.
-  /// Used in code generation to `@override`
-  final bool flattened;
-
   @override
   SelectionNode get astNode;
-
-  static Selection _flatten(Selection selection) {
-    if (selection is InlineFragment) {
-      return InlineFragment._flattened(selection);
-    }
-    if (selection is Field) {
-      return Field._flattened(selection);
-    }
-    throw StateError(
-      'cannot flatten selection ${selection.runtimeType} $selection',
-    );
-  }
 
   static Selection fromNode(
     SelectionNode astNode, [
@@ -106,11 +81,6 @@ class Field extends Selection {
     this.schemaType,
     GetExecutableType getType,
   ]) : super(getType);
-
-  Field._flattened(Field field)
-      : astNode = field.astNode,
-        schemaType = field.schemaType,
-        super._flattened(field.getType);
 
   @override
   final FieldNode astNode;
@@ -171,11 +141,6 @@ class InlineFragment extends Selection {
     GetExecutableType getType,
   ]) : super(getType);
 
-  InlineFragment._flattened(InlineFragment inline)
-      : astNode = inline.astNode,
-        schemaType = inline.schemaType,
-        super._flattened(inline.getType);
-
   @override
   final InlineFragmentNode astNode;
 
@@ -198,43 +163,4 @@ class InlineFragment extends Selection {
 
   static InlineFragment fromNode(InlineFragmentNode astNode) =>
       InlineFragment(astNode);
-}
-
-class _FlattenedSelectionSet {
-  _FlattenedSelectionSet(Iterable<Selection> selections) {
-    _selections = List.unmodifiable(selections.expand<Selection>(_flatten));
-  }
-
-  final _fragmentSpreadNames = <String>{};
-  List<Selection> _selections;
-
-  List<Selection> get selections => _selections;
-
-  List<String> get fragmentSpreadNames =>
-      List.unmodifiable(_fragmentSpreadNames);
-
-  List<Field> get fields => selections.whereType<Field>().toList();
-
-  List<InlineFragment> get inlineFragments =>
-      selections.whereType<InlineFragment>().toList();
-
-  Iterable<Selection> _flatten(Selection selection) {
-    if (selection is FragmentSpread) {
-      _fragmentSpreadNames.add(selection.name);
-      final selections = selection.fragment.selectionSet.selections;
-      return selections.expand((selection) {
-        // swallow already seen fragment spreads
-        if (selection is FragmentSpread) {
-          return _fragmentSpreadNames.contains(selection.name)
-              ? []
-              : _flatten(selection);
-        }
-
-        // TODO flatten is a confusing name for a boolean flag
-        return [Selection._flatten(selection)];
-      });
-    }
-
-    return [selection];
-  }
 }

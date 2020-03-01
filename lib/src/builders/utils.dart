@@ -1,6 +1,7 @@
 import 'package:build/build.dart' show AssetId;
 import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart';
+import 'package:built_graphql/src/executable/path_manager.dart' as p;
 import 'package:built_graphql/src/reader.dart';
 import 'package:built_graphql/src/schema/schema.dart' show GraphQLType;
 import 'package:meta/meta.dart';
@@ -99,20 +100,18 @@ String pathClassName(Iterable<String> path) => path.map(className).join('');
 
 typedef GetClassName = String Function(Iterable<String> path);
 
-class ClassNameManager {
+class ClassNameManager extends p.PathManager<String> {
   ClassNameManager([this._className = pathClassName]);
 
   final GetClassName _className;
 
-  final Map<BuiltList<String>, String> _nameRegistry = {};
-
-  Set<String> get usedNames => _nameRegistry.values.toSet();
+  Set<String> get usedNames => registry.values.toSet();
 
   String className(Iterable<String> selectionPath) {
     final path = selectionPath.toBuiltList();
 
-    if (_nameRegistry.containsKey(path)) {
-      return _nameRegistry[path];
+    if (registry.containsKey(path)) {
+      return registry[path];
     }
     final defaultName = _className(path);
     final _usedNames = usedNames;
@@ -124,42 +123,44 @@ class ClassNameManager {
     while (!_usedNames.contains(newName())) {
       collision += 1;
     }
-    _nameRegistry[path] = newName();
+    registry[path] = newName();
     return newName();
   }
+
+  @override
+  String resolve(Iterable<String> selectionPath) => className(selectionPath);
 }
 
-class PathFocus {
-  PathFocus._(this._manager, Iterable<String> path)
-      : path = BuiltList<String>(path);
+class PathFocus extends p.PathFocus<String> {
+  PathFocus(ClassNameManager manager, Iterable<String> path)
+      : super(manager, path);
+  PathFocus.root([Iterable<String> path = const []])
+      : super(ClassNameManager(), path);
 
-  PathFocus.root([Iterable<String> path])
-      : _manager = ClassNameManager(),
-        path = BuiltList<String>(path ?? <String>[]);
+  @override
+  ClassNameManager get _manager => manager as ClassNameManager;
 
-  final ClassNameManager _manager;
-  final BuiltList<String> path;
+  @override
+  PathFocus extend(Iterable<String> other) =>
+      PathFocus(_manager, path.followedBy(other));
 
-  PathFocus append(String name) => PathFocus._(
-        _manager,
-        path.followedBy([name]),
-      );
+  @override
   PathFocus operator +(Object other) {
     if (other is String) {
-      return append(other);
+      return extend([other]);
     }
     if (other is Iterable<String>) {
-      return PathFocus._(_manager, path.followedBy(other));
+      return extend(other);
     }
     if (other is PathFocus) {
-      return PathFocus._(_manager, path.followedBy(other.path));
+      return extend(other.path);
     }
     throw StateError(
       'Cannot add ${other.runtimeType} $other to PathFocus $this',
     );
   }
 
-  String get className => _manager.className(path);
+  String get className => resolved;
 }
 
 String docstring(String description, [String trailing = '\n']) {
