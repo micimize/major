@@ -243,6 +243,11 @@ class ListPrinter<T> {
         shouldTrailDivider: (items, inner) => inner.isNotEmpty,
       );
 
+  /// Adds an extra
+  ListPrinter<T> get andDoubleSpaced => copyWith(
+        divider: divider.replaceAll('\n', '') + '\n\n',
+      );
+
   //trailingCommaWhen({ int length =  }): (items, inner) => true,
 
   @override

@@ -10,6 +10,7 @@ import 'package:built_graphql/src/builders/utils.dart' as u;
 class SelectionSetPrinters {
   const SelectionSetPrinters({
     @required this.parentClass,
+    @required this.allFragments,
     @required this.builderParentClass,
     @required this.attributes,
     @required this.builderAttributes,
@@ -17,6 +18,18 @@ class SelectionSetPrinters {
 
   /// Parent class the [Built] class should `implement`
   final String parentClass;
+
+  final List<String> allFragments;
+
+  List<String> get allInterfaces => [
+        parentClass,
+        ...allFragments.map(u.className),
+      ];
+
+  List<String> get allBuilderInterfaces => [
+        builderParentClass,
+        ...allFragments.map((fragment) => u.className(fragment) + 'Builder')
+      ];
 
   /// Parent class the [Builder] class should `implement`
   final String builderParentClass;
@@ -38,26 +51,33 @@ SelectionSetPrinters printSelectionSetFields(
   u.PathFocus path, {
   List<Field> additionalFields = const [],
 }) {
-  final SCHEMA_TYPE = u.className(selectionSet.schemaType.name); // '_schema.' +
-  final SCHEMA_BUILDER_TYPE =
-      config.nestedBuilders ? SCHEMA_TYPE + 'Builder' : SCHEMA_TYPE;
+  final schemaClass = u.className(selectionSet.schemaType.name); // '_schema.' +
+  final schemaBuilderFieldClass =
+      config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
+  final flattened = selectionSet.flattened;
+
+  // we use the flattened selectionset fields (i.e. with fragment spreads merged in)
   final fieldsTemplate = u.ListPrinter(
-    items: selectionSet.fields + (additionalFields ?? []),
+    items: flattened.fields + (additionalFields ?? []),
   );
 
-  final GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
-    final type = printType(field.type, path: path + field.alias);
-    return [
-      u.docstring(field.schemaType.description),
-      u.nullable(field.type),
-      type.type,
-      'get',
-      u.dartName(field.alias),
-      '=>',
-      type.cast('${config.protectedFields}.${u.dartName(field.name)}')
-    ];
-  }).semicolons;
+  final GETTERS = fieldsTemplate
+      .map((field) {
+        final type = printType(field.type, path: path + field.alias);
+        return [
+          u.docstring(field.schemaType.description),
+          u.nullable(field.type),
+          if (field.flattened) '@override',
+          type.type,
+          'get',
+          u.dartName(field.alias),
+          '=>',
+          type.cast('${config.protectedFields}.${u.dartName(field.name)}')
+        ];
+      })
+      .semicolons
+      .andDoubleSpaced;
 
   final BUILDER_GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
     final type = printBuilderType(field.type, path: path + field.alias);
@@ -89,17 +109,18 @@ SelectionSetPrinters printSelectionSetFields(
           ])
   */
   return SelectionSetPrinters(
-    parentClass: '${u.bgPrefix}.Focus<$SCHEMA_TYPE>',
-    builderParentClass: '${u.bgPrefix}.Focus<$SCHEMA_BUILDER_TYPE>',
+    parentClass: '${u.bgPrefix}.Focus<$schemaClass>',
+    allFragments: flattened.fragmentSpreadNames,
+    builderParentClass: '${u.bgPrefix}.Focus<$schemaBuilderFieldClass>',
     attributes: '''
       @override
-      $SCHEMA_TYPE get ${config.protectedFields};
+      $schemaClass get ${config.protectedFields};
 
       $GETTERS
     ''',
     builderAttributes: '''
       @override
-      ${SCHEMA_BUILDER_TYPE} ${config.protectedFields};
+      ${schemaBuilderFieldClass} ${config.protectedFields};
 
       ${BUILDER_GETTERS}
     ''',
@@ -123,8 +144,8 @@ String printSelectionSetClass({
   }
 
   final fieldClassesTemplate = u.ListPrinter(
-    items: selectionSet.fields,
-    divider: '\n',
+    items: selectionSet.flattened.fields,
+    divider: '\n\n',
   ).map((field) => [printFieldSelectionSet(field, path)]);
 
   final schemaType = u.className(selectionSet.schemaType.name); // '_schema.' +
@@ -137,13 +158,9 @@ String printSelectionSetClass({
 
   final built = u.builtClass(
     path.className,
-    mixins: selectionSet.fragmentSpreads.map(
-      (spread) => u.className(spread.name),
-    ),
-    implements: [ss.parentClass],
+    implements: ss.allInterfaces,
     body: '''
-      factory ${path.className}.from(${ss.parentClass} focus) => _\$${path.className}._(${config.protectedFields}: focus.${config.protectedFields});
-      factory ${path.className}.of(${schemaType} objectType) => _\$${path.className}._(${config.protectedFields}: objectType);
+      ${builtFactories(path.className, ss.parentClass, schemaType)}
 
       ${ss.attributes}
     ''',
@@ -151,10 +168,7 @@ String printSelectionSetClass({
 
   final builder = u.builderClassFor(
     path.className,
-    mixins: selectionSet.fragmentSpreads.map(
-      (spread) => u.className(spread.name) + 'Builder',
-    ),
-    implements: [ss.builderParentClass],
+    implements: ss.allBuilderInterfaces,
     body: '''
       ${ss.builderAttributes}
     ''',
@@ -180,3 +194,13 @@ String printFieldSelectionSet(Field field, u.PathFocus path) {
     selectionSet: field.selectionSet,
   );
 }
+
+String builtFactories(
+  String className,
+  String focusClass,
+  String schemaClass,
+) =>
+    '''
+      factory ${className}.from(${focusClass} focus) => _\$${className}._(${config.protectedFields}: focus.${config.protectedFields});
+      factory ${className}.of(${schemaClass} objectType) => _\$${className}._(${config.protectedFields}: objectType);
+    ''';
