@@ -1,7 +1,7 @@
 import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
 import 'package:built_graphql/src/builders/utils.dart';
-import 'package:built_graphql/src/executable/definitions.dart';
+import 'package:built_graphql/src/executable/selection_simplifier.dart';
 
 String printFragment(FragmentDefinition fragment, PathFocus root) {
   final path = root + fragment.name;
@@ -9,12 +9,14 @@ String printFragment(FragmentDefinition fragment, PathFocus root) {
   final schemaBuilderFieldClass =
       config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
+  final selectionSet = fragment.selectionSet.simplified;
+
   final fieldClassesTemplate = ListPrinter(
-    items: fragment.selectionSet.fields,
+    items: selectionSet.fields,
     divider: '\n',
   ).map((field) => [printFieldSelectionSet(field, path)]);
 
-  final ss = printSelectionSetFields(fragment.selectionSet, path);
+  final ss = printSelectionSetFields(selectionSet.simplified, path);
 
   final builtImplements = [
     ss.parentClass,

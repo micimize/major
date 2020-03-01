@@ -1,8 +1,7 @@
 import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
-import 'package:built_graphql/src/executable/definitions.dart';
-import 'package:built_graphql/src/schema/definitions.dart';
+import 'package:built_graphql/src/executable/selection_simplifier.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart' as u;
 
