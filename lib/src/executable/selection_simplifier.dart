@@ -43,29 +43,41 @@ import './definitions.dart' as d;
 
 export './definitions.dart' hide SelectionSet, InlineFragment, Field;
 
-abstract class Simplified implements d.Selection {
-  /// The fragments this field are defined in
-  Map<String, d.FragmentDefinition> get definedInFragments;
+abstract class Simplified {
+  /// There should be a path to this field for every fragment it's defined within,
+  /// So that we can find corresponding models in the builder
+  Set<BuiltList<String>> get fragmentPaths;
 
   BuiltList<String> get path;
 }
 
-Map<String, d.FragmentDefinition> _mergedFragments<S extends d.Selection>(
+abstract class SimplifiedSelection implements Simplified, d.Selection {}
+
+Set<BuiltList<String>> _mergeFragmentPaths<S>([
   S maybeSimple,
-  Iterable<d.FragmentDefinition> fromFragments,
-) =>
+  Set<BuiltList<String>> fragmentPaths,
+]) =>
     {
-      if (maybeSimple is Simplified) ...maybeSimple.definedInFragments,
-      ...Map.fromEntries(fromFragments.map((f) => MapEntry(f.name, f)))
+      if (maybeSimple != null && maybeSimple is SimplifiedSelection)
+        ...maybeSimple.fragmentPaths,
+      if (fragmentPaths != null) ...fragmentPaths
     };
 
-class Field extends d.Field with Simplified {
+Set<BuiltList<String>> _descendIntoFragments([
+  Set<BuiltList<String>> fragmentPaths,
+  String selectionName,
+]) =>
+    (fragmentPaths == null)
+        ? null
+        : fragmentPaths.map((f) => f.append(selectionName)).toSet();
+
+class Field extends d.Field with SimplifiedSelection {
   Field(
     d.Field field,
     this.selectionSet,
     this._path, [
-    Iterable<d.FragmentDefinition> fromFragments,
-  ])  : definedInFragments = _mergedFragments(field, fromFragments ?? []),
+    Set<BuiltList<String>> fragmentPaths,
+  ])  : fragmentPaths = _mergeFragmentPaths(field, fragmentPaths),
         super(
           field.astNode,
           field.schemaType,
@@ -74,9 +86,9 @@ class Field extends d.Field with Simplified {
 
   Field mergedWith(Field other) => Field(
         this,
-        SelectionSet([selectionSet, other.selectionSet], _path),
+        selectionSet?.mergedWith(other.selectionSet) ?? other.selectionSet,
         _path,
-        other.definedInFragments.values,
+        other.fragmentPaths,
       );
 
   final BuiltList<String> _path;
@@ -88,17 +100,16 @@ class Field extends d.Field with Simplified {
   final SelectionSet selectionSet;
 
   @override
-  final Map<String, d.FragmentDefinition> definedInFragments;
+  final Set<BuiltList<String>> fragmentPaths;
 }
 
-class InlineFragment extends d.InlineFragment with Simplified {
+class InlineFragment extends d.InlineFragment with SimplifiedSelection {
   InlineFragment(
     d.InlineFragment inlineFragment,
     this.selectionSet,
     this._path, [
-    Iterable<d.FragmentDefinition> fromFragments,
-  ])  : definedInFragments =
-            _mergedFragments(inlineFragment, fromFragments ?? []),
+    Set<BuiltList<String>> fragmentPaths,
+  ])  : fragmentPaths = _mergeFragmentPaths(inlineFragment, fragmentPaths),
         super(
           inlineFragment.astNode,
           inlineFragment.schemaType,
@@ -107,9 +118,9 @@ class InlineFragment extends d.InlineFragment with Simplified {
 
   InlineFragment mergedWith(InlineFragment other) => InlineFragment(
         this,
-        SelectionSet([selectionSet, other.selectionSet], _path),
+        selectionSet?.mergedWith(other.selectionSet) ?? other.selectionSet,
         _path,
-        other.definedInFragments.values,
+        other.fragmentPaths,
       );
 
   @override
@@ -121,15 +132,16 @@ class InlineFragment extends d.InlineFragment with Simplified {
   BuiltList<String> get path => _path.append('on$onTypeName');
 
   @override
-  final Map<String, d.FragmentDefinition> definedInFragments;
+  final Set<BuiltList<String>> fragmentPaths;
 }
 
 /// A composit selectionset that represents the merger of all selection sets defined at the same path
-class SelectionSet extends d.SelectionSet {
+class SelectionSet extends d.SelectionSet with Simplified {
   SelectionSet._(
     this.selectionSets,
     this.selections,
     this.path,
+    this.fragmentPaths,
   ) : super(
           selectionSets.first.astNode,
           selectionSets.first.schemaType,
@@ -139,6 +151,7 @@ class SelectionSet extends d.SelectionSet {
   factory SelectionSet(
     Iterable<d.SelectionSet> selectionSets,
     BuiltList<String> path,
+    Set<BuiltList<String>> fragmentPaths,
   ) {
     // flatten other simplified selection sets
     final _selectionSets = selectionSets.expand<d.SelectionSet>(
@@ -152,9 +165,13 @@ class SelectionSet extends d.SelectionSet {
         return [ss];
       },
     ).toList();
+    if (_selectionSets.isEmpty) {
+      return null;
+    }
 
     final selections = <String, d.Selection>{};
-    for (final selection in _flattened(selectionSets, path)) {
+    for (final selection
+        in _flattened(_selectionSets, path, fragmentPaths ?? {})) {
       if (selections.containsKey(selection.alias)) {
         if (selection is Field) {
           final existing = selections[selection.alias] as Field;
@@ -165,17 +182,28 @@ class SelectionSet extends d.SelectionSet {
           selections[selection.alias] = existing.mergedWith(selection);
         }
       }
+      selections[selection.alias] = selection;
     }
 
     return SelectionSet._(
       _selectionSets,
       selections.values.toList(),
       path,
+      fragmentPaths ?? {},
     );
   }
 
+  SelectionSet mergedWith(SelectionSet other) => other == null
+      ? this
+      : SelectionSet(
+          [this, other],
+          path,
+          fragmentPaths.union(other.fragmentPaths ?? {}),
+        );
+
   final List<d.SelectionSet> selectionSets;
 
+  @override
   final BuiltList<String> path;
 
   @override
@@ -197,13 +225,23 @@ class SelectionSet extends d.SelectionSet {
         .where((spread) => spreadNames.add(spread.name))
         .toList();
   }
+
+  @override
+  final Set<BuiltList<String>> fragmentPaths;
 }
 
 Iterable<d.Selection> _flattened(
-        Iterable<d.SelectionSet> selectionSets, BuiltList<String> path) =>
+  Iterable<d.SelectionSet> selectionSets,
+  BuiltList<String> path,
+  Set<BuiltList<String>> fragmentPaths,
+) =>
     selectionSets.expand(
       (ss) => ss.selections.expand(
-        (selection) => _simplifySelectionFirstPass(selection, path),
+        (selection) => _simplifySelectionFirstPass(
+          selection,
+          path,
+          fragmentPaths,
+        ),
       ),
     );
 
@@ -213,27 +251,39 @@ Iterable<d.Selection> _flattened(
 Iterable<d.Selection> _simplifySelectionFirstPass(
   d.Selection selection,
   BuiltList<String> path, [
-  d.FragmentDefinition fromFragment,
-]) sync* {
+  Set<BuiltList<String>> fragmentPaths,
+]) {
+  final fps = _descendIntoFragments(fragmentPaths, selection.alias);
   if (selection is d.InlineFragment) {
-    yield InlineFragment(
-      selection,
-      SelectionSet([selection.selectionSet], path),
-      path,
-      [fromFragment],
-    );
+    return [
+      InlineFragment(
+        selection,
+        selection.selectionSet != null
+            ? SelectionSet([selection.selectionSet], path, fps)
+            : null,
+        path,
+        fragmentPaths,
+      )
+    ];
   }
   if (selection is d.Field) {
-    yield Field(
-      selection,
-      SelectionSet([selection.selectionSet], path),
-      path,
-      [fromFragment],
-    );
+    return [
+      Field(
+        selection,
+        selection.selectionSet != null
+            ? SelectionSet([selection.selectionSet], path, fps)
+            : null,
+        path,
+        fragmentPaths,
+      )
+    ];
   }
   if (selection is d.FragmentSpread) {
     for (final s in selection.fragment.selectionSet.selections) {
-      yield* _simplifySelectionFirstPass(s, path, selection.fragment);
+      // descend into a new fragment
+      return _simplifySelectionFirstPass(s, path, {
+        [selection.fragment.name].toBuiltList()
+      });
     }
   }
 
@@ -247,8 +297,6 @@ extension Append<T> on BuiltList<T> {
 }
 
 extension GetSimplified on d.SelectionSet {
-  SelectionSet get simplified => SelectionSet(
-        [this],
-        <String>[].toBuiltList(),
-      );
+  SelectionSet get simplified =>
+      SelectionSet([this], <String>[].toBuiltList(), {});
 }

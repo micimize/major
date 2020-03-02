@@ -129,19 +129,20 @@ class ClassNameManager {
   }
 }
 
+// TODO make the path manager more coherent
 class PathFocus {
-  PathFocus._(this._manager, Iterable<String> path)
+  PathFocus._(this.manager, Iterable<String> path)
       : path = BuiltList<String>(path);
 
   PathFocus.root([Iterable<String> path])
-      : _manager = ClassNameManager(),
+      : manager = ClassNameManager(),
         path = BuiltList<String>(path ?? <String>[]);
 
-  final ClassNameManager _manager;
+  final ClassNameManager manager;
   final BuiltList<String> path;
 
   PathFocus append(String name) => PathFocus._(
-        _manager,
+        manager,
         path.followedBy([name]),
       );
   PathFocus operator +(Object other) {
@@ -149,17 +150,17 @@ class PathFocus {
       return append(other);
     }
     if (other is Iterable<String>) {
-      return PathFocus._(_manager, path.followedBy(other));
+      return PathFocus._(manager, path.followedBy(other));
     }
     if (other is PathFocus) {
-      return PathFocus._(_manager, path.followedBy(other.path));
+      return PathFocus._(manager, path.followedBy(other.path));
     }
     throw StateError(
       'Cannot add ${other.runtimeType} $other to PathFocus $this',
     );
   }
 
-  String get className => _manager.className(path);
+  String get className => manager.className(path);
 }
 
 String docstring(String description, [String trailing = '\n']) {

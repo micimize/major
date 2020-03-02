@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
@@ -9,7 +10,7 @@ import 'package:built_graphql/src/builders/utils.dart' as u;
 class SelectionSetPrinters {
   const SelectionSetPrinters({
     @required this.parentClass,
-    @required this.allFragments,
+    @required this.interfaces,
     @required this.builderParentClass,
     @required this.attributes,
     @required this.builderAttributes,
@@ -18,16 +19,13 @@ class SelectionSetPrinters {
   /// Parent class the [Built] class should `implement`
   final String parentClass;
 
-  final List<String> allFragments;
+  final BuiltSet<String> interfaces;
 
-  List<String> get allInterfaces => [
-        parentClass,
-        ...allFragments.map(u.className),
-      ];
+  List<String> get allInterfaces => [parentClass, ...interfaces];
 
   List<String> get allBuilderInterfaces => [
         builderParentClass,
-        ...allFragments.map((fragment) => u.className(fragment) + 'Builder')
+        ...interfaces.map((fragment) => fragment + 'Builder')
       ];
 
   /// Parent class the [Builder] class should `implement`
@@ -54,11 +52,9 @@ SelectionSetPrinters printSelectionSetFields(
   final schemaBuilderFieldClass =
       config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
-  final flattened = selectionSet.flattened;
-
   // we use the flattened selectionset fields (i.e. with fragment spreads merged in)
   final fieldsTemplate = u.ListPrinter(
-    items: flattened.fields + (additionalFields ?? []),
+    items: selectionSet.fields + (additionalFields ?? []),
   );
 
   final GETTERS = fieldsTemplate
@@ -67,7 +63,7 @@ SelectionSetPrinters printSelectionSetFields(
         return [
           u.docstring(field.schemaType.description),
           u.nullable(field.type),
-          if (field.flattened) '@override',
+          if (field.fragmentPaths.isNotEmpty) '@override',
           type.type,
           'get',
           u.dartName(field.alias),
@@ -82,6 +78,7 @@ SelectionSetPrinters printSelectionSetFields(
     final type = printBuilderType(field.type, path: path + field.alias);
     return [
       u.docstring(field.schemaType.description),
+      if (field.fragmentPaths.isNotEmpty) '@override',
       type.type,
       'get',
       u.dartName(field.alias),
@@ -90,26 +87,12 @@ SelectionSetPrinters printSelectionSetFields(
     ];
   }).semicolons;
 
-  /*
-  final BUILDER_SETTERS = fieldsTemplate
-      .copyWith(divider: '\n\n')
-      .map((field) => [
-            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
-            '=>',
-            '${config.protectedFields}.${u.dartName(field.name)} = value',
-          ])
-      .semicolons;
-
-  final ARGUMENTS = fieldsTemplate
-      .map((field) => [
-            if (field.type.isNonNull) '@required',
-            printType(field.type),
-            dartName(field.name),
-          ])
-  */
   return SelectionSetPrinters(
     parentClass: '${u.bgPrefix}.Focus<$schemaClass>',
-    allFragments: flattened.fragmentSpreadNames,
+    interfaces: BuiltSet(<String>[
+      ...selectionSet.fragmentPaths.map(path.manager.className),
+      ...selectionSet.fragmentSpreads.map((s) => u.className(s.alias)),
+    ]),
     builderParentClass: '${u.bgPrefix}.Focus<$schemaBuilderFieldClass>',
     attributes: '''
       @override
@@ -143,7 +126,7 @@ String printSelectionSetClass({
   }
 
   final fieldClassesTemplate = u.ListPrinter(
-    items: selectionSet.flattened.fields,
+    items: selectionSet.fields,
     divider: '\n\n',
   ).map((field) => [printFieldSelectionSet(field, path)]);
 
@@ -203,3 +186,21 @@ String builtFactories(
       factory ${className}.from(${focusClass} focus) => _\$${className}._(${config.protectedFields}: focus.${config.protectedFields});
       factory ${className}.of(${schemaClass} objectType) => _\$${className}._(${config.protectedFields}: objectType);
     ''';
+
+/*
+  final BUILDER_SETTERS = fieldsTemplate
+      .copyWith(divider: '\n\n')
+      .map((field) => [
+            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
+            '=>',
+            '${config.protectedFields}.${u.dartName(field.name)} = value',
+          ])
+      .semicolons;
+
+  final ARGUMENTS = fieldsTemplate
+      .map((field) => [
+            if (field.type.isNonNull) '@required',
+            printType(field.type),
+            dartName(field.name),
+          ])
+  */

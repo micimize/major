@@ -1,6 +1,8 @@
 import 'package:built_graphql/built_graphql.dart';
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
 import 'package:built_graphql/src/executable/definitions.dart';
+import 'package:built_graphql/src/executable/selection_simplifier.dart'
+    show GetSimplified;
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
@@ -10,7 +12,7 @@ String printOperation(OperationDefinition operation, PathFocus root) {
   final operationType = printSelectionSetClass(
     path: path + 'Result',
     description: operation.schemaType.description,
-    selectionSet: operation.selectionSet,
+    selectionSet: operation.selectionSet.simplified,
   );
 
   return format('''
