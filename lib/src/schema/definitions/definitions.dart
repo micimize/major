@@ -107,6 +107,9 @@ class InterfaceTypeDefinition extends TypeDefinitionWithFieldSet
   @override
   final InterfaceTypeDefinitionNode astNode;
 
+  bool isImplementedBy(ObjectTypeDefinition objectType) =>
+      objectType.interfaceNames.contains(name);
+
   static InterfaceTypeDefinition fromNode(InterfaceTypeDefinitionNode astNode,
           [ResolveType getType]) =>
       InterfaceTypeDefinition(astNode, getType);
@@ -182,7 +185,12 @@ class UnionTypeDefinition extends TypeDefinition
 
   Iterable<String> get _typeNames => typeNames.map((t) => t.name);
 
-  List<TypeDefinition> get types => _typeNames.map(getType).toList();
+  /// http://spec.graphql.org/draft/#sel-HAHdfFDABABlG3ib:
+  /// > The member types of a Union type must all be Object base types;
+  /// > Scalar, Interface and Union types must not be member types of a Union.
+  /// > Similarly, wrapping types must not be member types of a Union.
+  List<ObjectTypeDefinition> get types =>
+      _typeNames.map(getType).cast<ObjectTypeDefinition>().toList();
 
   static UnionTypeDefinition fromNode(
     UnionTypeDefinitionNode astNode, [

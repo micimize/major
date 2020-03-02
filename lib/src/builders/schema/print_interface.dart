@@ -3,7 +3,10 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 import './print_parametrized_field.dart';
 
-String printInterface(InterfaceTypeDefinition interfaceType) {
+String printInterface(
+  InterfaceTypeDefinition interfaceType,
+  List<ObjectTypeDefinition> possibleTypes,
+) {
   final CLASS_NAME = className(interfaceType.name);
 
   final fieldsTemplate = ListPrinter(items: interfaceType.fields);
@@ -27,6 +30,16 @@ String printInterface(InterfaceTypeDefinition interfaceType) {
       .semicolons;
 
   /*
+  final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
+    (objectClass) => [
+      '''
+        if (value is $objectClass){
+          return $objectClass.of(value);
+        }
+        '''
+    ],
+  );
+
   final ARGUMENTS = fieldsTemplate
       .map((field) => [
             if (field.type.isNonNull) '@required',

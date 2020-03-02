@@ -19,7 +19,21 @@ abstract class GraphQLEntity {
   Node get astNode;
 }
 
-mixin AbstractType on GraphQLEntity {}
+mixin AbstractType on TypeDefinition {
+  static bool isPossibleType(
+    AbstractType abstractType,
+    ObjectTypeDefinition objectType,
+  ) {
+    if (abstractType is UnionTypeDefinition) {
+      return abstractType._typeNames.contains(objectType.name);
+    }
+    if (abstractType is InterfaceTypeDefinition) {
+      return objectType.interfaceNames.contains(abstractType.name);
+    }
+
+    throw ArgumentError('$abstractType is unsupported');
+  }
+}
 
 @immutable
 abstract class GraphQLType extends GraphQLEntity {

@@ -12,7 +12,7 @@ String printSchema(GraphQLSchema schema) {
   ${schema.enums.map(printEnum).join('\n')}
 
   // Interfaces
-  ${schema.interaces.map(printInterface).join('\n')}
+  ${schema.interaces.map((i) => printInterface(i, schema.getPossibleTypes(i))).join('\n')}
 
   // Object Types
   ${schema.objectTypes.map(printObjectType).join('\n')}

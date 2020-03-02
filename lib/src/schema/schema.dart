@@ -69,14 +69,17 @@ class GraphQLSchema extends TypeSystemDefinition {
   List<T> _getAll<T extends TypeDefinition>() =>
       _allTypeDefinitions.whereType<T>().toList();
 
-  /*
-  List<ObjectTypeDefinition> getPossibleTypes(AbstractType abstractType) =>
-      null;
+  List<ObjectTypeDefinition> getPossibleTypes(AbstractType abstractType) {
+    if (abstractType is UnionTypeDefinition) {
+      return abstractType.types;
+    }
+    if (abstractType is InterfaceTypeDefinition) {
+      return objectTypes.where(abstractType.isImplementedBy).toList();
+    }
+    throw ArgumentError('$abstractType is unsupported');
+  }
 
-  bool isPossibleType(
-          AbstractType abstractType, ObjectTypeDefinition objectType) =>
-      false; // objectType is abstractType.runtimeType;
-  */
+  final isPossibleType = AbstractType.isPossibleType;
 
   static GraphQLSchema fromNode(DocumentNode documentNode) =>
       buildSchema(documentNode);
