@@ -52,8 +52,13 @@ String builtClass(
         factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};
 
         $body
+
+        static Serializer<$className> get serializer => ${serializerName(className)};
       ''',
     );
+
+String serializerName(String name) =>
+    '_\$' + dartName(unhide(name)) + 'Serializer';
 
 String builderClassFor(
   String className, {
@@ -293,9 +298,10 @@ String printDirectives(GraphQLDocumentAsset asset,
   }
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND
-    import 'package:built_value/built_value.dart';
     import 'package:meta/meta.dart';
     import 'package:built_collection/built_collection.dart';
+    import 'package:built_value/built_value.dart';
+    import 'package:built_value/serializer.dart';
 
     ${additional}
     ${asset.imports.map(printImport).join('\n')}

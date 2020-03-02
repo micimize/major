@@ -63,6 +63,7 @@ SelectionSetPrinters printSelectionSetFields(
         return [
           u.docstring(field.schemaType.description),
           u.nullable(field.type),
+          "@BuiltValueField(wireName: '${field.alias}', serialize: true)",
           if (field.fragmentPaths.isNotEmpty) '@override',
           type.type,
           'get',

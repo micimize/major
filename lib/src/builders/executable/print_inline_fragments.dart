@@ -47,7 +47,7 @@ String printInlineFragments({
       .copyWith(divider: '\n\n');
 
   final fragmentAliases = fragmentsTemplate.map((fragment) {
-    final _path = path + 'on' + fragment.onTypeName;
+    final _path = path + fragment.alias;
     return [
       _path.className,
       'get on${fragment.onTypeName} =>'
@@ -86,6 +86,10 @@ String printInlineFragments({
       $sharedGetters
 
       $fragmentAliases
+
+      Object get value => ${fragmentsTemplate.map(
+              (fragment) => [fragment.alias],
+            ).copyWith(divider: '??')};
 
     ''',
   );
