@@ -49,7 +49,7 @@ String builtClass(
       ],
       body: '''
         $className._();
-        factory $className([void Function(${className}Builder) updates]) = _\$${className};
+        factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};
 
         $body
       ''',
@@ -69,7 +69,7 @@ String builderClassFor(
         'Builder<$className, ${className}Builder>',
       ],
       body: '''
-        factory ${className}Builder() = _\$${className}Builder;
+        factory ${className}Builder() = _\$${unhide(className)}Builder;
         ${className}Builder._();
 
         $body
@@ -89,6 +89,8 @@ String format(String source) {
 
 String dartName(String name) => ReCase(name).camelCase;
 String className(String name) => ReCase(name).pascalCase;
+
+String unhide(String className) => className.replaceAll(RegExp('^_*'), '');
 
 /// Default class name builder
 ///

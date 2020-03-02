@@ -28,23 +28,60 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
     ),
   ].join(', ');
 
+  final schemaClass = className(selectionSet.schemaType.name);
+  final schemaBuilderFieldClass =
+      config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
+
+  final parentClass = '${bgPrefix}.Focus<$schemaClass>';
+  final concreteClassName = '_${path.className}SelectionSet';
+
+  final built = builtClass(
+    concreteClassName,
+    mixins: [path.className],
+    // implements: [ss.parentClass],
+    body: '''
+      ${builtFactories(concreteClassName, parentClass, schemaClass)}
+
+      @override
+      ${schemaClass} get ${config.protectedFields};
+    ''',
+  );
+
+  final builder = builderClassFor(
+    concreteClassName,
+    mixins: [path.className + 'Builder'],
+    body: '''
+      @override
+      ${schemaBuilderFieldClass} ${config.protectedFields};
+    ''', //  the mixin provides fields
+  );
+
   return format('''
     $fieldMixinsTemplate
 
     abstract class ${path.className} implements ${builtImplements} {
+      ${builtMixinFactories(path.className, concreteClassName, parentClass, schemaClass)}
+
       ${ss.attributes}
     }
 
     abstract class ${path.className}Builder implements ${builderImplements} {
       ${ss.builderAttributes}
     }
+
+    $built
+
+    $builder
     ''');
 }
 
 String printFragment(FragmentDefinition fragment, PathFocus root) {
-  final path = root + fragment.name;
+  return printFragmentMixin(
+      fragment.selectionSet.simplified, root + fragment.name);
+  /*
+  //final path = root + fragment.name;
 
-  final schemaClass = className(fragment.selectionSet.schemaType.name);
+  final schemaClass = className(selectionSet.schemaType.name);
   final schemaBuilderFieldClass =
       config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
@@ -80,4 +117,16 @@ String printFragment(FragmentDefinition fragment, PathFocus root) {
     $builder
 
   ''');
+  */
 }
+
+String builtMixinFactories(
+  String className,
+  String selectionSetClassName,
+  String focusClass,
+  String schemaClass,
+) =>
+    '''
+      static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);
+      static ${className} of(${schemaClass} focus) => ${selectionSetClassName}.of(focus);
+    ''';

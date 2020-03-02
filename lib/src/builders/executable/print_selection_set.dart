@@ -183,8 +183,8 @@ String builtFactories(
   String schemaClass,
 ) =>
     '''
-      factory ${className}.from(${focusClass} focus) => _\$${className}._(${config.protectedFields}: focus.${config.protectedFields});
-      factory ${className}.of(${schemaClass} objectType) => _\$${className}._(${config.protectedFields}: objectType);
+      factory ${className}.from(${focusClass} focus) => _\$${u.unhide(className)}._(${config.protectedFields}: focus.${config.protectedFields});
+      factory ${className}.of(${schemaClass} objectType) => _\$${u.unhide(className)}._(${config.protectedFields}: objectType);
     ''';
 
 /*

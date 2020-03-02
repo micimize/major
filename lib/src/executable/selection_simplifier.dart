@@ -279,12 +279,11 @@ Iterable<d.Selection> _simplifySelectionFirstPass(
     ];
   }
   if (selection is d.FragmentSpread) {
-    for (final s in selection.fragment.selectionSet.selections) {
-      // descend into a new fragment
+    return selection.fragment.selectionSet.selections.expand((s) {
       return _simplifySelectionFirstPass(s, path, {
         [selection.fragment.name].toBuiltList()
       });
-    }
+    });
   }
 
   throw StateError(
