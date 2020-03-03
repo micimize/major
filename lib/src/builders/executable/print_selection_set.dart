@@ -48,6 +48,7 @@ SelectionSetPrinters printSelectionSetFields(
   SelectionSet selectionSet,
   u.PathFocus path, {
   List<Field> additionalFields = const [],
+  Iterable<String> additionalInterfaces,
 }) {
   final schemaClass = u.className(selectionSet.schemaType.name); // '_schema.' +
   final schemaBuilderFieldClass =
@@ -76,6 +77,7 @@ SelectionSetPrinters printSelectionSetFields(
   return SelectionSetPrinters(
     parentClass: u.selectionSetOf(schemaClass),
     interfaces: BuiltSet(<String>[
+      ...(additionalInterfaces ?? []),
       ...selectionSet.fragmentPaths.map(path.manager.className),
       ...selectionSet.fragmentSpreads.map((s) => u.className(s.alias)),
     ]),
@@ -94,6 +96,8 @@ String printSelectionSetClass({
   @required String description,
   @required SelectionSet selectionSet,
   List<Field> additionalFields = const [],
+  List<String> additionalInterfaces,
+  String additionalBody = '',
 }) {
   if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
     return printInlineFragments(
@@ -114,6 +118,7 @@ String printSelectionSetClass({
     selectionSet,
     path,
     additionalFields: additionalFields,
+    additionalInterfaces: additionalInterfaces,
   );
 
   final built = u.builtClass(
@@ -129,6 +134,7 @@ String printSelectionSetClass({
     )}
 
       ${ss.attributes}
+      ${additionalBody}
     ''',
   );
 

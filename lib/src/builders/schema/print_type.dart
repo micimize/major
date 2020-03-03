@@ -127,13 +127,15 @@ String printObjTypeSetter(d.GraphQLType type,
     return [
       value,
       // config.protectedFields,
+      if (!nested)
+        'toObjectBuilder()',
       if (!nested && type.type is d.InterfaceTypeDefinition)
-        'toObjectBuilder().build()',
+        'build()'
     ].join('.');
   }
   if (type is d.ListType) {
     final innerType = printBuilderType(type.type);
-    final innerSetter = printObjTypeSetter(type.type, 'i');
+    final innerSetter = printObjTypeSetter(type.type, 'i', true);
 
     return [
       'ListBuilder<$innerType>(',

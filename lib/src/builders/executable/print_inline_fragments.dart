@@ -9,6 +9,7 @@ List<String> printInlineFragmentSelectionSet(
   InlineFragment fragment,
   u.PathFocus p, {
   @required List<Field> sharedFields,
+  String onGetters,
 }) {
   final path = p + 'on' + fragment.onTypeName;
 
@@ -18,6 +19,8 @@ List<String> printInlineFragmentSelectionSet(
       description: fragment.schemaType.description,
       selectionSet: fragment.selectionSet,
       additionalFields: sharedFields,
+      additionalInterfaces: [p.className],
+      additionalBody: onGetters,
     )
   ];
 }
@@ -28,7 +31,7 @@ String printInlineFragments({
   @required SelectionSet selectionSet,
 }) {
   final schemaClass = u.className(selectionSet.schemaType.name);
-  final ssClass = u.selectionSetOf(schemaClass);
+  final className = path.className + '';
 
   final sharedFields = selectionSet.fields ?? [];
 
@@ -37,13 +40,19 @@ String printInlineFragments({
   );
 
   final inlineFragmentClasses = fragmentsTemplate
-      .map(
-        (fragment) => printInlineFragmentSelectionSet(
-          fragment,
-          path,
+      .map((fragment) => printInlineFragmentSelectionSet(fragment, path,
           sharedFields: sharedFields,
-        ),
-      )
+          onGetters: fragmentsTemplate
+              .map((f) => [
+                    '@override',
+                    (path + f.alias).className,
+                    'get',
+                    'on${f.onTypeName}',
+                    '=>',
+                    fragment == f ? 'this' : 'null',
+                  ])
+              .semicolons
+              .toString()))
       .copyWith(divider: '\n\n');
 
   final fragmentAliases = fragmentsTemplate.map((fragment) {
@@ -51,9 +60,26 @@ String printInlineFragments({
     return [
       _path.className,
       '''get on${fragment.onTypeName} {
-          final _value  = value;
-          return _value is ${_path.className} ? _value : null;
+          if (this is ${_path.className}){
+            return this as ${_path.className};
+          }
+          return null;
       }'''
+    ];
+  }).copyWith(divider: '\n\n');
+
+  final objBuilders = fragmentsTemplate
+      .map((fragment) => ['on${fragment.onTypeName}?.toObjectBuilder()'])
+      .copyWith(divider: ' ?? ');
+
+  final fragmentFactories = fragmentsTemplate.map((fragment) {
+    final _path = path + fragment.alias;
+    return [
+      '''
+      if (objectType is ${fragment.onTypeName}){
+        return ${_path.className}.of(objectType);
+      }
+      '''
     ];
   }).copyWith(divider: '\n\n');
 
@@ -72,22 +98,8 @@ String printInlineFragments({
       type.type,
       'get',
       u.dartName(field.alias),
-      '=>',
-      type.cast('value.${u.dartName(field.name)}')
     ];
   }).semicolons;
-
-  final built = u.builtClass(
-    path.className,
-    implements: [ssClass],
-    body: '''
-      $sharedGetters
-
-      $fragmentAliases
-
-      $ssClass get value;
-    ''',
-  );
 
   return u.format('''
     ${inlineFragmentClasses}
@@ -95,7 +107,31 @@ String printInlineFragments({
     ${fieldClassesTemplate}
 
     ${u.docstring(description, '')}
-    ${built}
+    @BuiltValue(instantiable: false)
+    abstract class $className {
+
+      $className rebuild(void Function(${className}Builder) updates);
+      ${className}Builder toBuilder();
+
+      $sharedGetters
+
+      $fragmentAliases
+
+      @override
+      ${schemaClass}Builder toObjectBuilder() => ${objBuilders};
+
+      static $className of($schemaClass objectType){
+        $fragmentFactories
+
+        throw ArgumentError('No concrete inline fragment defined for \${objectType.runtimeType} \$objectType. We should have default concrete interface fallbacks... but do not.');
+      }
+
+    }
+
+    /// Add the missing build interface
+    extension ${className}BuilderExt on ${className}Builder {
+      Character build() => null;
+    }
 
   ''');
 }
