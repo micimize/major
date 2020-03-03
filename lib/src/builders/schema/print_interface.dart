@@ -25,8 +25,7 @@ String printInterface(
     final type = printBuilderType(field.type);
     return [
       docstring(field.description),
-      '${type.type} get ${dartName(field.name)};\n',
-      'set ${dartName(field.name)}(${printType(field.type)} value);',
+      '${type.type} ${dartName(field.name)};\n',
     ];
   });
 

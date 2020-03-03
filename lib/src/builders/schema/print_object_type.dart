@@ -7,7 +7,6 @@ String printObjectType(ObjectTypeDefinition objectType) {
   final fieldsTemplate = ListPrinter(items: objectType.fields);
 
   final getters = fieldsTemplate
-      .copyWith(divider: '\n\n')
       .map((field) => [
             docstring(field.description),
             //nullable(field.type),
@@ -18,7 +17,18 @@ String printObjectType(ObjectTypeDefinition objectType) {
             'get',
             dartName(field.name),
           ])
-      .semicolons;
+      .semicolons
+      .andDoubleSpaced;
+
+  final builderAttrs = fieldsTemplate
+      .map((field) => [
+            docstring(field.description),
+            if (field.isOverride) '@override',
+            printBuilderType(field.type).type,
+            dartName(field.name),
+          ])
+      .semicolons
+      .andDoubleSpaced;
 
   /*
   final ARGUMENTS = fieldsTemplate
@@ -28,11 +38,20 @@ String printObjectType(ObjectTypeDefinition objectType) {
             dartName(field.name),
           ])
   */
+  final name = className(objectType.name);
 
   final built = builtClass(
-    className(objectType.name),
-    implements: objectType.interfaceNames.map((i) => printType(i).type),
+    name,
+    implements: objectType.interfaceNames
+        .map((i) => printType(i, extending: name).type),
     body: getters.toString(),
+  );
+
+  final builder = builderClassFor(
+    name,
+    implements: objectType.interfaceNames
+        .map((i) => printBuilderType(i, extending: name).type),
+    body: builderAttrs.toString(),
   );
 
   return format(objectType.fields.map(printField).join('') +
@@ -40,6 +59,8 @@ String printObjectType(ObjectTypeDefinition objectType) {
 
     ${docstring(objectType.description, '')}
     ${built}
+
+    ${builder}
 
   ''');
 }
