@@ -1,5 +1,6 @@
 import 'package:built_graphql/src/builders/config.dart' as config;
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
+import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 import 'package:built_graphql/src/executable/selection_simplifier.dart';
 
@@ -22,7 +23,7 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   ].join(', ');
 
   final builderImplements = [
-    ss.builderParentClass,
+    ss.builderParentClass ?? 'Object',
     ...selectionSet.fragmentSpreads.map(
       (spread) => className(spread.name) + 'Builder',
     ),
@@ -32,29 +33,32 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   final schemaBuilderFieldClass =
       config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
-  final parentClass = '${bgPrefix}.Focus<$schemaClass>';
+  final parentClass = selectionSetOf(schemaClass);
   final concreteClassName = '_${path.className}SelectionSet';
 
   final built = builtClass(
     concreteClassName,
     mixins: [path.className],
-    // implements: [ss.parentClass],
     body: '''
-      ${builtFactories(concreteClassName, parentClass, schemaClass)}
-
-      @override
-      ${schemaClass} get ${config.protectedFields};
+      ${builtFactories(concreteClassName, parentClass, schemaClass, selectionSet.fields)}
     ''',
   );
 
-  final builder = builderClassFor(
-    concreteClassName,
-    mixins: [path.className + 'Builder'],
-    body: '''
-      @override
-      ${schemaBuilderFieldClass} ${config.protectedFields};
-    ''', //  the mixin provides fields
-  );
+  final fieldsTemplate = ListPrinter(items: selectionSet.fields);
+
+  final getters = fieldsTemplate
+      .map((field) {
+        final type = printType(field.type, path: path + field.alias);
+        return [
+          docstring(field.schemaType.description),
+          if (field.fragmentPaths.isNotEmpty) '@override',
+          type.type,
+          'get',
+          dartName(field.alias),
+        ];
+      })
+      .semicolons
+      .andDoubleSpaced;
 
   return format('''
     $fieldMixinsTemplate
@@ -62,62 +66,20 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
     mixin ${path.className} implements ${builtImplements} {
       ${builtMixinFactories(path.className, concreteClassName, parentClass, schemaClass)}
 
-      ${ss.attributes}
-    }
+      ${getters}
 
-    mixin ${path.className}Builder implements ${builderImplements} {
-      ${ss.builderAttributes}
+      ${toObjectBuilder(selectionSet.schemaType, selectionSet.fields)}
     }
 
     $built
-
-    $builder
     ''');
 }
 
 String printFragment(FragmentDefinition fragment, PathFocus root) {
   return printFragmentMixin(
-      fragment.selectionSet.simplified, root + fragment.name);
-  /*
-  //final path = root + fragment.name;
-
-  final schemaClass = className(selectionSet.schemaType.name);
-  final schemaBuilderFieldClass =
-      config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
-
-  final parentClass = '${bgPrefix}.Focus<$schemaClass>';
-  final concreteClassName = (path + 'SelectionSet').className;
-
-  final built = builtClass(
-    concreteClassName,
-    mixins: [path.className],
-    // implements: [ss.parentClass],
-    body: '''
-      ${builtFactories(concreteClassName, parentClass, schemaClass)}
-
-      @override
-      ${schemaClass} get ${config.protectedFields};
-    ''',
+    fragment.selectionSet.simplified,
+    root + fragment.name,
   );
-
-  final builder = builderClassFor(
-    concreteClassName,
-    mixins: [path.className + 'Builder'],
-    body: '''
-      @override
-      ${schemaBuilderFieldClass} ${config.protectedFields};
-    ''', //  the mixin provides fields
-  );
-
-  return format('''
-    ${printFragmentMixin(fragment.selectionSet.simplified, path)}
-
-    $built
-
-    $builder
-
-  ''');
-  */
 }
 
 String builtMixinFactories(
@@ -127,6 +89,6 @@ String builtMixinFactories(
   String schemaClass,
 ) =>
     '''
-      static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);
-      static ${className} of(${schemaClass} focus) => ${selectionSetClassName}.of(focus);
+      // static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);
+      static ${className} of(${schemaClass} objectType) => ${selectionSetClassName}.of(objectType);
     ''';

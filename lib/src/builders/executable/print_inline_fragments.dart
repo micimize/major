@@ -28,7 +28,7 @@ String printInlineFragments({
   @required SelectionSet selectionSet,
 }) {
   final schemaClass = u.className(selectionSet.schemaType.name);
-  final focusClass = '${u.bgPrefix}.Focus<$schemaClass>';
+  final ssClass = u.selectionSetOf(schemaClass);
 
   final sharedFields = selectionSet.fields ?? [];
 
@@ -51,8 +51,7 @@ String printInlineFragments({
     return [
       _path.className,
       'get on${fragment.onTypeName} =>'
-          '${config.protectedFields} is ${fragment.onTypeName} ?',
-      '${_path.className}.of(${config.protectedFields} as ${fragment.onTypeName}) : null'
+          'value is ${_path.className} ? value : null'
     ];
   }).semicolons;
 
@@ -72,25 +71,19 @@ String printInlineFragments({
       'get',
       u.dartName(field.alias),
       '=>',
-      type.cast('${config.protectedFields}.${u.dartName(field.name)}')
+      type.cast('value.${u.dartName(field.name)}')
     ];
   }).semicolons;
 
   final built = u.builtClass(
     path.className,
-    implements: [focusClass],
+    implements: [ssClass],
     body: '''
-      factory ${path.className}.from(${focusClass} focus) => _\$${path.className}._(${config.protectedFields}: focus.${config.protectedFields});
-      factory ${path.className}.of($schemaClass objectType) => _\$${path.className}._(${config.protectedFields}: objectType);
-
       $sharedGetters
 
       $fragmentAliases
 
-      Object get value => ${fragmentsTemplate.map(
-              (fragment) => [fragment.alias],
-            ).copyWith(divider: '??')};
-
+      $ssClass get value;
     ''',
   );
 

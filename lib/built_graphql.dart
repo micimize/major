@@ -1,4 +1,4 @@
 /// More dartdocs go here.
 library built_graphql;
 
-export './src/runtime.dart' show Focus, unfocus;
+export './src/runtime.dart';

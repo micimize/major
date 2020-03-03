@@ -29,5 +29,3 @@ class _Extensions {
 }
 
 const nestedBuilders = false;
-
-const protectedFields = '\$fields';

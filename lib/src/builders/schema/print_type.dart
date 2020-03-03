@@ -126,8 +126,9 @@ String printSetter(d.GraphQLType type,
       type.type is d.TypeDefinitionWithFieldSet) {
     return [
       value,
-      config.protectedFields,
-      if (!nested && type.type is d.InterfaceTypeDefinition) 'toBuilder()',
+      // config.protectedFields,
+      if (!nested && type.type is d.InterfaceTypeDefinition)
+        '.toObjectBuilder().build()',
     ].join('.');
   }
   if (type is d.ListType) {

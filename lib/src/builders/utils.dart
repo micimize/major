@@ -310,3 +310,6 @@ String printDirectives(GraphQLDocumentAsset asset,
 
     ''');
 }
+
+String selectionSetOf(String schemaClass) =>
+    '${bgPrefix}.SelectionSet<$schemaClass, ${schemaClass}Builder>';
