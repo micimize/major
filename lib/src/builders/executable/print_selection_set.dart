@@ -68,44 +68,6 @@ SelectionSetPrinters printSelectionSetFields(
           type.type,
           'get',
           u.dartName(field.alias),
-          '=>',
-          type.cast('${config.protectedFields}.${u.dartName(field.name)}')
-        ];
-      })
-      .semicolons
-      .andDoubleSpaced;
-
-  final BUILDER_GETTERS = fieldsTemplate
-      .map((field) {
-        final type = printBuilderType(field.type, path: path + field.alias);
-        return [
-          u.docstring(field.schemaType.description),
-          if (field.fragmentPaths.isNotEmpty) '@override',
-          type.type,
-          'get',
-          u.dartName(field.alias),
-          '=>',
-          type.cast('${config.protectedFields}.${u.dartName(field.name)}'),
-        ];
-      })
-      .semicolons
-      .andDoubleSpaced;
-
-  final toObjBuilderAttrs = fieldsTemplate.map((field) {
-    return [
-      '..${u.dartName(field.name)} =',
-      printSetter(field.type, field.alias),
-    ];
-  }).copyWith(divider: '\n');
-
-  final BUILDER_SETTERS = fieldsTemplate
-      .map((field) {
-        final type = printType(field.type, path: path + field.alias);
-        return [
-          if (field.fragmentPaths.isNotEmpty) '@override',
-          'set ${u.dartName(field.alias)}(covariant ${type} value)',
-          '=>',
-          '${config.protectedFields}.rebuild((f) => f..${u.dartName(field.name)} = ${printSetter(field.type)})',
         ];
       })
       .semicolons
@@ -123,16 +85,7 @@ SelectionSetPrinters printSelectionSetFields(
       ${toObjectBuilder(selectionSet.schemaType, fields)}
     ''',
     builderAttributes: '''
-      @override
-      @BuiltValueField(serialize: false)
-      ${schemaBuilderFieldClass} ${config.protectedFields};
-
-      ${BUILDER_GETTERS}
-
-      ${BUILDER_SETTERS}
     ''',
-
-    /*BUILDER_SETTERS dont think we even need them*/
   );
 }
 
