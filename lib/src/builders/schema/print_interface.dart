@@ -14,22 +14,22 @@ String printInterface(
   final GETTERS = fieldsTemplate
       .map((field) => [
             docstring(field.name),
-            nullable(field.type),
+            // nullable(field.type),
             printType(field.type).type,
             'get',
             dartName(field.name),
           ])
       .semicolons;
 
-  final BUILDER_ATTRS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
-    final type = printBuilderType(field.type);
-    return [
-      docstring(field.description),
-      '${type.type} ${dartName(field.name)};\n',
-    ];
-  });
-
   /*
+  final BUILDER_VARIABLES = fieldsTemplate
+      .map((field) => [
+            docstring(field.name),
+            printType(field.type).type,
+            dartName(field.name),
+          ])
+      .semicolons;
+
   final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
     (objectClass) => [
       '''
@@ -55,13 +55,13 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
       '''
     ${docstring(interfaceType.description, '')}
     @BuiltValue(instantiable: false)
-    abstract class $CLASS_NAME<V extends $CLASS_NAME<V, B>, B extends ${CLASS_NAME}Builder<V, B>> extends Built<V, B> {
+    abstract class $CLASS_NAME {
       $GETTERS
+
+      $CLASS_NAME rebuild(void Function(${CLASS_NAME}Builder) updates);
+      ${CLASS_NAME}Builder toBuilder();
     }
 
-    abstract class ${CLASS_NAME}Builder<V extends $CLASS_NAME<V, B>, B extends ${CLASS_NAME}Builder<V, B>> extends Builder<V, B> {
-      $BUILDER_ATTRS
-    }
     ''');
 
   ///abstract class ${CLASS_NAME}Builder {

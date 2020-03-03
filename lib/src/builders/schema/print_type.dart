@@ -65,15 +65,13 @@ TypeTemplate _printList(
   );
 }
 
-TypeTemplate printType(d.GraphQLType type,
-    {String prefix, PathFocus path, String extending}) {
+TypeTemplate printType(d.GraphQLType type, {String prefix, PathFocus path}) {
   prefix ??= '';
   if (type is d.NamedType) {
     return _printPrimitive(type) ??
         _printEnum(type) ??
         TypeTemplate.of(
-          path?.className ??
-              prefix + className(type.name) + genericize(type, extending),
+          path?.className ?? prefix + className(type.name),
         );
   }
   if (type is d.ListType) {
@@ -88,13 +86,12 @@ TypeTemplate printType(d.GraphQLType type,
 }
 
 TypeTemplate printBuilderType(d.GraphQLType type,
-    {String prefix, PathFocus path, String extending}) {
+    {String prefix, PathFocus path}) {
   prefix ??= '';
   if (type is d.NamedType) {
     return _printPrimitive(type) ??
         _printEnum(type) ??
-        _printNestedBuilder(type,
-            prefix: prefix, path: path, extending: extending);
+        _printNestedBuilder(type, prefix: prefix, path: path);
   }
   if (type is d.ListType) {
     return _printList(
@@ -108,12 +105,10 @@ TypeTemplate printBuilderType(d.GraphQLType type,
 }
 
 TypeTemplate _printNestedBuilder(d.NamedType type,
-    {String prefix, PathFocus path, String extending}) {
+    {String prefix, PathFocus path}) {
   var builderName = (path?.className ?? prefix + className(type.name));
   if (config.nestedBuilders) {
     builderName += 'Builder';
-
-    builderName += genericize(type, extending);
 
     return TypeTemplate(
       builderName,
@@ -122,17 +117,4 @@ TypeTemplate _printNestedBuilder(d.NamedType type,
   } else {
     return TypeTemplate.of(builderName);
   }
-}
-
-String genericize(d.NamedType type, String extending) {
-  if (!type.hasResolver || type.type is! d.InterfaceTypeDefinition) {
-    return '';
-  }
-  if (extending != null) {
-    return '<$extending, ${extending}Builder>';
-  }
-  final built = className(type.name);
-  final builder = built + 'Builder';
-
-  return '<$built<$built, $builder>, $builder<$built, $builder>>';
 }
