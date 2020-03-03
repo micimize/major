@@ -62,9 +62,9 @@ SelectionSetPrinters printSelectionSetFields(
         final type = printType(field.type, path: path + field.alias);
         return [
           u.docstring(field.schemaType.description),
+          if (field.fragmentPaths.isNotEmpty) '@override',
           u.nullable(field.type),
           "@BuiltValueField(wireName: '${field.alias}', serialize: true)",
-          if (field.fragmentPaths.isNotEmpty) '@override',
           type.type,
           'get',
           u.dartName(field.alias),
@@ -88,6 +88,15 @@ SelectionSetPrinters printSelectionSetFields(
     ];
   }).semicolons;
 
+  final BUILDER_SETTERS = fieldsTemplate
+      .copyWith(divider: '\n\n')
+      .map((field) => [
+            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
+            '=>',
+            '${config.protectedFields}.${u.dartName(field.name)} = value',
+          ])
+      .semicolons;
+
   return SelectionSetPrinters(
     parentClass: '${u.bgPrefix}.Focus<$schemaClass>',
     interfaces: BuiltSet(<String>[
@@ -103,9 +112,12 @@ SelectionSetPrinters printSelectionSetFields(
     ''',
     builderAttributes: '''
       @override
+      @BuiltValueField(serialize: false)
       ${schemaBuilderFieldClass} ${config.protectedFields};
 
       ${BUILDER_GETTERS}
+
+      ${BUILDER_SETTERS}
     ''',
 
     /*BUILDER_SETTERS dont think we even need them*/
@@ -189,15 +201,6 @@ String builtFactories(
     ''';
 
 /*
-  final BUILDER_SETTERS = fieldsTemplate
-      .copyWith(divider: '\n\n')
-      .map((field) => [
-            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
-            '=>',
-            '${config.protectedFields}.${u.dartName(field.name)} = value',
-          ])
-      .semicolons;
-
   final ARGUMENTS = fieldsTemplate
       .map((field) => [
             if (field.type.isNonNull) '@required',

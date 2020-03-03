@@ -10,8 +10,10 @@ String printObjectType(ObjectTypeDefinition objectType) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             docstring(field.description),
-            nullable(field.type),
-            if (field.isOverride) '@override',
+            //nullable(field.type),
+            '@nullable',
+            if (field.isOverride)
+              '@override',
             printType(field.type).type,
             'get',
             dartName(field.name),

@@ -28,6 +28,6 @@ class _Extensions {
       };
 }
 
-const nestedBuilders = false;
+const nestedBuilders = true;
 
 const protectedFields = '\$fields';

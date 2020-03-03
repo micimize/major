@@ -21,13 +21,14 @@ String printInterface(
           ])
       .semicolons;
 
-  final BUILDER_VARIABLES = fieldsTemplate
-      .map((field) => [
-            docstring(field.name),
-            printType(field.type).type,
-            dartName(field.name),
-          ])
-      .semicolons;
+  final BUILDER_ATTRS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
+    final type = printBuilderType(field.type);
+    return [
+      docstring(field.description),
+      '${type.type} get ${dartName(field.name)};\n',
+      'set ${dartName(field.name)}(${printType(field.type)} value);',
+    ];
+  });
 
   /*
   final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
@@ -55,13 +56,13 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
       '''
     ${docstring(interfaceType.description, '')}
     @BuiltValue(instantiable: false)
-    abstract class $CLASS_NAME {
+    abstract class $CLASS_NAME<V extends $CLASS_NAME<V, B>, B extends ${CLASS_NAME}Builder<V, B>> extends Built<V, B> {
       $GETTERS
-
-      $CLASS_NAME rebuild(void Function(${CLASS_NAME}Builder) updates);
-      ${CLASS_NAME}Builder toBuilder();
     }
 
+    abstract class ${CLASS_NAME}Builder<V extends $CLASS_NAME<V, B>, B extends ${CLASS_NAME}Builder<V, B>> extends Builder<V, B> {
+      $BUILDER_ATTRS
+    }
     ''');
 
   ///abstract class ${CLASS_NAME}Builder {
