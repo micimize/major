@@ -75,27 +75,34 @@ SelectionSetPrinters printSelectionSetFields(
       .semicolons
       .andDoubleSpaced;
 
-  final BUILDER_GETTERS = fieldsTemplate.copyWith(divider: '\n\n').map((field) {
-    final type = printBuilderType(field.type, path: path + field.alias);
-    return [
-      u.docstring(field.schemaType.description),
-      if (field.fragmentPaths.isNotEmpty) '@override',
-      type.type,
-      'get',
-      u.dartName(field.alias),
-      '=>',
-      type.cast('${config.protectedFields}.${u.dartName(field.name)}'),
-    ];
-  }).semicolons;
+  final BUILDER_GETTERS = fieldsTemplate
+      .map((field) {
+        final type = printBuilderType(field.type, path: path + field.alias);
+        return [
+          u.docstring(field.schemaType.description),
+          if (field.fragmentPaths.isNotEmpty) '@override',
+          type.type,
+          'get',
+          u.dartName(field.alias),
+          '=>',
+          type.cast('${config.protectedFields}.${u.dartName(field.name)}'),
+        ];
+      })
+      .semicolons
+      .andDoubleSpaced;
 
   final BUILDER_SETTERS = fieldsTemplate
-      .copyWith(divider: '\n\n')
-      .map((field) => [
-            'set ${u.dartName(field.alias)}(${printType(field.type, path: path + field.alias)} value)',
-            '=>',
-            '${config.protectedFields}.${u.dartName(field.name)} = value',
-          ])
-      .semicolons;
+      .map((field) {
+        final type = printType(field.type, path: path + field.alias);
+        return [
+          if (field.fragmentPaths.isNotEmpty) '@override',
+          'set ${u.dartName(field.alias)}(covariant ${type} value)',
+          '=>',
+          '${config.protectedFields}.rebuild((f) => f..${u.dartName(field.name)} = ${printSetter(field.type)})',
+        ];
+      })
+      .semicolons
+      .andDoubleSpaced;
 
   return SelectionSetPrinters(
     parentClass: '${u.bgPrefix}.Focus<$schemaClass>',

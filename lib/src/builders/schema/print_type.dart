@@ -118,3 +118,26 @@ TypeTemplate _printNestedBuilder(d.NamedType type,
     return TypeTemplate.of(builderName);
   }
 }
+
+String printSetter(d.GraphQLType type,
+    [String value = 'value', bool nested = false]) {
+  if (type is d.NamedType &&
+      type.hasResolver &&
+      type.type is d.TypeDefinitionWithFieldSet) {
+    return [
+      value,
+      config.protectedFields,
+      if (!nested && type.type is d.InterfaceTypeDefinition) 'toBuilder()',
+    ].join('.');
+  }
+  if (type is d.ListType) {
+    final inner = printSetter(type.type, 'i', true);
+    return [
+      value,
+      if (inner != 'i') 'map((i) => ${inner})',
+      'toBuiltList()',
+      'toBuilder()',
+    ].join('.');
+  }
+  return value;
+}

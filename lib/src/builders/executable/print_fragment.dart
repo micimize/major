@@ -59,13 +59,13 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   return format('''
     $fieldMixinsTemplate
 
-    abstract class ${path.className} implements ${builtImplements} {
+    mixin ${path.className} implements ${builtImplements} {
       ${builtMixinFactories(path.className, concreteClassName, parentClass, schemaClass)}
 
       ${ss.attributes}
     }
 
-    abstract class ${path.className}Builder implements ${builderImplements} {
+    mixin ${path.className}Builder implements ${builderImplements} {
       ${ss.builderAttributes}
     }
 
