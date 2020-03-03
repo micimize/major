@@ -21,6 +21,16 @@ String printInterface(
           ])
       .semicolons;
 
+  final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
+    (objectClass) => [
+      '''
+        if (selectionSet is $selectionSetOf($objectClass)){
+          return ${objectClass}Builder();
+        }
+        '''
+    ],
+  );
+
   /*
   final BUILDER_VARIABLES = fieldsTemplate
       .map((field) => [
@@ -30,15 +40,6 @@ String printInterface(
           ])
       .semicolons;
 
-  final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
-    (objectClass) => [
-      '''
-        if (value is $objectClass){
-          return $objectClass.of(value);
-        }
-        '''
-    ],
-  );
 
   final ARGUMENTS = fieldsTemplate
       .map((field) => [
@@ -60,7 +61,20 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
 
       $CLASS_NAME rebuild(void Function(${CLASS_NAME}Builder) updates);
       ${CLASS_NAME}Builder toBuilder();
+
+      static ${CLASS_NAME}Builder builderFor(${selectionSetOf(CLASS_NAME)} selectionSet){
+
+        $factories
+
+        throw ArgumentError('No builder for \${selectionSet.runtimeType} \$selectionSet. This should be impossible.');
+      }
     }
+
+    /// Add the missing build interface
+    extension ${CLASS_NAME}BuilderExt on CharacterBuilder {
+      Character build() => null;
+    }
+
 
     ''');
 

@@ -25,7 +25,9 @@ FutureOr<void> buildSchema(BuildStep buildStep) async {
   return buildStep.writeAsString(
       targetAsset,
       //_dartfmt.format(
-      printDirectives(doc) + '\n' + printSchema(GraphQLSchema.fromNode(doc.ast))
+      printDirectives(doc, importBg: true) +
+          '\n' +
+          printSchema(GraphQLSchema.fromNode(doc.ast))
       //),
       );
 }

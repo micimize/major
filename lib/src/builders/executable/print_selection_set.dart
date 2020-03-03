@@ -125,6 +125,7 @@ String printSelectionSetClass({
       ss.parentClass,
       schemaType,
       selectionSet.fields + (additionalFields ?? []),
+      path,
     )}
 
       ${ss.attributes}
@@ -165,10 +166,14 @@ String builtFactories(
   String focusClass,
   String schemaClass,
   List<Field> fields,
+  u.PathFocus path,
 ) {
   final mappers = u.ListPrinter(items: fields).map((field) {
+    final type = printBuilderType(field.type, path: path + field.alias);
+
     return [
-      '${u.dartName(field.alias)}: objectType.${u.dartName(field.name)}',
+      '${u.dartName(field.alias)}:',
+      type.cast('objectType.${u.dartName(field.name)}')
       //printSetter(field.type, field.alias),
     ];
   }).copyWith(divider: ',\n');
@@ -199,44 +204,19 @@ String toObjectBuilder(
   List<Field> fields,
 ) {
   final schemaClass = u.className(schemaType.name);
-  final getBuilder = '${schemaClass}Builder' +
+  final getBuilder = '${schemaClass}' +
       (schemaType is s.InterfaceTypeDefinition
-          ? 'forObjectTypeOf(this)'
-          : '()');
+          ? '.builderFor(this)'
+          : 'Builder()');
   final setters = u.ListPrinter(items: fields).map((field) {
     return [
       '..${u.dartName(field.name)} =',
-      printSetter(field.type, field.alias),
+      printObjTypeSetter(field.type, field.alias),
     ];
   }).copyWith(divider: '\n');
   return '''
     @override
     ${schemaClass}Builder toObjectBuilder() => ${getBuilder}
-      ${setters};
-    ''';
-}
-
-// TODO
-/// Get the from object type builder from the schema,
-/// allowing interface builders to resolve to one of their possible concrete type builders
-String fromObjectBuilder(
-  s.TypeDefinition schemaType,
-  List<Field> fields,
-) {
-  final schemaClass = u.className(schemaType.name);
-  final getBuilder = '${schemaClass}Builder' +
-      (schemaType is s.InterfaceTypeDefinition
-          ? 'forObjectTypeOf(this)'
-          : '()');
-  final setters = u.ListPrinter(items: fields).map((field) {
-    return [
-      '..${u.dartName(field.name)} =',
-      printSetter(field.type, field.alias),
-    ];
-  }).copyWith(divider: '\n');
-  return '''
-    @override
-    ${schemaClass}Builder fromObject() => ${getBuilder}
       ${setters};
     ''';
 }

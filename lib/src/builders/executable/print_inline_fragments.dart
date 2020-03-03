@@ -50,10 +50,12 @@ String printInlineFragments({
     final _path = path + fragment.alias;
     return [
       _path.className,
-      'get on${fragment.onTypeName} =>'
-          'value is ${_path.className} ? value : null'
+      '''get on${fragment.onTypeName} {
+          final _value  = value;
+          return _value is ${_path.className} ? _value : null;
+      }'''
     ];
-  }).semicolons;
+  }).copyWith(divider: '\n\n');
 
   final fieldClassesTemplate = u.ListPrinter(
     items: sharedFields,

@@ -39,9 +39,9 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   final built = builtClass(
     concreteClassName,
     mixins: [path.className],
-    body: '''
-      ${builtFactories(concreteClassName, parentClass, schemaClass, selectionSet.fields)}
-    ''',
+    body: builtFactories(concreteClassName, parentClass, schemaClass,
+            selectionSet.fields, path)
+        .toString(),
   );
 
   final fieldsTemplate = ListPrinter(items: selectionSet.fields);
