@@ -5,11 +5,3 @@ builders:
     build_extensions: { ".graphql": [".graphql.dart"] }
     auto_apply: none
     build_to: source
-
-targets:
-  $default:
-    builders:
-      built_graphql|builder:
-        enabled: true
-        options:
-          schema: built_graphql|lib/schema.graphql

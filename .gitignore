@@ -11,9 +11,9 @@ build/
 doc/api/
 
 
-lib/graphql/*
-lib/schema.graphql.dart
-lib/schema.graphql.g.dart
+*.graphql.dart
+*.graphql.g.dart
+
 
 .history/
 .vscode/
