@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './graphql/schema.dart';
+import './graphql/schema.graphql.dart';
 
 typedef void OnSelect(Episode episode);
 

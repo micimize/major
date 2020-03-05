@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import './graphql/hero_for_episode.gql.dart';
-import './graphql/schema.dart';
+import './graphql/operations/hero_for_episode.graphql.dart' as query;
+import './graphql/schema.graphql.dart';
 import './typed_query.dart';
 
 String format(DateTime date) =>
@@ -16,7 +16,7 @@ class HeroForEpisode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HeroForEpisodeTypedQuery(
-      variables: HeroForEpisodeVariables(ep: episode),
+      variables: query.HeroForEpisodeVariables((b) => b.ep = episode),
       builder: ({loading, error, data}) {
         if (error != null) {
           return Text(error.toString());
@@ -27,7 +27,7 @@ class HeroForEpisode extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         }
-        return Text(getPrettyJSONString(data.toJson()));
+        return Text(getPrettyJSONString(data?.toJson()));
       },
     );
   }
@@ -40,22 +40,21 @@ class HeroForEpisodeTypedQuery extends StatelessWidget {
     @required this.builder,
   }) : super(key: key);
 
-  final HeroForEpisodeVariables variables;
-  final QueryChildBuilder<HeroForEpisodeQuery> builder;
+  final query.HeroForEpisodeVariables variables;
+  final QueryChildBuilder<query.HeroForEpisodeResult> builder;
 
   @override
   Widget build(BuildContext context) {
-    return TypedQuery<HeroForEpisodeQuery>(
+    return TypedQuery<query.HeroForEpisodeResult>(
       documentName: 'hero_for_episode',
-      dataFromJson:
-          wrapFromJsonMap((json) => HeroForEpisodeQuery.fromJson(json)),
+      dataFromJson: wrapFromJsonMap(query.HeroForEpisodeResult.fromJson),
       variables: variables.toJson(),
       builder: builder,
     );
   }
 }
 
-String getPrettyJSONString(jsonObject) {
-  var encoder = new JsonEncoder.withIndent("  ");
+String getPrettyJSONString(Object jsonObject) {
+  var encoder = JsonEncoder.withIndent("  ");
   return encoder.convert(jsonObject);
 }

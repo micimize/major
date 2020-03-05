@@ -54,6 +54,9 @@ String builtClass(
         $body
 
         static Serializer<$className> get serializer => ${serializerName(className)};
+        static final fromJson = _serializers.curryFromJson(serializer);
+        static final _toJson =  _serializers.curryToJson(serializer);
+        Map<String, Object> toJson() => _toJson(this);
       ''',
     );
 
@@ -124,11 +127,12 @@ class ClassNameManager {
     final defaultName = _className(path);
     final _usedNames = usedNames;
     if (!_usedNames.contains(defaultName)) {
+      _nameRegistry[path] = defaultName;
       return defaultName;
     }
     var collision = 2;
     String newName() => _className([defaultName, collision.toString()]);
-    while (!_usedNames.contains(newName())) {
+    while (_usedNames.contains(newName())) {
       collision += 1;
     }
     _nameRegistry[path] = newName();
@@ -279,6 +283,23 @@ AssetId dartTargetOf(AssetId assetId) => assetId.changeExtension(
       extensions.dartTarget,
     );
 
+String modelsFrom(AssetId assetId) {
+  var segments = assetId.pathSegments;
+  var last = segments.removeLast().split('.').first;
+  segments.add(last);
+
+  return dartName(segments.join('/')) + 'Models';
+}
+
+String moduleSerializers(String serializersUniqueName) => '''
+
+  @SerializersFor(${serializersUniqueName})
+  final Serializers serializers = _\$serializers;
+
+
+  final _serializers = ${bgPrefix}.ConvenienceSerializers(serializers);
+''';
+
 String printImport(AssetId asset, [String alias]) => [
       'import',
       "'${dartTargetOf(asset).uri}'",
@@ -302,6 +323,7 @@ String printDirectives(GraphQLDocumentAsset asset,
     import 'package:built_collection/built_collection.dart';
     import 'package:built_value/built_value.dart';
     import 'package:built_value/serializer.dart';
+    import 'package:built_value/standard_json_plugin.dart';
 
     ${additional}
     ${asset.imports.map(printImport).join('\n')}

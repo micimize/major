@@ -1,3 +1,7 @@
+import 'package:meta/meta.dart';
+import 'package:built_value/serializer.dart';
+import 'package:built_value/standard_json_plugin.dart';
+
 //import 'package:meta/meta.dart';
 
 /// We use SelectionSetFocus to subvert dart's type system to better suite the graphql structurally-oriented model
@@ -18,3 +22,24 @@ abstract class SelectionSet<Fields, FieldsBuilder> {
 /// so as to avoid all possible field name collisions
 Fields unfocus<Fields>(Focus<Fields> focus) => focus.$fields;
 */
+
+@immutable
+class ConvenienceSerializers {
+  ConvenienceSerializers(Serializers serializers)
+      : _serializers =
+            (serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
+
+  final Serializers _serializers;
+
+  T Function(Map<String, Object> json) curryFromJson<T>(
+    Serializer<T> serializer,
+  ) =>
+      (Map<String, Object> json) =>
+          _serializers.deserializeWith(serializer, json);
+
+  Map<String, Object> Function(T instance) curryToJson<T>(
+    Serializer<T> serializer,
+  ) =>
+      (T instance) => _serializers.serializeWith(serializer, instance)
+          as Map<String, Object>;
+}

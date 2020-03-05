@@ -1,3 +1,4 @@
+import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/schema/schema.dart';
 import 'package:built_graphql/src/builders/schema/print_enums.dart';
 import 'package:built_graphql/src/builders/schema/print_interface.dart';
@@ -6,7 +7,10 @@ import 'package:built_graphql/src/builders/schema/print_input_type.dart';
 import 'package:built_graphql/src/builders/schema/print_union.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
-String printSchema(GraphQLSchema schema) {
+String printSchema(GraphQLSchema schema, String serializersUniqueName) {
+  final serializables = schema.typeMap.values
+      .map((t) => className(t.name))
+      .where((name) => !defaultPrimitives.containsKey(name));
   return format('''
   // Enums
   ${schema.enums.map(printEnum).join('\n')}
@@ -22,6 +26,11 @@ String printSchema(GraphQLSchema schema) {
 
   // Inputs
   ${schema.inputObjectTypes.map(printInputObjectType).join('\n')}
+
+
+  const ${serializersUniqueName} = <Type>[${serializables.toSet().join(',')}];
+
+  ${moduleSerializers(serializersUniqueName)}
 
   ''');
 }

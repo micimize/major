@@ -11,7 +11,7 @@ List<String> printInlineFragmentSelectionSet(
   @required List<Field> sharedFields,
   String onGetters,
 }) {
-  final path = p + 'on' + fragment.onTypeName;
+  final path = p + fragment.alias;
 
   return [
     printSelectionSetClass(

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import './client_provider.dart';
-import './graphql/schema.dart';
+import './graphql/schema.graphql.dart';
 import './select_episode.dart';
 import './episode.dart';
 
-const String GRAPHQL_ENDPOINT = 'http://localhost:8080/graphql';
+const String GRAPHQL_ENDPOINT = 'http://10.0.2.2:8080/graphql';
 
 void main() => runApp(MyApp());
 

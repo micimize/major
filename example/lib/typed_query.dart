@@ -43,7 +43,7 @@ class TypedQuery<Data> extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-          Data data = null;
+          Data data;
           try {
             if (result.data != null) {
               data = dataFromJson(result.data);

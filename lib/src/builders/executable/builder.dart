@@ -52,7 +52,15 @@ FutureOr<void> buildExecutable(BuildStep buildStep, AssetId schemaId) async {
           ) +
           '\n' +
           printExecutable(
-            ExecutableDocument(doc.ast, schema.getType, doc.importedAsts),
+            ExecutableDocument(
+              doc.ast,
+              schema.getType,
+              doc.importedAsts,
+            ),
+            modelsFrom(targetAsset),
+            doc.imports
+                .map(modelsFrom)
+                .followedBy([modelsFrom(schemaId)]).toList(),
             //PathFocus.root(),
           )
       //),
