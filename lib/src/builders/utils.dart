@@ -45,7 +45,7 @@ String builtClass(
       mixins: mixins,
       implements: [
         ...implements,
-        '$bgPrefix.ToJson',
+        '$bgPrefix.BuiltToJson',
         'Built<$className, ${className}Builder>',
       ],
       body: '''

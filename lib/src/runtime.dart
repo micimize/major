@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 
-abstract class ToJson {
+abstract class BuiltToJson {
   Map<String, Object> toJson();
 }
 
@@ -54,21 +54,26 @@ class ConvenienceSerializers {
           as Map<String, Object>;
 }
 
-class InterfaceSerializer<I extends ToJson> implements StructuredSerializer<I> {
-  const InterfaceSerializer({@required this.typeMap, @required this.wireName});
+class InterfaceSerializer<I extends BuiltToJson>
+    implements StructuredSerializer<I> {
+  const InterfaceSerializer({@required this.typeMap, String wireName})
+      : _wireName = wireName;
 
   final Map<String, Type> typeMap;
 
   @override
-  Iterable<Type> get types => typeMap.values;
+  Iterable<Type> get types => [I, ...typeMap.values];
 
-  StructuredSerializer<I> serializerForType(String typeName) {
-    final type = typeMap[typeName];
-    return (type as dynamic).serializer as StructuredSerializer<I>;
-  }
+  final String _wireName;
 
   @override
-  final String wireName;
+  String get wireName => _wireName ?? '$I';
+
+  StructuredSerializer<I> _serializerForType(
+    Serializers serializers,
+    Type type,
+  ) =>
+      serializers.serializerForType(type) as StructuredSerializer<I>;
 
   @override
   Iterable<Object> serialize(
@@ -76,7 +81,11 @@ class InterfaceSerializer<I extends ToJson> implements StructuredSerializer<I> {
     I object, {
     FullType specifiedType = FullType.unspecified,
   }) =>
-      [object.toJson()];
+      _serializerForType(serializers, object.runtimeType).serialize(
+        serializers,
+        object,
+        specifiedType: specifiedType,
+      );
 
   @override
   I deserialize(
@@ -85,9 +94,9 @@ class InterfaceSerializer<I extends ToJson> implements StructuredSerializer<I> {
     FullType specifiedType = FullType.unspecified,
   }) {
     final _serialized = serialized.toList();
-    final typeName = _getTypeName(_serialized);
-
-    return serializerForType(typeName).deserialize(
+    final type = typeMap[_getTypeName(_serialized)];
+    final concreteSerializer = _serializerForType(serializers, type);
+    return concreteSerializer.deserialize(
       serializers,
       _serialized,
       specifiedType: specifiedType,
