@@ -2,6 +2,10 @@ import 'package:meta/meta.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 
+abstract class ToJson {
+  Map<String, Object> toJson();
+}
+
 //import 'package:meta/meta.dart';
 
 /// We use SelectionSetFocus to subvert dart's type system to better suite the graphql structurally-oriented model
@@ -34,12 +38,72 @@ class ConvenienceSerializers {
   T Function(Map<String, Object> json) curryFromJson<T>(
     Serializer<T> serializer,
   ) =>
-      (Map<String, Object> json) =>
-          _serializers.deserializeWith(serializer, json);
+      (Map<String, Object> json) {
+        try {
+          return _serializers.deserializeWith(serializer, json);
+        } catch (e) {
+          print('oooh');
+          throw e;
+        }
+      };
 
   Map<String, Object> Function(T instance) curryToJson<T>(
     Serializer<T> serializer,
   ) =>
       (T instance) => _serializers.serializeWith(serializer, instance)
           as Map<String, Object>;
+}
+
+class InterfaceSerializer<I extends ToJson> implements StructuredSerializer<I> {
+  const InterfaceSerializer({@required this.typeMap, @required this.wireName});
+
+  final Map<String, Type> typeMap;
+
+  @override
+  Iterable<Type> get types => typeMap.values;
+
+  StructuredSerializer<I> serializerForType(String typeName) {
+    final type = typeMap[typeName];
+    return (type as dynamic).serializer as StructuredSerializer<I>;
+  }
+
+  @override
+  final String wireName;
+
+  @override
+  Iterable<Object> serialize(
+    Serializers serializers,
+    I object, {
+    FullType specifiedType = FullType.unspecified,
+  }) =>
+      [object.toJson()];
+
+  @override
+  I deserialize(
+    Serializers serializers,
+    Iterable<Object> serialized, {
+    FullType specifiedType = FullType.unspecified,
+  }) {
+    final _serialized = serialized.toList();
+    final typeName = _getTypeName(_serialized);
+
+    return serializerForType(typeName).deserialize(
+      serializers,
+      _serialized,
+      specifiedType: specifiedType,
+    );
+  }
+}
+
+String _getTypeName(Iterable<Object> serialized) {
+  final iterator = serialized.iterator;
+  while (iterator.moveNext()) {
+    final key = iterator.current as String;
+    iterator.moveNext();
+    final dynamic value = iterator.current;
+    if (key == '__typename') {
+      return value as String;
+    }
+  }
+  throw ArgumentError('$serialized contains no __typename');
 }

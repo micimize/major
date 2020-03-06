@@ -132,9 +132,10 @@ String printSelectionSetClass({
       selectionSet.fields + (additionalFields ?? []),
       path,
     )}
-
       ${ss.attributes}
       ${additionalBody}
+
+      static final schemaTypeName = '${u.className(selectionSet.schemaType.name)}';
     ''',
   );
 

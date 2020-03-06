@@ -38,7 +38,6 @@ String printInlineFragments({
   final fragmentsTemplate = u.ListPrinter(
     items: selectionSet.inlineFragments,
   );
-
   final inlineFragmentClasses = fragmentsTemplate
       .map((fragment) => printInlineFragmentSelectionSet(fragment, path,
           sharedFields: sharedFields,
@@ -108,7 +107,7 @@ String printInlineFragments({
 
     ${u.docstring(description, '')}
     @BuiltValue(instantiable: false)
-    abstract class $className {
+    abstract class $className implements ${u.bgPrefix}.ToJson {
 
       $className rebuild(void Function(${className}Builder) updates);
       ${className}Builder toBuilder();
@@ -126,12 +125,28 @@ String printInlineFragments({
         throw ArgumentError('No concrete inline fragment defined for \${objectType.runtimeType} \$objectType. We should have default concrete interface fallbacks... but do not.');
       }
 
+      static Serializer<$className> get serializer => ${u.serializerName(className)};
+      static final fromJson = _serializers.curryFromJson(serializer);
+
+      @override
+      Map<String, Object> toJson();
+
     }
 
     /// Add the missing build interface
     extension ${className}BuilderExt on ${className}Builder {
       Character build() => null;
     }
+
+    final ${u.serializerName(className)} = ${u.bgPrefix}.InterfaceSerializer<$className>(
+      wireName: '$schemaClass',
+      typeMap: {
+        '$className': $className,
+        ${fragmentsTemplate.map((f) => [
+            "'${f.schemaType.name}':",
+            (path + f.alias).className
+          ])}},
+    );
 
   ''');
 }

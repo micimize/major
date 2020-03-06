@@ -4,7 +4,10 @@ import './graphql/schema.graphql.dart';
 import './select_episode.dart';
 import './episode.dart';
 
-const String GRAPHQL_ENDPOINT = 'http://10.0.2.2:8080/graphql';
+const String GRAPHQL_ENDPOINT =
+/**/ 'http://e02551aa.ngrok.io/graphql'; // ngrok proxy for device */
+/* / 'http://10.0.2.2:8080/graphql'; //     android simulator      */
+/* / 'http://localhost:8080/graphql';//     ios simulator          */
 
 void main() => runApp(MyApp());
 
