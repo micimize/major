@@ -58,7 +58,7 @@ SelectionSetPrinters printSelectionSetFields(
   // we use the flattened selectionset fields (i.e. with fragment spreads merged in)
   final fieldsTemplate = u.ListPrinter(items: fields);
 
-  final GETTERS = fieldsTemplate
+  final getters = fieldsTemplate
       .map((field) {
         final type = printType(field.type, path: path + field.alias);
         return [
@@ -74,6 +74,18 @@ SelectionSetPrinters printSelectionSetFields(
       .semicolons
       .andDoubleSpaced;
 
+  /* TODO named arguments are presented as either or in 
+     https://medium.com/dartlang/moving-fast-with-dart-immutable-values-1e717925fafb
+  final arguments = fieldsTemplate.map((field) {
+    final type = printType(field.type, path: path + field.alias);
+    return [
+      (type != null && field.type.isNonNull) ? '' : '@required',
+      type.type,
+      u.dartName(field.alias),
+    ];
+  });
+  */
+
   return SelectionSetPrinters(
     parentClass: u.selectionSetOf(schemaClass),
     interfaces: BuiltSet(<String>[
@@ -82,7 +94,7 @@ SelectionSetPrinters printSelectionSetFields(
       ...selectionSet.fragmentSpreads.map((s) => u.className(s.alias)),
     ]),
     attributes: '''
-      $GETTERS
+      $getters
 
       ${toObjectBuilder(selectionSet.schemaType, fields)}
     ''',
@@ -132,6 +144,7 @@ String printSelectionSetClass({
       selectionSet.fields + (additionalFields ?? []),
       path,
     )}
+
       ${ss.attributes}
       ${additionalBody}
 

@@ -1,22 +1,30 @@
-A library for Dart developers.
+# `built_graphql`
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+`built_graphql` uses the dart `build` system and `gql` to generate `built_value` classes, currently primarily for use in client side applications.
 
 ## Usage
 
-A simple usage example:
+### `build.yaml`:
 
-```dart
-import 'package:built_graphql/built_graphql.dart';
-
-main() {
-  var awesome = new Awesome();
-}
+```yaml
+targets:
+  $default:
+    builders:
+      built_graphql|builder:
+        enabled: true
+        options:
+          schema: built_graphql_example|lib/graphql/schema.graphql
 ```
 
-## Features and bugs
+### `pubspec.yaml`:
 
-Please file feature requests and bugs at the [issue tracker][tracker].
+```yaml
+dependencies:
+  built_graphql: # TODO publish
+  built_value_generator: ^7.0.9 #TODO depends on my PR
+  built_collection: ^4.3.2
+  built_value: ^7.0.9
 
-[tracker]: http://example.com/issues/replaceme
+dev_dependencies:
+  build_runner: ^1.7.4
+```

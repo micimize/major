@@ -1,6 +1,7 @@
 /// Simplifies operation selection set structures into more easily/logically traversable forms.
 ///
 /// GraphQL Selection Sets can get fairly complicated, and resolve into structures that don't coorespond to the declaration graph.
+/// 
 /// For example, subfields are merged across same-named fields:
 /// ```graphql
 /// fragment withOrbitals on PlanetsConnection {

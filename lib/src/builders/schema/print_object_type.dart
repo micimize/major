@@ -28,14 +28,17 @@ String printObjectType(ObjectTypeDefinition objectType) {
           ])
   */
 
+  final _className = className(objectType.name);
+
   final built = builtClass(
-    className(objectType.name),
+    _className,
     implements: objectType.interfaceNames.map((i) => printType(i).type),
     body: getters.toString(),
   );
 
-  return format(objectType.fields.map(printField).join('') +
-      '''
+  return format(
+      objectType.fields.map((f) => printField(_className, f)).join('') +
+          '''
 
     ${docstring(objectType.description, '')}
     ${built}

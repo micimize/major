@@ -6,7 +6,7 @@ final _ARG_MAP = 'BuiltMap<String, Object>';
 
 final _seenFields = <String>{};
 
-String _parameterizedField(FieldDefinition field) {
+String _parameterizedField(String parentClassName, FieldDefinition field) {
   final FIELD_CLASS_NAME = printType(field.type);
 
   // only generated field classes once
@@ -60,9 +60,10 @@ String _parameterizedField(FieldDefinition field) {
   ''');
 }
 
-String printField(FieldDefinition field, [FieldDefinition parentField]) {
+String printField(String className, FieldDefinition field,
+    [FieldDefinition parentField]) {
   if (field.args?.isEmpty ?? true) {
     return '';
   }
-  return _parameterizedField(field);
+  return _parameterizedField(className, field);
 }

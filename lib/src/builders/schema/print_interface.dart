@@ -52,8 +52,9 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
       $CLASS_NAME._();
       factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
   */
-  return format(interfaceType.fields.map(printField).join('') +
-      '''
+  return format(
+      interfaceType.fields.map((f) => printField(CLASS_NAME, f)).join('') +
+          '''
     ${docstring(interfaceType.description, '')}
     @BuiltValue(instantiable: false)
     abstract class $CLASS_NAME {
@@ -71,7 +72,7 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
     }
 
     /// Add the missing build interface
-    extension ${CLASS_NAME}BuilderExt on ${CLASS_NAME}Builder {
+    extension ${CLASS_NAME}BuilderWithBuild on ${CLASS_NAME}Builder {
       Character build() => null;
     }
 
