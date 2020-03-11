@@ -10,9 +10,12 @@ String printOperation(OperationDefinition operation, PathFocus root) {
   final path = root + (operation.name ?? 'Mutation');
 
   final operationType = printSelectionSetClass(
+    operation,
     path: path + 'Result',
     description: operation.schemaType.description,
-    selectionSet: operation.selectionSet.simplified,
+    selectionSet: operation.selectionSet.simplified(
+      (path + 'Result').className,
+    ),
   );
 
   return format('''

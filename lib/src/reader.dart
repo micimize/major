@@ -161,22 +161,14 @@ Set<String> _allRelativeImports(String doc) {
 // TODO for now we remove type names from the operation and treat them statically
 class StripTypenames extends TransformingVisitor {
   @override
-  FieldNode visitFieldNode(FieldNode node) {
-    if (node.selectionSet == null) {
-      return node;
-    }
-
-    return FieldNode(
-      name: node.name,
-      alias: node.alias,
-      arguments: node.arguments,
-      directives: node.directives,
-      selectionSet: SelectionSetNode(
-        selections: node.selectionSet.selections
-            .where((selection) => !(selection is FieldNode &&
-                selection.name.value == '__typename'))
-            .toList(),
-      ),
+  SelectionSetNode visitSelectionSetNode(SelectionSetNode node) {
+    return SelectionSetNode(
+      selections: node.selections
+          .where(
+            (selection) => !(selection is FieldNode &&
+                selection.name.value == '__typename'),
+          )
+          .toList(),
     );
   }
 }

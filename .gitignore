@@ -13,6 +13,7 @@ doc/api/
 
 *.graphql.dart
 *.graphql.g.dart
+*.ast.g.dart
 
 
 .history/

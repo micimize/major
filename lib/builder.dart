@@ -8,17 +8,14 @@ import './src/builders/schema/builder.dart' show buildSchema;
 import './src/builders/executable/builder.dart' show buildExecutable;
 
 BuiltGraphQLBuilder builtGraphQLBuilder(BuilderOptions options) {
-  return BuiltGraphQLBuilder(
-    schemaId: AssetId.parse(options.config['schema'] as String),
-  );
+  configure(options.config);
+  return BuiltGraphQLBuilder();
 }
 
 class BuiltGraphQLBuilder implements Builder {
-  final AssetId schemaId;
+  AssetId get schemaId => configuration.schemaId;
 
-  BuiltGraphQLBuilder({
-    @required this.schemaId,
-  });
+  BuiltGraphQLBuilder();
 
   @override
   Map<String, List<String>> get buildExtensions => extensions.forBuild;

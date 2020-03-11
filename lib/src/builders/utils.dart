@@ -2,7 +2,8 @@ import 'package:build/build.dart' show AssetId;
 import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart';
 import 'package:built_graphql/src/reader.dart';
-import 'package:built_graphql/src/schema/schema.dart' show GraphQLType;
+import 'package:built_graphql/src/schema/schema.dart'
+    show GraphQLType, GraphQLEntity;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
@@ -39,13 +40,14 @@ String builtClass(
   Iterable<String> mixins = const [],
   Iterable<String> implements = const [],
   @required String body,
+  bool serializable,
 }) =>
     _abstractClass(
       className,
       mixins: mixins,
       implements: [
         ...implements,
-        '$bgPrefix.BuiltToJson',
+        if (serializable ?? !className.startsWith('_')) '$bgPrefix.BuiltToJson',
         'Built<$className, ${className}Builder>',
       ],
       body: '''
@@ -54,12 +56,19 @@ String builtClass(
 
         $body
 
-        static Serializer<$className> get serializer => ${serializerName(className)};
-        static final fromJson = _serializers.curryFromJson(serializer);
-        static final _toJson =  _serializers.curryToJson(serializer);
-        Map<String, Object> toJson() => _toJson(this);
+        ${serializable ?? !className.startsWith('_') ? _serializers(className) : ''}
       ''',
     );
+
+String sourceDocBlock(GraphQLEntity source) =>
+    docstring('```graphql\n${source}\n```');
+
+String _serializers(String className) => '''
+  static Serializer<$className> get serializer => ${serializerName(className)};
+  static final fromJson = _serializers.curryFromJson(serializer);
+  static final _toJson =  _serializers.curryToJson(serializer);
+  Map<String, Object> toJson() => _toJson(this);
+''';
 
 String serializerName(String name) =>
     '_\$' + dartName(unhide(name)) + 'Serializer';
@@ -177,7 +186,7 @@ class PathFocus {
 
 String docstring(String description, [String trailing = '\n']) {
   if (description != null && description.trim().isNotEmpty) {
-    return '/// ' + description.trim().split('\n').join('\n///') + trailing;
+    return '/// ' + description.trim().split('\n').join('\n/// ') + trailing;
   }
   return '';
 }
@@ -280,6 +289,9 @@ bool _defaultShouldTrailDivider(List<Object> items, String inner) => false;
 String generatedPartOf(String path) =>
     p.basenameWithoutExtension(path) + extensions.generatedPart;
 
+String adjacentAstFor(String path) =>
+    p.basenameWithoutExtension(path) + extensions.generatedAstToAlias;
+
 AssetId dartTargetOf(AssetId assetId) => assetId.changeExtension(
       extensions.dartTarget,
     );
@@ -308,11 +320,17 @@ String printImport(AssetId asset, [String alias]) => [
       ';'
     ].join(' ');
 
-String printDirectives(GraphQLDocumentAsset asset,
-    {Map<AssetId, String> additionalImports = const {},
-    bool importBg = false}) {
+String printDirectives(
+  GraphQLDocumentAsset asset, {
+  Map<AssetId, String> additionalImports = const {},
+  Iterable<String> rawImports = const [],
+  Iterable<String> rawExports = const [],
+  bool importBg = false,
+}) {
   var additional = additionalImports.entries
       .map((imp) => printImport(imp.key, imp.value))
+      .followedBy(rawImports.map((e) => "import '$e';"))
+      .followedBy(rawExports.map((e) => "export '$e';"))
       .join('\n');
   if (importBg) {
     additional +=
@@ -328,6 +346,8 @@ String printDirectives(GraphQLDocumentAsset asset,
 
     ${additional}
     ${asset.imports.map(printImport).join('\n')}
+
+    export '${adjacentAstFor(asset.path)}' show document;
 
     part '${generatedPartOf(asset.path)}';
 

@@ -1,7 +1,7 @@
 /// Simplifies operation selection set structures into more easily/logically traversable forms.
 ///
 /// GraphQL Selection Sets can get fairly complicated, and resolve into structures that don't coorespond to the declaration graph.
-/// 
+///
 /// For example, subfields are merged across same-named fields:
 /// ```graphql
 /// fragment withOrbitals on PlanetsConnection {
@@ -130,7 +130,7 @@ class InlineFragment extends d.InlineFragment with SimplifiedSelection {
   final BuiltList<String> _path;
 
   @override
-  BuiltList<String> get path => _path.append('on$onTypeName');
+  BuiltList<String> get path => _path.append(alias);
 
   @override
   final Set<BuiltList<String>> fragmentPaths;
@@ -254,16 +254,20 @@ Iterable<d.Selection> _simplifySelectionFirstPass(
   BuiltList<String> path, [
   Set<BuiltList<String>> fragmentPaths,
 ]) {
+  if (selection == null) {
+    throw ArgumentError('Received null selection in $path!');
+  }
   final fps = _descendIntoFragments(fragmentPaths, selection.alias);
   if (selection is d.InlineFragment) {
     return [
       InlineFragment(
         selection,
         selection.selectionSet != null
-            ? SelectionSet([selection.selectionSet], path, fps)
+            ? SelectionSet(
+                [selection.selectionSet], path.append(selection.alias), fps)
             : null,
         path,
-        fragmentPaths,
+        fps,
       )
     ];
   }
@@ -272,16 +276,18 @@ Iterable<d.Selection> _simplifySelectionFirstPass(
       Field(
         selection,
         selection.selectionSet != null
-            ? SelectionSet([selection.selectionSet], path, fps)
+            ? SelectionSet(
+                [selection.selectionSet], path.append(selection.alias), fps)
             : null,
         path,
-        fragmentPaths,
+        fps,
       )
     ];
   }
   if (selection is d.FragmentSpread) {
     return selection.fragment.selectionSet.selections.expand((s) {
       return _simplifySelectionFirstPass(s, path, {
+        ...fragmentPaths,
         [selection.fragment.name].toBuiltList()
       });
     });
@@ -297,6 +303,6 @@ extension Append<T> on BuiltList<T> {
 }
 
 extension GetSimplified on d.SelectionSet {
-  SelectionSet get simplified =>
-      SelectionSet([this], <String>[].toBuiltList(), {});
+  SelectionSet simplified(String root) =>
+      SelectionSet([this], <String>[root].toBuiltList(), {});
 }

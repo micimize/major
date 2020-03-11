@@ -73,7 +73,7 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
 
     /// Add the missing build interface
     extension ${CLASS_NAME}BuilderWithBuild on ${CLASS_NAME}Builder {
-      Character build() => null;
+      $CLASS_NAME build() => null;
     }
 
 

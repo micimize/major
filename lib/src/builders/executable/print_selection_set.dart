@@ -60,7 +60,7 @@ SelectionSetPrinters printSelectionSetFields(
 
   final getters = fieldsTemplate
       .map((field) {
-        final type = printType(field.type, path: path + field.alias);
+        final type = printType(field.type, path: u.PathFocus.root(field.path));
         return [
           u.docstring(field.schemaType.description),
           if (field.fragmentPaths.isNotEmpty) '@override',
@@ -90,8 +90,13 @@ SelectionSetPrinters printSelectionSetFields(
     parentClass: u.selectionSetOf(schemaClass),
     interfaces: BuiltSet(<String>[
       ...(additionalInterfaces ?? []),
-      ...selectionSet.fragmentPaths.map(path.manager.className),
-      ...selectionSet.fragmentSpreads.map((s) => u.className(s.alias)),
+      ...BuiltSet(
+        selectionSet.fragmentPaths
+            .map(u.pathClassName)
+            .followedBy(selectionSet.fragmentSpreads.map(
+              (s) => u.className(s.alias),
+            )),
+      ),
     ]),
     attributes: '''
       $getters
@@ -103,7 +108,8 @@ SelectionSetPrinters printSelectionSetFields(
   );
 }
 
-String printSelectionSetClass({
+String printSelectionSetClass(
+  ExecutableGraphQLEntity source, {
   @required u.PathFocus path,
   @required String description,
   @required SelectionSet selectionSet,
@@ -113,6 +119,7 @@ String printSelectionSetClass({
 }) {
   if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
     return printInlineFragments(
+      source,
       path: path,
       description: description,
       selectionSet: selectionSet,
@@ -146,7 +153,7 @@ String printSelectionSetClass({
     )}
 
       ${ss.attributes}
-      ${additionalBody}
+      ${additionalBody ?? ''}
 
       static final schemaTypeName = '${u.className(selectionSet.schemaType.name)}';
     ''',
@@ -175,6 +182,7 @@ String printFieldSelectionSet(Field field, u.PathFocus path) {
     return '';
   }
   return printSelectionSetClass(
+    field,
     path: path + field.alias,
     description: field.schemaType.description,
     selectionSet: field.selectionSet,
@@ -189,7 +197,12 @@ String builtFactories(
   u.PathFocus path,
 ) {
   final mappers = u.ListPrinter(items: fields).map((field) {
-    final type = printBuilderType(field.type, path: path + field.alias);
+    final type = printBuilderType(field.type,
+        // TODO we've got duplicate pathing abstractions, but the passed-down PathFocus
+        // collects classnames for use in the serializer definitions.
+        // It's janky as hell, and should be fixed
+        path: u.PathFocus.root(field.path) // path + field.alias,
+        );
 
     return [
       '${u.dartName(field.alias)}:',

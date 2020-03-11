@@ -1,12 +1,13 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart' as config;
+import 'package:built_graphql/src/builders/executable/print_fragment.dart';
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
 import 'package:meta/meta.dart';
 import 'package:built_graphql/src/executable/selection_simplifier.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart' as u;
 
-List<String> printInlineFragmentSelectionSet(
+List<String> printInlineFragmentSelectionSetMixin(
   InlineFragment fragment,
   u.PathFocus p, {
   @required List<Field> sharedFields,
@@ -15,11 +16,11 @@ List<String> printInlineFragmentSelectionSet(
   final path = p + fragment.alias;
 
   return [
-    printSelectionSetClass(
+    // will tail recurse into printInlineFragmentMixin if nested inline fragments found
+    printFragmentMixin(
       fragment,
-      path: path,
-      description: fragment.schemaType.description,
-      selectionSet: fragment.selectionSet,
+      fragment.selectionSet,
+      path,
       additionalFields: sharedFields,
       additionalInterfaces: [p.className],
       additionalBody: onGetters ?? '',
@@ -27,10 +28,9 @@ List<String> printInlineFragmentSelectionSet(
   ];
 }
 
-String printInlineFragments(
+String printInlineFragmentMixin(
   ExecutableGraphQLEntity source, {
   @required u.PathFocus path,
-  @required String description,
   @required SelectionSet selectionSet,
 }) {
   final schemaClass = u.className(selectionSet.schemaType.name);
@@ -42,7 +42,7 @@ String printInlineFragments(
     items: selectionSet.inlineFragments,
   );
   final inlineFragmentClasses = fragmentsTemplate
-      .map((fragment) => printInlineFragmentSelectionSet(
+      .map((fragment) => printInlineFragmentSelectionSetMixin(
             fragment,
             path,
             sharedFields: sharedFields,
@@ -51,7 +51,7 @@ String printInlineFragments(
                       '@override',
                       (path + f.alias).className,
                       'get',
-                      'on${f.onTypeName}',
+                      f.alias,
                       '=>',
                       fragment == f ? 'this' : 'null',
                     ])
@@ -77,21 +77,13 @@ String printInlineFragments(
       .map((fragment) => ['on${fragment.onTypeName}?.toObjectBuilder()'])
       .copyWith(divider: ' ?? ');
 
-  final fragmentFactories = fragmentsTemplate.map((fragment) {
-    final _path = path + fragment.alias;
-    return [
-      '''
-      if (objectType is ${fragment.onTypeName}){
-        return ${_path.className}.of(objectType);
-      }
-      '''
-    ];
-  }).copyWith(divider: '\n\n');
-
   final fieldClassesTemplate = u.ListPrinter(
     items: sharedFields,
     divider: '\n',
-  ).map((field) => [printFieldSelectionSet(field, path)]);
+  ).map((field) => [
+        if (field.selectionSet != null)
+          printFragmentMixin(field, field.selectionSet, path + field.alias)
+      ]);
 
   final fieldsTemplate = u.ListPrinter(items: selectionSet.fields);
 
@@ -106,30 +98,34 @@ String printInlineFragments(
     ];
   }).semicolons;
 
+  // inline fragments are selectionsets of interfaces
+  //final parentClass = u.selectionSetOf(schemaClass);
+
   final implementations = BuiltSet<String>(<String>[
-    '${u.bgPrefix}.BuiltToJson',
-    //u.selectionSetOf(schemaClass),
+    // '${u.bgPrefix}.BuiltToJson',
+    //parentClass,
     ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
   ]).join(', ');
+
+  final fragmentFactories = fragmentsTemplate.map((fragment) {
+    final _path = path + fragment.alias;
+    return [
+      '''
+      if (objectType is ${fragment.onTypeName}){
+        return ${_path.className}.of(objectType);
+      }
+      '''
+    ];
+  }).copyWith(divider: '\n\n');
 
   return u.format('''
     ${inlineFragmentClasses}
 
     ${fieldClassesTemplate}
 
-    ${u.docstring(description, '')}
+    /// Inline Fragment Base Mixin
     ${u.sourceDocBlock(source)}
-    @BuiltValue(instantiable: false)
-    abstract class $className implements ${implementations} {
-
-      $className rebuild(void Function(${className}Builder) updates);
-      ${className}Builder toBuilder();
-
-      $sharedGetters
-
-      $fragmentAliases
-
-      ${schemaClass}Builder toObjectBuilder() => ${objBuilders};
+    mixin $className ${(implementations.isNotEmpty) ? 'implements' : ''} ${implementations} {
 
       static $className of($schemaClass objectType){
         $fragmentFactories
@@ -140,38 +136,13 @@ String printInlineFragments(
         );
       }
 
-      @BuiltValueSerializer(custom: true)
-      static Serializer<$className> get serializer => ${u.bgPrefix}.InterfaceSerializer<$className>(
-        wireName: '$schemaClass',
-        typeMap: {
-          ${fragmentsTemplate.map((f) => [
-            "'${f.schemaType.name}':",
-            (path + f.alias).className
-          ])}},
-      );
+      $sharedGetters
 
-      static final fromJson = _serializers.curryFromJson(serializer);
+      $fragmentAliases
 
-      @override
-      Map<String, Object> toJson();
+      ${schemaClass}Builder toObjectBuilder();
 
     }
 
-    /// Add the missing build interface
-    extension ${className}BuilderExt on ${className}Builder {
-      Character build() => null;
-    }
   ''');
-}
-
-String printFieldSelectionSet(Field field, u.PathFocus path) {
-  if (field.selectionSet == null) {
-    return '';
-  }
-  return printSelectionSetClass(
-    field,
-    path: path + field.alias,
-    description: field.schemaType.description,
-    selectionSet: field.selectionSet,
-  );
 }

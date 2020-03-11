@@ -4,22 +4,6 @@ import 'package:built_graphql/src/builders/utils.dart';
 
 import '../../schema/definitions/definitions.dart' as d;
 
-final defaultPrimitives = {
-  'String': 'String',
-  'Int': 'int',
-  'Float': 'double',
-  'Boolean': 'bool',
-  'ID': 'String',
-  'int': 'int',
-  'bool': 'bool',
-  'double': 'double',
-  'num': 'num',
-  'dynamic': 'dynamic',
-  'Object': 'Object',
-  'DateTime': 'DateTime',
-  'Date': 'DateTime'
-};
-
 String identity(String i) => i;
 
 String Function(String value) _of(String type) => (value) => '$type.of($value)';
@@ -36,8 +20,8 @@ class TypeTemplate {
 }
 
 TypeTemplate _printPrimitive(d.NamedType type) {
-  if (defaultPrimitives.containsKey(type.name)) {
-    return TypeTemplate(defaultPrimitives[type.name]);
+  if (typeConfig.scalars.containsKey(type.name)) {
+    return TypeTemplate(typeConfig.scalars[type.name]);
   }
   return null;
 }
@@ -65,7 +49,11 @@ TypeTemplate _printList(
   );
 }
 
-TypeTemplate printType(d.GraphQLType type, {String prefix, PathFocus path}) {
+TypeTemplate printType(
+  d.GraphQLType type, {
+  String prefix,
+  PathFocus path,
+}) {
   prefix ??= '';
   if (type is d.NamedType) {
     return _printPrimitive(type) ??
@@ -146,3 +134,5 @@ String printObjTypeSetter(d.GraphQLType type,
   }
   return value;
 }
+
+config.TypeConfig get typeConfig => config.configuration.forTypes;

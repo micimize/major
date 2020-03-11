@@ -33,7 +33,7 @@ class GraphQLSchema extends TypeSystemDefinition {
 
   /// Map of name => [TypeDefinition]
   /// TODO saturating types with awareness before they make it to the end user is important
-  final Map<String, TypeDefinition> typeMap;
+  final BuiltMap<String, TypeDefinition> typeMap;
 
   /// Adds a type resolver to top-level
   TypeDefinition _withAwareness(TypeDefinition definition) =>
@@ -142,7 +142,7 @@ GraphQLSchema buildSchema(
     typeMap: {
       ...typeMap,
       ..._operationTypeMap(typeMap, schemaDef),
-    },
+    }.build(),
     directives: directives,
   );
 }
@@ -152,11 +152,13 @@ Map<String, ObjectTypeDefinition> _operationTypeMap(
   SchemaDefinitionNode schemaDef,
 ) {
   final operationTypeNames = _getOperationTypeNames(schemaDef);
-  return operationTypeNames.map(
-    (type, name) => MapEntry(
-      type.name,
-      typeMap[name] as ObjectTypeDefinition,
-    ),
+  return Map.fromEntries(
+    operationTypeNames.entries
+        .map((e) => MapEntry(
+              e.key.name,
+              typeMap[e.value] as ObjectTypeDefinition,
+            ))
+        .where((e) => e.value != null),
   );
 }
 

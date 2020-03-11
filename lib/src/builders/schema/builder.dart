@@ -21,13 +21,23 @@ FutureOr<void> buildSchema(BuildStep buildStep) async {
   final targetAsset = buildStep.inputId.changeExtension(
     extensions.dartTarget,
   );
+  final dartDirectives = printDirectives(
+    doc,
+    importBg: true,
+    rawImports: configuration.schemaImports,
+    rawExports: configuration.schemaExports,
+  );
 
+  final schema =
+      printSchema(GraphQLSchema.fromNode(doc.ast), modelsFrom(targetAsset));
   return buildStep.writeAsString(
-      targetAsset,
-      //_dartfmt.format(
-      printDirectives(doc, importBg: true) +
-          '\n' +
-          printSchema(GraphQLSchema.fromNode(doc.ast), modelsFrom(targetAsset))
-      //),
-      );
+    targetAsset,
+    format(
+      '''
+      $dartDirectives
+
+      $schema
+      ''',
+    ),
+  );
 }

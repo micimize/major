@@ -1,37 +1,62 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_graphql/src/builders/config.dart' as config;
+import 'package:built_graphql/src/builders/executable/print_inline_in_fragment.dart';
 import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 import 'package:built_graphql/src/executable/selection_simplifier.dart';
 
-String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
+String printFragmentMixin(
+  ExecutableGraphQLEntity source,
+  SelectionSet selectionSet,
+  PathFocus path, {
+  List<Field> additionalFields = const [],
+  Iterable<String> additionalInterfaces,
+  String additionalBody,
+}) {
+  if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
+    return printInlineFragmentMixin(
+      source,
+      selectionSet: selectionSet,
+      path: path,
+    );
+  }
+
   final fieldMixinsTemplate = ListPrinter(
     items: selectionSet.fields,
     divider: '\n',
-  ).map((field) => [
-        if (field.selectionSet != null)
-          printFragmentMixin(field.selectionSet, path + field.name)
-      ]);
+  ).map(
+    (field) => [
+      if (field.selectionSet != null)
+        printFragmentMixin(
+          field,
+          field.selectionSet,
+          path + field.alias,
+        )
+    ],
+  );
 
-  final ss = printSelectionSetFields(selectionSet, path);
+  final ss = printSelectionSetFields(
+    selectionSet,
+    path,
+    additionalFields: additionalFields,
+    additionalInterfaces: additionalInterfaces,
+  );
 
-  final builtImplements = [
+  // TODO pretty major flaw in the serializer collector right now
+  // is that it includes all names referenced by the file's path manager
+  final fragmentModelImplementations = BuiltSet<String>(selectionSet
+      .fragmentPaths
+      .map<String>(pathClassName)
+      .followedBy(selectionSet.fragmentSpreads.map((e) => className(e.name))));
+
+  final builtImplements = BuiltSet<String>(<String>[
     ss.parentClass,
-    ...selectionSet.fragmentSpreads.map(
-      (spread) => className(spread.name),
-    ),
-  ].join(', ');
-
-  final builderImplements = [
-    ss.builderParentClass ?? 'Object',
-    ...selectionSet.fragmentSpreads.map(
-      (spread) => className(spread.name) + 'Builder',
-    ),
-  ].join(', ');
+    ...ss.interfaces,
+    ...fragmentModelImplementations,
+  ]).join(', ');
 
   final schemaClass = className(selectionSet.schemaType.name);
-  final schemaBuilderFieldClass =
-      config.nestedBuilders ? schemaClass + 'Builder' : schemaClass;
 
   final parentClass = selectionSetOf(schemaClass);
   final concreteClassName = '_${path.className}SelectionSet';
@@ -39,9 +64,17 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   final built = builtClass(
     concreteClassName,
     mixins: [path.className],
-    body: builtFactories(concreteClassName, parentClass, schemaClass,
-            selectionSet.fields, path)
-        .toString(),
+    body: '''
+    ${builtFactories(
+      concreteClassName,
+      parentClass,
+      schemaClass,
+      selectionSet.fields,
+      path,
+    )}
+    
+    ${additionalBody ?? ''}
+    ''',
   );
 
   final fieldsTemplate = ListPrinter(items: selectionSet.fields);
@@ -63,6 +96,7 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
   return format('''
     $fieldMixinsTemplate
 
+    ${sourceDocBlock(source)}
     mixin ${path.className} implements ${builtImplements} {
       ${builtMixinFactories(path.className, concreteClassName, parentClass, schemaClass)}
 
@@ -77,7 +111,8 @@ String printFragmentMixin(SelectionSet selectionSet, PathFocus path) {
 
 String printFragment(FragmentDefinition fragment, PathFocus root) {
   return printFragmentMixin(
-    fragment.selectionSet.simplified,
+    fragment,
+    fragment.selectionSet.simplified(fragment.name),
     root + fragment.name,
   );
 }
@@ -89,6 +124,7 @@ String builtMixinFactories(
   String schemaClass,
 ) =>
     '''
-      // static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);
       static ${className} of(${schemaClass} objectType) => ${selectionSetClassName}.of(objectType);
     ''';
+
+// static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);

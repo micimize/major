@@ -10,7 +10,7 @@ import 'package:built_graphql/src/builders/utils.dart';
 String printSchema(GraphQLSchema schema, String serializersUniqueName) {
   final serializables = schema.typeMap.values
       .map((t) => className(t.name))
-      .where((name) => !defaultPrimitives.containsKey(name));
+      .where((name) => !typeConfig.scalars.keys.map(className).contains(name));
   return format('''
   // Enums
   ${schema.enums.map(printEnum).join('\n')}

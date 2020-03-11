@@ -131,7 +131,15 @@ class FragmentSpread extends Selection {
   @override
   String get alias => name;
 
-  FragmentDefinition get fragment => getType.fromFragments(name);
+  FragmentDefinition get fragment {
+    final frag = getType.fromFragments(name);
+    if (frag == null) {
+      throw StateError(
+        'Could not resolve fragment $name referenced by fragment spread ${this}',
+      );
+    }
+    return frag;
+  }
 
   List<Directive> get directives =>
       astNode.directives.map(Directive.fromNode).toList();
