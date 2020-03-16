@@ -14,6 +14,10 @@ String printFragmentMixin(
   Iterable<String> additionalInterfaces,
   String additionalBody,
 }) {
+  if (!shouldGenerate(selectionSet.schemaType.name)) {
+    return '';
+  }
+
   if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
     return printInlineFragmentMixin(
       source,
@@ -54,16 +58,19 @@ String printFragmentMixin(
     ss.parentClass,
     ...ss.interfaces,
     ...fragmentModelImplementations,
+    ...config.configuration.mixinsWhen(
+        (selectionSet.fields + additionalFields).map((e) => e.name)),
   ]).join(', ');
 
   final schemaClass = className(selectionSet.schemaType.name);
 
   final parentClass = selectionSetOf(schemaClass);
-  final concreteClassName = '_${path.className}SelectionSet';
+  final concreteClassName = '${path.className}SelectionSet';
 
   final built = builtClass(
     concreteClassName,
     mixins: [path.className],
+    fieldNames: ((selectionSet.fields + additionalFields).map((e) => e.name)),
     body: '''
     ${builtFactories(
       concreteClassName,

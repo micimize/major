@@ -41,6 +41,7 @@ String builtClass(
   Iterable<String> implements = const [],
   @required String body,
   bool serializable,
+  @required Iterable<String> fieldNames,
 }) =>
     _abstractClass(
       className,
@@ -49,10 +50,11 @@ String builtClass(
         ...implements,
         if (serializable ?? !className.startsWith('_')) '$bgPrefix.BuiltToJson',
         'Built<$className, ${className}Builder>',
+        ...configuration.mixinsWhen(fieldNames),
       ],
       body: '''
-        $className._();
         factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};
+        $className._();
 
         $body
 
@@ -313,12 +315,21 @@ String moduleSerializers(String serializersUniqueName) => '''
   final _serializers = ${bgPrefix}.ConvenienceSerializers(serializers);
 ''';
 
-String printImport(AssetId asset, [String alias]) => [
-      'import',
+String printDirective(AssetId asset,
+        {String alias, String directive = 'import', List<String> hide}) =>
+    [
+      directive,
       "'${dartTargetOf(asset).uri}'",
       if (alias != null) 'as ${alias}',
+      if (hide != null && hide.isNotEmpty) 'hide ${hide.join(', ')}',
       ';'
     ].join(' ');
+
+final reExport = true;
+
+String Function(AssetId) printGraphQlDirective(String directive) =>
+    (AssetId asset) => printDirective(asset,
+        directive: directive, hide: ['serializers', 'document']);
 
 String printDirectives(
   GraphQLDocumentAsset asset, {
@@ -328,7 +339,7 @@ String printDirectives(
   bool importBg = false,
 }) {
   var additional = additionalImports.entries
-      .map((imp) => printImport(imp.key, imp.value))
+      .map((imp) => printDirective(imp.key, alias: imp.value))
       .followedBy(rawImports.map((e) => "import '$e';"))
       .followedBy(rawExports.map((e) => "export '$e';"))
       .join('\n');
@@ -345,7 +356,9 @@ String printDirectives(
     import 'package:built_value/standard_json_plugin.dart';
 
     ${additional}
-    ${asset.imports.map(printImport).join('\n')}
+    ${asset.imports.map(printGraphQlDirective('import')).join('\n')}
+
+    ${asset.imports.map(printGraphQlDirective('export')).join('\n')}
 
     export '${adjacentAstFor(asset.path)}' show document;
 
@@ -356,3 +369,21 @@ String printDirectives(
 
 String selectionSetOf(String schemaClass) =>
     '${bgPrefix}.SelectionSet<$schemaClass, ${schemaClass}Builder>';
+
+final ignoreLints = '// ignore_for_file: ' +
+    [
+      'always_put_control_body_on_new_line',
+      'always_specify_types',
+      'annotate_overrides',
+      'avoid_annotating_with_dynamic',
+      'avoid_as',
+      'avoid_catches_without_on_clauses',
+      'avoid_returning_this',
+      'lines_longer_than_80_chars',
+      'omit_local_variable_types',
+      'prefer_expression_function_bodies',
+      'sort_constructors_first',
+      'test_types_in_equals',
+      'unnecessary_const',
+      'unnecessary_new'
+    ].join(',');

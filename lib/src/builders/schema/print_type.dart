@@ -59,7 +59,11 @@ TypeTemplate printType(
     return _printPrimitive(type) ??
         _printEnum(type) ??
         TypeTemplate.of(
-          path?.className ?? prefix + className(type.name),
+          resolveClassName(
+            type.name,
+            path: path,
+            prefix: prefix,
+          ),
         );
   }
   if (type is d.ListType) {
@@ -94,7 +98,7 @@ TypeTemplate printBuilderType(d.GraphQLType type,
 
 TypeTemplate _printNestedBuilder(d.NamedType type,
     {String prefix, PathFocus path}) {
-  var builderName = (path?.className ?? prefix + className(type.name));
+  var builderName = resolveClassName(type.name, path: path, prefix: prefix);
   if (config.nestedBuilders) {
     builderName += 'Builder';
 
@@ -136,3 +140,25 @@ String printObjTypeSetter(d.GraphQLType type,
 }
 
 config.TypeConfig get typeConfig => config.configuration.forTypes;
+
+String resolveClassName(String typeName, {PathFocus path, String prefix}) {
+  prefix ??= '';
+  final typeClassName = className(_replaceTypes(typeName));
+
+  if (typeConfig.irreducibleTypes.containsKey(typeClassName)) {
+    return prefix + typeClassName;
+  }
+
+  return path?.className ?? prefix + typeClassName;
+}
+
+String _replaceTypes(String typeName) {
+  final replacement = typeConfig.replaceTypes[typeName] ?? typeName;
+  if (replacement == typeName) {
+    return typeName;
+  }
+  return _replaceTypes(replacement);
+}
+
+bool shouldGenerate(String typeName) =>
+    typeConfig.irreducibleTypes[typeName]?.generate ?? true;

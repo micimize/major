@@ -110,6 +110,7 @@ String printInlineFragments(
     '${u.bgPrefix}.BuiltToJson',
     //u.selectionSetOf(schemaClass),
     ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
+    ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
   ]).join(', ');
 
   return u.format('''

@@ -41,6 +41,29 @@ class _Extensions {
 const nestedBuilders = false;
 
 @immutable
+class MixinConfig {
+  MixinConfig({
+    @required this.name,
+    @required this.whenFields,
+  });
+  final String name;
+
+  final Set<String> whenFields;
+}
+
+@immutable
+class IrreducibleConfig {
+  IrreducibleConfig({
+    @required this.name,
+    bool generate,
+  }) : generate = generate ?? true;
+
+  final String name;
+
+  final bool generate;
+}
+
+@immutable
 class TypeConfig {
   TypeConfig({
     Map<String, String> scalars,
@@ -55,7 +78,7 @@ class TypeConfig {
 
   final Map<String, String> replaceTypes;
 
-  final List<String> irreducibleTypes;
+  final Map<String, IrreducibleConfig> irreducibleTypes;
 
   static final defaultPrimitives = {
     'String': 'String',
@@ -81,6 +104,7 @@ class Configuration {
     this.schemaExports,
     this.schemaImports,
     this.forTypes,
+    this.forMixins,
   });
 
   final AssetId schemaId;
@@ -88,6 +112,15 @@ class Configuration {
   final List<String> schemaExports;
 
   final TypeConfig forTypes;
+
+  final List<MixinConfig> forMixins;
+
+  Iterable<String> mixinsWhen(Iterable<String> fieldNames) {
+    final fields = fieldNames.toSet();
+    return forMixins
+        .where((m) => fields.containsAll(m.whenFields))
+        .map((m) => m.name);
+  }
 
   factory Configuration.fromMap(Map<String, dynamic> config) {
     final schemaConf = config['schema'] is String
@@ -97,6 +130,8 @@ class Configuration {
     final schemaId = AssetId.parse(schemaConf['path'] as String);
     final imports = _fromYamlList<String>(schemaConf['imports'] ?? YamlList());
     final exports = _fromYamlList<String>(schemaConf['exports'] ?? YamlList());
+
+    final mixins = _fromYamlList<Map>(config['mixins'] ?? YamlList());
     return Configuration(
       schemaId: schemaId,
       schemaImports: imports,
@@ -105,9 +140,30 @@ class Configuration {
         scalars: _fromYamlMap<String, String>(config['scalars'] ?? YamlMap()),
         replaceTypes:
             _fromYamlMap<String, String>(config['replaceTypes'] ?? YamlMap()),
-        irreducibleTypes:
-            _fromYamlList<String>(config['irreducibleTypes'] ?? YamlList()),
+        irreducibleTypes: Map.fromEntries(
+          _fromYamlList<YamlMap>(config['irreducibleTypes'] ?? YamlList()).map(
+            (m) => MapEntry(
+              m['name'] as String,
+              IrreducibleConfig(
+                name: m['name'] as String,
+                generate: m['generate'] as bool,
+              ),
+            ),
+          ),
+        ),
       ),
+      forMixins: mixins
+          .map(
+            (mixinConfig) => MixinConfig(
+              name: mixinConfig['name'] as String,
+              whenFields: Set.from(
+                _fromYamlList<String>(
+                  (mixinConfig['when'] as Map)['fields'],
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 }

@@ -21,5 +21,6 @@ String printExecutable(
 
   ${moduleSerializers(serializersUniqueName)}
 
+  ${ignoreLints}
   ''');
 }

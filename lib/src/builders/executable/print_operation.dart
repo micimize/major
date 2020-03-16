@@ -41,5 +41,9 @@ String printVariables(
           ])
       .semicolons;
 
-  return builtClass(path.className, body: getters.toString());
+  return builtClass(
+    path.className,
+    body: getters.toString(),
+    fieldNames: variables.map((e) => e.name),
+  );
 }

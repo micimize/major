@@ -117,6 +117,11 @@ String printSelectionSetClass(
   List<String> additionalInterfaces,
   String additionalBody = '',
 }) {
+  // swallow selectionset models of irreducibleTypes
+  if (typeConfig.irreducibleTypes.containsKey(selectionSet.schemaType.name)) {
+    return '';
+  }
+
   if (selectionSet.inlineFragments?.isNotEmpty ?? false) {
     return printInlineFragments(
       source,
@@ -142,6 +147,7 @@ String printSelectionSetClass(
 
   final built = u.builtClass(
     path.className,
+    fieldNames: selectionSet.fields.map((e) => e.name),
     implements: ss.allInterfaces,
     body: '''
       ${builtFactories(
@@ -171,6 +177,7 @@ String printSelectionSetClass(
     ${fieldClassesTemplate}
 
     ${u.docstring(description, '')}
+    ${u.sourceDocBlock(source)}
     ${built}
 
   ''');

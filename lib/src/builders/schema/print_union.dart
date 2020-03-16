@@ -3,6 +3,10 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
 String printUnion(UnionTypeDefinition unionType) {
+  if (!shouldGenerate(unionType.name)) {
+    return '';
+  }
+
   final optionsTemplate = ListPrinter(items: unionType.typeNames);
 
   final GETTERS = optionsTemplate

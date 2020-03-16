@@ -32,5 +32,6 @@ String printSchema(GraphQLSchema schema, String serializersUniqueName) {
 
   ${moduleSerializers(serializersUniqueName)}
 
+  ${ignoreLints}
   ''');
 }

@@ -3,6 +3,10 @@ import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
 
 String printInputObjectType(InputObjectTypeDefinition inputType) {
+  if (!shouldGenerate(inputType.name)) {
+    return '';
+  }
+
   final fieldsTemplate = ListPrinter(items: inputType.fields);
 
   /*
@@ -32,7 +36,11 @@ String printInputObjectType(InputObjectTypeDefinition inputType) {
           ])
   */
 
-  final built = builtClass(className(inputType.name), body: getters.toString());
+  final built = builtClass(
+    className(inputType.name),
+    body: getters.toString(),
+    fieldNames: inputType.fields.map((e) => e.name),
+  );
 
   return format('''
 

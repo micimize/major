@@ -4,6 +4,10 @@ import 'package:built_graphql/src/builders/utils.dart';
 import 'package:built_graphql/src/builders/schema/print_parametrized_field.dart';
 
 String printObjectType(ObjectTypeDefinition objectType) {
+  if (!shouldGenerate(objectType.name)) {
+    return '';
+  }
+
   final fieldsTemplate = ListPrinter(items: objectType.fields);
 
   final getters = fieldsTemplate
@@ -34,6 +38,7 @@ String printObjectType(ObjectTypeDefinition objectType) {
     _className,
     implements: objectType.interfaceNames.map((i) => printType(i).type),
     body: getters.toString(),
+    fieldNames: objectType.fields.map((e) => e.name),
   );
 
   return format(

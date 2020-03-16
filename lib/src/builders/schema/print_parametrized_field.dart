@@ -37,7 +37,9 @@ String _parameterizedField(String parentClassName, FieldDefinition field) {
     ];
   });
 
-  final built = builtClass(className(field.name) + 'Results', body: '''
+  final built = builtClass(
+    className(field.name) + 'Results',
+    body: '''
       // static Serializer<FieldResults> get serializer => _\$fieldResultsSerializer;
 
       @protected
@@ -51,7 +53,9 @@ String _parameterizedField(String parentClassName, FieldDefinition field) {
 
       $FIELD_CLASS_NAME call($ARGUMENTS) =>
           results[args($ARGUMENT_PASSTHROUGH)];
-  ''');
+    ''',
+    fieldNames: [],
+  );
 
   return format('''
 

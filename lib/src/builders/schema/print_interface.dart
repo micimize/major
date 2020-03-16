@@ -1,12 +1,17 @@
 import 'package:built_graphql/src/schema/schema.dart';
 import 'package:built_graphql/src/builders/schema/print_type.dart';
 import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql/src/builders/config.dart';
 import './print_parametrized_field.dart';
 
 String printInterface(
   InterfaceTypeDefinition interfaceType,
   List<ObjectTypeDefinition> possibleTypes,
 ) {
+  if (!shouldGenerate(interfaceType.name)) {
+    return '';
+  }
+
   final CLASS_NAME = className(interfaceType.name);
 
   final fieldsTemplate = ListPrinter(items: interfaceType.fields);
@@ -52,12 +57,15 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
       $CLASS_NAME._();
       factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
   */
+
+  final implements =
+      configuration.mixinsWhen(interfaceType.fields.map((e) => e.name));
   return format(
       interfaceType.fields.map((f) => printField(CLASS_NAME, f)).join('') +
           '''
     ${docstring(interfaceType.description, '')}
     @BuiltValue(instantiable: false)
-    abstract class $CLASS_NAME {
+    abstract class $CLASS_NAME ${implements.isNotEmpty ? 'implements ${implements.join(", ")}' : ''} {
       $GETTERS
 
       $CLASS_NAME rebuild(void Function(${CLASS_NAME}Builder) updates);
