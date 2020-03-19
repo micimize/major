@@ -6,6 +6,7 @@ RegExp importStatement = RegExp(r'^#import (\w+)\s*', multiLine: true);
 
 // TODO this is pretty slipshod - inlines `#import $name` calls
 // TODO dedupe names
+// TODO gql has built in import logic now so we don't have to load from files
 Future<String> loadGQL(String name) async {
   String body =
       await rootBundle.loadString('lib/graphql/operations/$name.graphql');
