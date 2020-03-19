@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      built_graphql|builder:
+        enabled: true
+        options:
+          schema: todoclock|lib/schema.graphql

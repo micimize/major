@@ -19,6 +19,9 @@ doc/api/
 .history/
 .vscode/
 
+## backend
+node_modules/
+
 ## Flutter Git Ignore
 # Miscellaneous
 *.class
