@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 0.0.0-alpha
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -32,9 +32,9 @@ dev_dependencies:
     path: ../../built_graphql
   flutter_test:
     sdk: flutter
-  pedantic: ^1.8.0
   test: ^1.6.0
   build_runner: ^1.7.4
+  pedantic: ^1.8.0
 
 
 

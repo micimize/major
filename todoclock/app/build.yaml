@@ -5,3 +5,24 @@ targets:
         enabled: true
         options:
           schema: todoclock|lib/schema.graphql
+          scalars:
+            Date: DateTime
+            Datetime: DateTime #PGDateTime
+            #FiniteDatetime: DateTime
+            UUID: String
+            Cursor: String
+            JSON: Object
+          # We want to treat TemporalIds like "false scalars"
+          # replaceTypes:
+          #  TemporalIdInput: TemporalId
+          # irreducibleTypes:
+          # - name: TemporalId
+          #   generate: false
+          # #- MetricDefinition
+          #mixins:
+          #  - name: Entity
+          #    when:
+          #      fields:
+          #      - entityId
+          #      - validFrom
+          #      - validUntil
