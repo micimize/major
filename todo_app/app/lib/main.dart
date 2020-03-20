@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todoclock/schema.graphql.dart';
+import 'package:todo_app/schema.graphql.dart';
 
 void main() => runApp(MyApp());
 
@@ -122,7 +122,7 @@ class TaskDisplay extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            const ListTile(
+            ListTile(
               leading: Icon(Icons.check_box_outline_blank),
               title: Text(task.title),
               subtitle: Text(task.description),

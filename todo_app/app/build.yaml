@@ -4,7 +4,7 @@ targets:
       built_graphql|builder:
         enabled: true
         options:
-          schema: todoclock|lib/schema.graphql
+          schema: todo_app|lib/schema.graphql
           scalars:
             Date: DateTime
             Datetime: DateTime #PGDateTime
