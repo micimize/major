@@ -1,4 +1,4 @@
-package com.example.todoclock
+package com.example.todo_app
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

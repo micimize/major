@@ -1,16 +1,20 @@
 # todo_app
 
-A new Flutter project.
+An app that helps you get things done
 
-## Getting Started
+## Roadmap
 
-This project is a starting point for a Flutter application.
+This is just a loose feature roadmap right now,
+Soon we'll want a real release/lifecycel roadmap
 
-A few resources to get you started if this is your first Flutter project:
+- [ ] Basic ad-hoc tasks (creation / completion)
+- [ ] Task Stopwatch
+- [ ] Visualizations / Quantification
+- [ ] Task "Ongoing / Partially complete" concept
+      (richer bullet journal carryover) 
+- [ ] Task Notes
+- [ ] Import/Export format
+- [ ] CLI? Web version?
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
