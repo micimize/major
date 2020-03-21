@@ -123,6 +123,7 @@ type Query implements Node {
 
 type Task {
   id: UUID
+  lifecycle: TaskLifecycle
   title: String
   description: String
 }
@@ -134,6 +135,9 @@ input TaskCondition {
   """Checks for equality with the object’s `id` field."""
   id: UUID
 
+  """Checks for equality with the object’s `lifecycle` field."""
+  lifecycle: TaskLifecycle
+
   """Checks for equality with the object’s `title` field."""
   title: String
 
@@ -144,8 +148,15 @@ input TaskCondition {
 """An input for mutations affecting `Task`"""
 input TaskInput {
   id: UUID
+  lifecycle: TaskLifecycle
   title: String
   description: String
+}
+
+enum TaskLifecycle {
+  TODO
+  COMPLETED
+  CANCELLED
 }
 
 """A connection to a list of `Task` values."""
@@ -179,6 +190,8 @@ enum TasksOrderBy {
   NATURAL
   ID_ASC
   ID_DESC
+  LIFECYCLE_ASC
+  LIFECYCLE_DESC
   TITLE_ASC
   TITLE_DESC
   DESCRIPTION_ASC

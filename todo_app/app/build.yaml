@@ -5,6 +5,14 @@ targets:
         enabled: true
         options:
           schema: todo_app|lib/schema.graphql
+          #schema:
+          #  path: savvy_app|lib/graphql/schema.graphql
+          #  imports:
+          #    - package:savvy_app/graphql/scalars/scalars.dart
+          #    - package:savvy_app/graphql/base.dart
+          #  exports:
+          #    - package:savvy_app/graphql/scalars/scalars.dart
+          #    - package:savvy_app/graphql/base.dart
           scalars:
             Date: DateTime
             Datetime: DateTime #PGDateTime
