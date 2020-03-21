@@ -1,0 +1,22 @@
+include: package:pedantic/analysis_options.yaml
+
+
+linter:
+  rules:
+    sort_child_properties_last: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    omit_local_variable_types: false
+    prefer_single_quotes: false
+    unnecessary_this: false
+
+analyzer:
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
+
+  exclude:
+   #- lib/graphql/schema.graphql.dart
+   #- lib/**.g.dart
+   #- lib/**.graphql.dart
+    - lib/**/_sloppy_*.dart

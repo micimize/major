@@ -1,0 +1,36 @@
+targets:
+  $default:
+    builders:
+      built_graphql|builder:
+        enabled: true
+        options:
+          schema: todo_app|lib/schema.graphql
+          #schema:
+          #  path: savvy_app|lib/graphql/schema.graphql
+          #  imports:
+          #    - package:savvy_app/graphql/scalars/scalars.dart
+          #    - package:savvy_app/graphql/base.dart
+          #  exports:
+          #    - package:savvy_app/graphql/scalars/scalars.dart
+          #    - package:savvy_app/graphql/base.dart
+          scalars:
+            Date: DateTime
+            Datetime: DateTime #PGDateTime
+            #FiniteDatetime: DateTime
+            UUID: String
+            Cursor: String
+            JSON: Object
+          # We want to treat TemporalIds like "false scalars"
+          # replaceTypes:
+          #  TemporalIdInput: TemporalId
+          # irreducibleTypes:
+          # - name: TemporalId
+          #   generate: false
+          # #- MetricDefinition
+          #mixins:
+          #  - name: Entity
+          #    when:
+          #      fields:
+          #      - entityId
+          #      - validFrom
+          #      - validUntil

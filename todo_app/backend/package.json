@@ -1,0 +1,22 @@
+{
+  "name": "todo_app-backend",
+  "version": "0.0.0-alpha",
+  "description": "todo'clock",
+  "private": true,
+  "scripts": {
+    "start": "postgraphile -c postgres:///todo_app -s public -j",
+    "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X"
+  },
+  "dependencies": {
+    "postgraphile": "^4.5.5",
+    "@graphile-contrib/pg-many-to-many": "^1.0.0-beta.12",
+    "@graphile-contrib/pg-simplify-inflector": "^5.0.0-beta.1"
+  },
+  "devDependencies": {},
+  "sideEffects": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/micimize/built-graphql.git"
+  },
+  "author": "Michael Joseph Rosenthal"
+}

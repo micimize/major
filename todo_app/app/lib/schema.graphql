@@ -1,0 +1,204 @@
+"""All input for the create `Task` mutation."""
+input CreateTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Task` to be created by this mutation."""
+  task: TaskInput!
+}
+
+"""The output of our create `Task` mutation."""
+type CreateTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Task` that was created by this mutation."""
+  task: Task
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Task`. May be used by Relay 1."""
+  taskEdge(
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [NATURAL]
+  ): TasksEdge
+}
+
+"""A location in a connection that can be used for resuming pagination."""
+scalar Cursor
+
+"""
+The root mutation type which contains root level fields which mutate data.
+"""
+type Mutation {
+  """Creates a single `Task`."""
+  createTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskInput!
+  ): CreateTaskPayload
+}
+
+"""An object with a globally unique `ID`."""
+interface Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: Cursor
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: Cursor
+}
+
+"""The root query type which gives access points into the data universe."""
+type Query implements Node {
+  """
+  Exposes the root query type nested one level down. This is helpful for Relay 1
+  which can only query top level fields if they are in a particular form.
+  """
+  query: Query!
+
+  """
+  The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`.
+  """
+  nodeId: ID!
+
+  """Fetches an object given its globally unique `ID`."""
+  node(
+    """The globally unique `ID`."""
+    nodeId: ID!
+  ): Node
+
+  """Reads and enables pagination through a set of `Task`."""
+  allTasks(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [NATURAL]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskCondition
+  ): TasksConnection
+}
+
+type Task {
+  id: UUID
+  lifecycle: TaskLifecycle
+  title: String
+  description: String
+}
+
+"""
+A condition to be used against `Task` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TaskCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `lifecycle` field."""
+  lifecycle: TaskLifecycle
+
+  """Checks for equality with the object’s `title` field."""
+  title: String
+
+  """Checks for equality with the object’s `description` field."""
+  description: String
+}
+
+"""An input for mutations affecting `Task`"""
+input TaskInput {
+  id: UUID
+  lifecycle: TaskLifecycle
+  title: String
+  description: String
+}
+
+enum TaskLifecycle {
+  TODO
+  COMPLETED
+  CANCELLED
+}
+
+"""A connection to a list of `Task` values."""
+type TasksConnection {
+  """A list of `Task` objects."""
+  nodes: [Task]!
+
+  """
+  A list of edges which contains the `Task` and cursor to aid in pagination.
+  """
+  edges: [TasksEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Task` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Task` edge in the connection."""
+type TasksEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Task` at the end of the edge."""
+  node: Task
+}
+
+"""Methods to use when ordering `Task`."""
+enum TasksOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  LIFECYCLE_ASC
+  LIFECYCLE_DESC
+  TITLE_ASC
+  TITLE_DESC
+  DESCRIPTION_ASC
+  DESCRIPTION_DESC
+}
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID

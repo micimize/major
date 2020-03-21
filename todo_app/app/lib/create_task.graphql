@@ -1,0 +1,5 @@
+mutation createTask($taskInput: CreateTaskInput!) {
+  createTask(input: $taskInput) {
+    clientMutationId
+  }
+}
