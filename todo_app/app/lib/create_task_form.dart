@@ -6,7 +6,7 @@ import 'package:todo_app/typed_mutation.dart';
 final CreateTaskMutation =
     TypedMutation.factoryFor<CreateTaskResult, CreateTaskVariables>(
   documentNode: document,
-  dataFromJson: wrapFromJsonMap(CreateTaskResult.fromJson),
+  dataFromJson: CreateTaskResult.fromJson,
 );
 
 class CreateTaskForm extends StatefulWidget {
@@ -70,9 +70,14 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
                     // the form is invalid.
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
-                      runMutation(CreateTaskVariables((b) => b
-                        ..taskInput =
-                            (schema.CreateTaskInputBuilder()..task = task)));
+                      runMutation(
+                        CreateTaskVariables(
+                          (b) => b
+                            ..taskInput =
+                                (schema.CreateTaskInputBuilder()..task = task),
+                        ),
+                        optimisticResult: CreateTaskResult(),
+                      );
                       // If the form is valid, we want to show a Snackbar
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Saving Task')));

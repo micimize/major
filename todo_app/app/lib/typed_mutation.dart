@@ -22,9 +22,10 @@ typedef MutationChildBuilder<Data, Variables> = Widget Function({
   TypedRunMutation<Variables, Data> runMutation,
 });
 
-typedef SerializeFromJson<Data> = Data Function(dynamic json);
+typedef SerializeFromJson<Data> = Data Function(Map<String, dynamic> jsonMap);
 typedef SerializeToJson<Variables> = Map<String, Object> Function(
-    Variables json);
+  Variables json,
+);
 
 /// A Strongly typed version of [Mutation]
 class TypedMutation<Data extends bg.BuiltToJson,
@@ -98,23 +99,13 @@ class TypedMutation<Data extends bg.BuiltToJson,
           loading: result.loading,
           exception: result.exception,
           data: result.data != null
-              ? logErrors(() => dataFromJson(result.data))
+              ? logErrors(
+                  () => dataFromJson(result.data as Map<String, dynamic>))
               : null,
         );
       },
     );
   }
-}
-
-// utils for consumers
-typedef FromJsonMap<Data> = Data Function(Map<String, Object> json);
-typedef FromJsonList<Data> = Data Function(List<dynamic> json);
-SerializeFromJson<Data> wrapFromJsonMap<Data>(FromJsonMap<Data> fromMap) {
-  return (Object json) => json is Map<String, Object> ? fromMap(json) : null;
-}
-
-SerializeFromJson<Data> wrapFromJsonList<Data>(FromJsonList<Data> fromList) {
-  return (Object json) => json is List<dynamic> ? fromList(json) : null;
 }
 
 typedef MutationFactory<ResultPayload extends bg.BuiltToJson,

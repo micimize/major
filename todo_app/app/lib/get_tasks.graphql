@@ -1,5 +1,5 @@
 query GetAllTasks {
-  tasks: allTasks {
+  tasks: allTasks(orderBy: ID_DESC) {
     nodes {
       id
       lifecycle

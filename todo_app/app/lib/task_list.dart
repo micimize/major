@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/create_task_form.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
-import 'package:todo_app/type_query.dart';
-import 'package:todo_app/get_tasks.graphql.dart';
+import 'package:todo_app/typed_query.dart';
+import 'package:todo_app/get_tasks.graphql.dart' as get_tasks;
+import 'package:todo_app/task_display.dart';
 
-final GetTasksQuery =
-    TypedQuery.factoryFor<GetAllTasksResult, GetAllTasksVariables>(
-  documentNode: document,
-  dataFromJson: wrapFromJsonMap(GetAllTasksResult.fromJson),
+final GetTasksQuery = TypedQuery.factoryFor<get_tasks.GetAllTasksResult,
+    get_tasks.GetAllTasksVariables>(
+  documentNode: get_tasks.document,
+  dataFromJson: get_tasks.GetAllTasksResult.fromJson,
 );
 
 class TaskList extends StatefulWidget {
@@ -41,7 +42,7 @@ class TaskListState extends State<TaskList> {
   @override
   Widget build(BuildContext context) {
     return GetTasksQuery(
-        variables: GetAllTasksVariables(),
+        variables: get_tasks.GetAllTasksVariables(),
         builder: ({data, exception, loading}) {
           return Scaffold(
             appBar: AppBar(
@@ -57,10 +58,7 @@ class TaskListState extends State<TaskList> {
                         (n) => n.toObjectBuilder().build(),
                       ),
                     ...tasks,
-                  ].map((t) => TaskDisplay(
-                        task: t,
-                        complete: taskCompleter(t),
-                      )),
+                  ].map((t) => TaskDisplay(task: t)),
                   Expanded(child: Container()),
                   ListTile(title: CreateTaskForm()),
                 ],
@@ -74,35 +72,6 @@ class TaskListState extends State<TaskList> {
           );
         });
   }
-}
-
-class TaskDisplay extends StatelessWidget {
-  const TaskDisplay({
-    Key key,
-    @required this.task,
-    @required this.complete,
-  }) : super(key: key);
-
-  final Task task;
-  final VoidCallback complete;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: IconButton(
-        onPressed: complete,
-        icon: Icon(
-          task.isCompleted ? Icons.check_box : Icons.check_box_outline_blank,
-        ),
-      ),
-      title: Text(task.title),
-      subtitle: Text(task.description),
-    );
-  }
-}
-
-extension _Helpers on Task {
-  bool get isCompleted => lifecycle == TaskLifecycle.COMPLETED;
 }
 
 final _testTasks = [

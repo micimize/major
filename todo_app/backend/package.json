@@ -4,8 +4,8 @@
   "description": "todo'clock",
   "private": true,
   "scripts": {
-    "start": "postgraphile -c postgres:///todo_app -s public -j",
-    "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X"
+    "start": "postgraphile -c postgres:///todo_app -s public -j --skip-plugins graphile-build:NodePlugin",
+    "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X  --skip-plugins graphile-build:NodePlugin"
   },
   "dependencies": {
     "postgraphile": "^4.5.5",

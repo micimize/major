@@ -4,13 +4,20 @@ import 'package:gql/language.dart' show printNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
 
+typedef QueryFactory<ResultPayload extends bg.BuiltToJson,
+        Variables extends bg.BuiltToJson>
+    = TypedQuery<ResultPayload, Variables> Function({
+  @required QueryChildBuilder<ResultPayload> builder,
+  @required Variables variables,
+});
+
 typedef QueryChildBuilder<Data> = Widget Function({
   bool loading,
   Data data,
   OperationException exception, // should be Exception
 });
 
-typedef SerializeFromJson<Data> = Data Function(dynamic json);
+typedef SerializeFromJson<Data> = Data Function(Map<String, dynamic> jsonMap);
 
 class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
     extends StatelessWidget {
@@ -33,7 +40,7 @@ class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
   Data unwrap(QueryResult result) {
     try {
       if (result.data != null) {
-        return dataFromJson(result.data);
+        return dataFromJson(result.data as Map<String, dynamic>);
       }
     } catch (error, stack) {
       print(
@@ -85,17 +92,7 @@ class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
           );
 }
 
-// utils for consumers
-typedef FromJsonMap<Data> = Data Function(Map<String, Object> json);
-typedef FromJsonList<Data> = Data Function(List<dynamic> json);
-SerializeFromJson<Data> wrapFromJsonMap<Data>(FromJsonMap<Data> fromMap) {
-  return (dynamic json) => json is Map<String, Object> ? fromMap(json) : null;
-}
-
-SerializeFromJson<Data> wrapFromJsonList<Data>(FromJsonList<Data> fromList) {
-  return (dynamic json) => json is List<dynamic> ? fromList(json) : null;
-}
-
+/* maybe required future api
 Future<String> keyProviderFactory({
   DocumentNode documentNode,
   Map<String, Object> variables,
@@ -104,10 +101,4 @@ Future<String> keyProviderFactory({
       documentNode: documentNode,
       variables: variables,
     ).toKey();
-
-typedef QueryFactory<ResultPayload extends bg.BuiltToJson,
-        Variables extends bg.BuiltToJson>
-    = TypedQuery<ResultPayload, Variables> Function({
-  @required QueryChildBuilder<ResultPayload> builder,
-  @required Variables variables,
-});
+    */
