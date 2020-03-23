@@ -1,0 +1,10 @@
+query GetAllTasks {
+  tasks: allTasks {
+    nodes {
+      id
+      lifecycle
+      title
+      description
+    }
+  }
+}

@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/create_task_form.dart';
-import 'package:todo_app/schema.graphql.dart';
+import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
+import 'package:todo_app/type_query.dart';
+import 'package:todo_app/get_tasks.graphql.dart';
+
+final GetTasksQuery =
+    TypedQuery.factoryFor<GetAllTasksResult, GetAllTasksVariables>(
+  documentNode: document,
+  dataFromJson: wrapFromJsonMap(GetAllTasksResult.fromJson),
+);
 
 class TaskList extends StatefulWidget {
   TaskList({Key key}) : super(key: key);
@@ -32,28 +40,39 @@ class TaskListState extends State<TaskList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Task List'),
-      ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            ...tasks.map((t) => TaskDisplay(
-                  task: t,
-                  complete: taskCompleter(t),
-                )),
-            Expanded(child: Container()),
-            ListTile(title: CreateTaskForm()),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: generateRandomTask,
-        tooltip: 'Generate Random Task',
-        child: Icon(Icons.add),
-      ),
-    );
+    return GetTasksQuery(
+        variables: GetAllTasksVariables(),
+        builder: ({data, exception, loading}) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Task List'),
+            ),
+            body: Center(
+              child: Column(
+                children: <Widget>[
+                  if (loading) CircularProgressIndicator(),
+                  ...[
+                    if (!loading)
+                      ...data.tasks.nodes.map(
+                        (n) => n.toObjectBuilder().build(),
+                      ),
+                    ...tasks,
+                  ].map((t) => TaskDisplay(
+                        task: t,
+                        complete: taskCompleter(t),
+                      )),
+                  Expanded(child: Container()),
+                  ListTile(title: CreateTaskForm()),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: generateRandomTask,
+              tooltip: 'Generate Random Task',
+              child: Icon(Icons.add),
+            ),
+          );
+        });
   }
 }
 
