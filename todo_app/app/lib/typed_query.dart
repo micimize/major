@@ -92,13 +92,11 @@ class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
           );
 }
 
-/* maybe required future api
 Future<String> keyProviderFactory({
   DocumentNode documentNode,
-  Map<String, Object> variables,
+  bg.BuiltToJson variables,
 }) async =>
     QueryOptions(
       documentNode: documentNode,
-      variables: variables,
+      variables: variables.toJson(),
     ).toKey();
-    */

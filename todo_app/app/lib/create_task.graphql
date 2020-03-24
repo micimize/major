@@ -1,5 +1,10 @@
 mutation createTask($taskInput: CreateTaskInput!) {
   createTask(input: $taskInput) {
     clientMutationId
+    task {
+      __typename
+      id
+      lifecycle
+    }
   }
 }

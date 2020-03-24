@@ -10,6 +10,50 @@ typedef TypedRunMutation<Variables, Result> = void Function(
   Result optimisticResult,
 });
 
+typedef TypedUpdateCache<Result extends bg.BuiltToJson> = void Function(
+  Cache variables,
+  TypedQueryResult<Result> queryResult,
+);
+
+extension TypedWith on QueryResult {
+  TypedQueryResult<Result> typedWith<Result extends bg.BuiltToJson>(
+    SerializeFromJson<Result> dataFromJson,
+  ) =>
+      TypedQueryResult(
+        typedData: dataFromJson(data as Map<String, dynamic>),
+        exception: exception,
+        source: source,
+      );
+}
+
+/// TODO not the best api
+/// Extends [QueryResult] with a `typedData` attribute
+class TypedQueryResult<Result extends bg.BuiltToJson> extends QueryResult {
+  TypedQueryResult({
+    this.typedData,
+    OperationException exception,
+    bool loading,
+    bool optimistic,
+    QueryResultSource source,
+  }) : super(
+          data: typedData.toJson(),
+          exception: exception,
+          loading: loading,
+          optimistic: optimistic,
+          source: source,
+        );
+
+  Result typedData;
+
+  /*
+  @override
+  dynamic get data {
+    throw Exception('use typedData!');
+  }
+  */
+
+}
+
 /// A strongly typed version of [MutationBuilder] with
 /// * `loading` state
 /// * strongly typed result `data`
@@ -45,7 +89,7 @@ class TypedMutation<Data extends bg.BuiltToJson,
   final MutationChildBuilder<Data, Variables> builder;
 
   final DocumentNode documentNode;
-  final OnMutationUpdate update;
+  final TypedUpdateCache<Data> update;
 
   final SerializeFromJson<Data> dataFromJson;
 
@@ -58,17 +102,16 @@ class TypedMutation<Data extends bg.BuiltToJson,
     }
   }
 
-  static MutationFactory<ResultPayload, Variables> factoryFor<
-          ResultPayload extends bg.BuiltToJson,
-          Variables extends bg.BuiltToJson>({
+  static MutationFactory<Result, Variables> factoryFor<
+          Result extends bg.BuiltToJson, Variables extends bg.BuiltToJson>({
     @required DocumentNode documentNode,
-    @required SerializeFromJson<ResultPayload> dataFromJson,
+    @required SerializeFromJson<Result> dataFromJson,
   }) =>
       ({
-        @required MutationChildBuilder<ResultPayload, Variables> builder,
-        OnMutationUpdate update,
+        @required MutationChildBuilder<Result, Variables> builder,
+        TypedUpdateCache<Result> update,
       }) =>
-          TypedMutation<ResultPayload, Variables>(
+          TypedMutation<Result, Variables>(
             documentNode: documentNode,
             dataFromJson: dataFromJson,
             builder: builder,
@@ -80,7 +123,12 @@ class TypedMutation<Data extends bg.BuiltToJson,
     return Mutation(
       options: MutationOptions(
         documentNode: documentNode,
-        update: update,
+        update: update != null
+            ? (cache, result) => update(
+                  cache,
+                  result.typedWith<Data>(dataFromJson),
+                )
+            : null,
         fetchPolicy: FetchPolicy.networkOnly,
       ),
       builder: (RunMutation runMutation, QueryResult result) {
@@ -108,9 +156,9 @@ class TypedMutation<Data extends bg.BuiltToJson,
   }
 }
 
-typedef MutationFactory<ResultPayload extends bg.BuiltToJson,
+typedef MutationFactory<Result extends bg.BuiltToJson,
         Variables extends bg.BuiltToJson>
-    = TypedMutation<ResultPayload, Variables> Function({
-  @required MutationChildBuilder<ResultPayload, Variables> builder,
-  OnMutationUpdate update,
+    = TypedMutation<Result, Variables> Function({
+  @required MutationChildBuilder<Result, Variables> builder,
+  TypedUpdateCache<Result> update,
 });

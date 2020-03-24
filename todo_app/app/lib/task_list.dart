@@ -12,6 +12,11 @@ final GetTasksQuery = TypedQuery.factoryFor<get_tasks.GetAllTasksResult,
   dataFromJson: get_tasks.GetAllTasksResult.fromJson,
 );
 
+final getTasksCacheKey = keyProviderFactory(
+  documentNode: get_tasks.document,
+  variables: get_tasks.GetAllTasksVariables(),
+);
+
 class TaskList extends StatefulWidget {
   TaskList({Key key}) : super(key: key);
 

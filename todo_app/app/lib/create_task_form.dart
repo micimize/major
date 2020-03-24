@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/create_task.graphql.dart';
+import 'package:todo_app/dev_utils.dart';
+import 'package:todo_app/get_tasks.graphql.dart' hide document;
 import 'package:todo_app/schema.graphql.dart' as schema;
 import 'package:todo_app/typed_mutation.dart';
+
+import 'package:todo_app/task_list.dart' show getTasksCacheKey;
 
 final CreateTaskMutation =
     TypedMutation.factoryFor<CreateTaskResult, CreateTaskVariables>(
@@ -29,6 +33,28 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
   @override
   Widget build(BuildContext context) {
     return CreateTaskMutation(
+      update: (cache, result) async {
+        if (result.loading || result.optimistic) {
+          return null;
+        }
+        if (result.hasException) {
+          pprint(result.exception.toString());
+        }
+        final cacheKey = await getTasksCacheKey;
+        final returnedFields = result.typedData.createTask.task;
+        final updated = GetAllTasksResult.fromJson(
+                cache.read(cacheKey) as Map<String, dynamic>)
+            .rebuild((b) => b.tasks.nodes.add(
+                  GetAllTasksResultTasksNodes(
+                    (b) => b
+                      ..id = returnedFields.id
+                      ..lifecycle = returnedFields.lifecycle
+                      ..title = task.title
+                      ..description = task.description,
+                  ),
+                ));
+        cache.write(cacheKey, updated.toJson());
+      },
       builder: ({
         data,
         exception,
@@ -76,7 +102,7 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
                             ..taskInput =
                                 (schema.CreateTaskInputBuilder()..task = task),
                         ),
-                        optimisticResult: CreateTaskResult(),
+                        // optimisticResult: CreateTaskResult(),
                       );
                       // If the form is valid, we want to show a Snackbar
                       Scaffold.of(context)
