@@ -144,9 +144,11 @@ String printSelectionSetClass(
     additionalFields: additionalFields,
     additionalInterfaces: additionalInterfaces,
   );
+  final schemaTypeName = '${u.className(selectionSet.schemaType.name)}';
 
   final built = u.builtClass(
     path.className,
+    schemaTypeName: schemaTypeName,
     fieldNames: selectionSet.fields.map((e) => e.name),
     implements: ss.allInterfaces,
     body: '''
@@ -161,7 +163,7 @@ String printSelectionSetClass(
       ${ss.attributes}
       ${additionalBody ?? ''}
 
-      static final schemaTypeName = '${u.className(selectionSet.schemaType.name)}';
+      static final schemaTypeName = '$schemaTypeName';
     ''',
   );
 

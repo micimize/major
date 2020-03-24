@@ -25,24 +25,24 @@ class TaskList extends StatefulWidget {
 }
 
 class TaskListState extends State<TaskList> {
-  List<Task> tasks = [
-    _testTasks[0],
-    _testTasks[1],
-    _testTasks[3],
-  ];
+//List<Task> tasks = [
+//  _testTasks[0],
+//  _testTasks[1],
+//  _testTasks[3],
+//];
 
-  VoidCallback taskCompleter(Task completed) => () => setState(
-        () => tasks = tasks.map((task) {
-          if (task.id == completed.id) {
-            return task.rebuild((b) => b..lifecycle = TaskLifecycle.COMPLETED);
-          }
-          return task;
-        }).toList(),
-      );
+//VoidCallback taskCompleter(Task completed) => () => setState(
+//      () => tasks = tasks.map((task) {
+//        if (task.id == completed.id) {
+//          return task.rebuild((b) => b..lifecycle = TaskLifecycle.COMPLETED);
+//        }
+//        return task;
+//      }).toList(),
+//    );
 
-  void generateRandomTask() => setState(() {
-        tasks.add(_testTasks[tasks.length]);
-      });
+//void generateRandomTask() => setState(() {
+//      tasks.add(_testTasks[tasks.length]);
+//    });
 
   @override
   Widget build(BuildContext context) {
@@ -62,22 +62,25 @@ class TaskListState extends State<TaskList> {
                       ...data.tasks.nodes.map(
                         (n) => n.toObjectBuilder().build(),
                       ),
-                    ...tasks,
+                    // ...tasks,
                   ].map((t) => TaskDisplay(task: t)),
                   ListTile(title: CreateTaskForm()),
                 ],
               ),
             ),
+            /*
             floatingActionButton: FloatingActionButton(
               onPressed: generateRandomTask,
               tooltip: 'Generate Random Task',
               child: Icon(Icons.add),
             ),
+            */
           );
         });
   }
 }
 
+/*
 final _testTasks = [
   TaskBuilder()
     ..title = 'watch indiana jones'
@@ -113,3 +116,5 @@ final _testTasks = [
       ),
     )
     .toList();
+
+*/

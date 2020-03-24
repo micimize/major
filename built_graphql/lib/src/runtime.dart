@@ -47,11 +47,19 @@ class ConvenienceSerializers {
         }
       };
 
+  // TODO adding __typename in toJson() makes it incongruous with built value serialzers
   Map<String, Object> Function(T instance) curryToJson<T>(
-    Serializer<T> serializer,
-  ) =>
-      (T instance) => _serializers.serializeWith(serializer, instance)
-          as Map<String, Object>;
+          Serializer<T> serializer,
+          [String schemaTypeName]) =>
+      (schemaTypeName != null)
+          ? (T instance) {
+              final json = _serializers.serializeWith(serializer, instance)
+                  as Map<String, Object>;
+              json['__typename'] = schemaTypeName;
+              return json;
+            }
+          : (T instance) => _serializers.serializeWith(serializer, instance)
+              as Map<String, Object>;
 }
 
 class InterfaceSerializer<I extends BuiltToJson>
