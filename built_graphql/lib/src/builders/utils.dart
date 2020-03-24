@@ -37,7 +37,6 @@ String _abstractClass(
 
 String builtClass(
   String className, {
-  String schemaTypeName,
   Iterable<String> mixins = const [],
   Iterable<String> implements = const [],
   @required String body,
@@ -59,23 +58,19 @@ String builtClass(
 
         $body
 
-        ${serializable ?? !className.startsWith('_') ? _serializers(className, schemaTypeName) : ''}
+        ${serializable ?? !className.startsWith('_') ? _serializers(className) : ''}
       ''',
     );
 
 String sourceDocBlock(GraphQLEntity source) =>
     docstring('```graphql\n${source}\n```');
 
-String _serializers(String className, [String schemaTypeName]) {
-  final schemaTypeNameArg =
-      schemaTypeName != null ? "'$schemaTypeName'" : 'null';
-  return '''
+String _serializers(String className) => '''
     static Serializer<$className> get serializer => ${serializerName(className)};
     static final fromJson = _serializers.curryFromJson(serializer);
-    static final _toJson =  _serializers.curryToJson(serializer, $schemaTypeNameArg);
+    static final _toJson =  _serializers.curryToJson(serializer);
     Map<String, Object> toJson() => _toJson(this);
   ''';
-}
 
 String serializerName(String name) =>
     '_\$' + dartName(unhide(name)) + 'Serializer';

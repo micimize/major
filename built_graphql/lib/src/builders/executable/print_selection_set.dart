@@ -148,7 +148,6 @@ String printSelectionSetClass(
 
   final built = u.builtClass(
     path.className,
-    schemaTypeName: schemaTypeName,
     fieldNames: selectionSet.fields.map((e) => e.name),
     implements: ss.allInterfaces,
     body: '''
@@ -164,6 +163,9 @@ String printSelectionSetClass(
       ${additionalBody ?? ''}
 
       static final schemaTypeName = '$schemaTypeName';
+
+      @BuiltValueField(wireName: '__typename', serialize: true)
+      String get __typename => schemaTypeName;
     ''',
   );
 
