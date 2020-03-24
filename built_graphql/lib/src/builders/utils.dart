@@ -37,30 +37,54 @@ String _abstractClass(
 
 String builtClass(
   String className, {
+  Map<String, String> staticFields,
   Iterable<String> mixins = const [],
   Iterable<String> implements = const [],
   @required String body,
   bool serializable,
   @required Iterable<String> fieldNames,
-}) =>
-    _abstractClass(
-      className,
-      mixins: mixins,
-      implements: [
-        ...implements,
-        if (serializable ?? !className.startsWith('_')) '$bgPrefix.BuiltToJson',
-        'Built<$className, ${className}Builder>',
-        ...configuration.mixinsWhen(fieldNames),
-      ],
-      body: '''
-        factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};
+}) {
+  /*
+  final mainFactory = staticFields == null
+      ? 'factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};'
+      : '''factory $className([void Function(${className}Builder) updates]) => _\$${unhide(className)}((b) => b
+        ..update(updates)
+        ..${staticFields.entries.map((e) => '${e.key} = ${e.value}').join('\n..')}
+      );
+      ''';
+  */
+
+  final mainFactory =
+      'factory $className([void Function(${className}Builder) updates]) = _\$${unhide(className)};';
+
+  final initializeBuilder = staticFields != null
+      ? '''
+    static void _initializeBuilder(${className}Builder b) => b
+      ..${staticFields.entries.map((e) => '${e.key} = ${e.value}').join('\n..')};
+      '''
+      : '';
+
+  return _abstractClass(
+    className,
+    mixins: mixins,
+    implements: [
+      ...implements,
+      if (serializable ?? !className.startsWith('_')) '$bgPrefix.BuiltToJson',
+      'Built<$className, ${className}Builder>',
+      ...configuration.mixinsWhen(fieldNames),
+    ],
+    body: '''
+        $mainFactory
         $className._();
+
+        $initializeBuilder 
 
         $body
 
         ${serializable ?? !className.startsWith('_') ? _serializers(className) : ''}
       ''',
-    );
+  );
+}
 
 String sourceDocBlock(GraphQLEntity source) =>
     docstring('```graphql\n${source}\n```');

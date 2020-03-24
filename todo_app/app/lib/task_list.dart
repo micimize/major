@@ -49,6 +49,7 @@ class TaskListState extends State<TaskList> {
     return GetTasksQuery(
         variables: get_tasks.GetAllTasksVariables(),
         builder: ({data, exception, loading}) {
+          print(data.tasks.nodes.map((n) => n.lifecycle));
           return Scaffold(
             appBar: AppBar(
               title: Text('Task List'),

@@ -150,6 +150,9 @@ String printSelectionSetClass(
     path.className,
     fieldNames: selectionSet.fields.map((e) => e.name),
     implements: ss.allInterfaces,
+    staticFields: {
+      'typeName': 'schemaTypeName',
+    },
     body: '''
       ${builtFactories(
       path.className,
@@ -165,7 +168,7 @@ String printSelectionSetClass(
       static final schemaTypeName = '$schemaTypeName';
 
       @BuiltValueField(wireName: '__typename', serialize: true)
-      String get __typename => schemaTypeName;
+      String get typeName;
     ''',
   );
 
