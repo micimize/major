@@ -43,6 +43,8 @@ input DeleteTaskByIdInput {
   payload verbatim. May be used to track mutations by the client.
   """
   clientMutationId: String
+
+  """Primary Key for Tasks"""
   id: UUID!
 }
 
@@ -154,6 +156,7 @@ type Query {
 }
 
 type Task {
+  """Primary Key for Tasks"""
   id: UUID!
   lifecycle: TaskLifecycle
   title: String
@@ -179,6 +182,7 @@ input TaskCondition {
 
 """An input for mutations affecting `Task`"""
 input TaskInput {
+  """Primary Key for Tasks"""
   id: UUID
   lifecycle: TaskLifecycle
   title: String
@@ -193,6 +197,7 @@ enum TaskLifecycle {
 
 """Represents an update to a `Task`. Fields that are set will be updated."""
 input TaskPatch {
+  """Primary Key for Tasks"""
   id: UUID
   lifecycle: TaskLifecycle
   title: String
@@ -252,6 +257,8 @@ input UpdateTaskByIdInput {
   An object where the defined keys will be set on the `Task` being updated.
   """
   taskPatch: TaskPatch!
+
+  """Primary Key for Tasks"""
   id: UUID!
 }
 

@@ -49,7 +49,7 @@ class TaskListState extends State<TaskList> {
               title: Text('Task List'),
             ),
             body: Center(
-              child: Column(
+              child: ListView(
                 children: <Widget>[
                   if (loading) CircularProgressIndicator(),
                   ...[
@@ -59,7 +59,6 @@ class TaskListState extends State<TaskList> {
                       ),
                     ...tasks,
                   ].map((t) => TaskDisplay(task: t)),
-                  Expanded(child: Container()),
                   ListTile(title: CreateTaskForm()),
                 ],
               ),

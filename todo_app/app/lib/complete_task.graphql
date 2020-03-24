@@ -3,8 +3,10 @@ mutation completeTask($taskId: UUID!) {
   updateTaskById(input: { id: $taskId, taskPatch: { lifecycle: COMPLETED } }) {
     clientMutationId
     task {
+      __typename
       id
       lifecycle
+      title
     }
   }
 }

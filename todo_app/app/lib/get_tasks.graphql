@@ -1,6 +1,7 @@
 query GetAllTasks {
-  tasks: allTasks(orderBy: ID_DESC) {
+  tasks: allTasks(orderBy: ID_ASC) {
     nodes {
+      __typename
       id
       lifecycle
       title

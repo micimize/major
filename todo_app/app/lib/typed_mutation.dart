@@ -93,7 +93,7 @@ class TypedMutation<Data extends bg.BuiltToJson,
           runMutation: (Variables variables, {Data optimisticResult}) {
             runMutation(
               logErrors(() => variables.toJson()),
-              optimisticResult: optimisticResult,
+              optimisticResult: optimisticResult?.toJson(),
             );
           },
           loading: result.loading,
