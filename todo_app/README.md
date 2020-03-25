@@ -7,7 +7,7 @@ An app that helps you get things done
 This is just a loose feature roadmap right now,
 Soon we'll want a real release/lifecycel roadmap
 
-- [ ] Basic ad-hoc tasks (creation / completion)
+- [X] Basic ad-hoc tasks (creation / completion)
 - [ ] Task Stopwatch
 - [ ] Visualizations / Quantification
 - [ ] Task "Ongoing / Partially complete" concept
