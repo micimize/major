@@ -33,6 +33,8 @@ CREATE FUNCTION task_created(task task) RETURNS finite_datetime AS $$
   SELECT cast(uuid_timestamp(task.id) as finite_datetime)
 $$ LANGUAGE sql STABLE;
 
+comment on function task_created(task) is E'@sortable';
+
 COMMENT ON COLUMN task.id IS 'Primary Key for Tasks';
 
 

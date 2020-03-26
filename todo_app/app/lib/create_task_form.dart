@@ -44,7 +44,8 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
         final returnedFields = result.typedData.createTask.task;
         final updated = GetAllTasksResult.fromJson(
                 cache.read(cacheKey) as Map<String, dynamic>)
-            .rebuild((b) => b.tasks.nodes.add(
+            .rebuild((b) => b.tasks.nodes.insert(
+                  0,
                   GetAllTasksResultTasksNodes(
                     (b) => b
                       ..id = returnedFields.id

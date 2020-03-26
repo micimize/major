@@ -3,6 +3,7 @@ import 'package:gql/ast.dart' show DocumentNode;
 import 'package:gql/language.dart' show printNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/dev_utils.dart';
 
 typedef QueryFactory<ResultPayload extends bg.BuiltToJson,
         Variables extends bg.BuiltToJson>
@@ -60,6 +61,10 @@ class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
         fetchPolicy: fetchPolicy,
       ),
       builder: (QueryResult result, {refetch, fetchMore}) {
+        if (result.hasException) {
+          pprint(result.exception.toString());
+          pprint(StackTrace.current);
+        }
         if (result.data == null && result.loading && catchLoading) {
           return Center(
             child: CircularProgressIndicator(),
