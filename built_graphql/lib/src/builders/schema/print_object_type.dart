@@ -14,9 +14,8 @@ String printObjectType(ObjectTypeDefinition objectType) {
       .copyWith(divider: '\n\n')
       .map((field) => [
             docstring(field.description),
-            // nullable(field.type),
-            if (field.isOverride)
-              '@override',
+            nullable(field.type),
+            if (field.isOverride) '@override',
             printType(field.type).type,
             'get',
             dartName(field.name),
@@ -37,8 +36,12 @@ String printObjectType(ObjectTypeDefinition objectType) {
   final built = builtClass(
     _className,
     implements: objectType.interfaceNames.map((i) => printType(i).type),
-    body: getters.toString(),
     fieldNames: objectType.fields.map((e) => e.name),
+    body: '''
+    $getters
+
+    factory ${_className}.of(${_className} i) => i;
+    ''',
   );
 
   return format(

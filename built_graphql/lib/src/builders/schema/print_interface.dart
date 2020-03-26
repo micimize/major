@@ -77,6 +77,8 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
 
         throw ArgumentError('No builder for \${selectionSet.runtimeType} \$selectionSet. This should be impossible.');
       }
+
+      factory ${CLASS_NAME}.of(${CLASS_NAME} i) => i;
     }
 
     /// Add the missing build interface

@@ -40,6 +40,7 @@ TypeTemplate _printList(
 ) {
   final innerTemplate = innerCallback(type.type);
   final innerCast = innerTemplate.cast('i');
+
   return TypeTemplate(
     '$listType<${innerTemplate.type}>',
     innerTemplate.cast == identity
