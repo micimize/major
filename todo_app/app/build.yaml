@@ -15,8 +15,8 @@ targets:
           #    - package:savvy_app/graphql/base.dart
           scalars:
             Date: DateTime
-            Datetime: DateTime #PGDateTime
-            #FiniteDatetime: DateTime
+            Datetime: DateTime
+            FiniteDatetime: DateTime
             UUID: String
             Cursor: String
             JSON: Object

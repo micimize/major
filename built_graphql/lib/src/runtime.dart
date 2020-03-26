@@ -1,3 +1,4 @@
+import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:meta/meta.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
@@ -30,8 +31,10 @@ Fields unfocus<Fields>(Focus<Fields> focus) => focus.$fields;
 @immutable
 class ConvenienceSerializers {
   ConvenienceSerializers(Serializers serializers)
-      : _serializers =
-            (serializers.toBuilder()..addPlugin(StandardJsonPlugin())).build();
+      : _serializers = (serializers.toBuilder()
+              ..add(Iso8601DateTimeSerializer())
+              ..addPlugin(StandardJsonPlugin()))
+            .build();
 
   final Serializers _serializers;
 
@@ -43,7 +46,8 @@ class ConvenienceSerializers {
           return _serializers.deserializeWith(serializer, json);
         } catch (e) {
           print('Failed to deserialize $json');
-          throw e;
+          return null;
+          //throw e;
         }
       };
 

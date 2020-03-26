@@ -36,6 +36,12 @@ type CreateTaskPayload {
 """A location in a connection that can be used for resuming pagination."""
 scalar Cursor
 
+"""
+A point in time as described by the [ISO
+8601](https://en.wikipedia.org/wiki/ISO_8601) standard. May or may not include a timezone.
+"""
+scalar Datetime
+
 """All input for the `deleteTaskById` mutation."""
 input DeleteTaskByIdInput {
   """
@@ -153,6 +159,7 @@ type Query {
     condition: TaskCondition
   ): TasksConnection
   taskById(id: UUID!): Task
+  uuidTimestamp(id: UUID!): Datetime
 }
 
 type Task {
@@ -161,6 +168,7 @@ type Task {
   lifecycle: TaskLifecycle
   title: String
   description: String
+  updated: Datetime!
 }
 
 """
@@ -178,6 +186,9 @@ input TaskCondition {
 
   """Checks for equality with the object’s `description` field."""
   description: String
+
+  """Checks for equality with the object’s `updated` field."""
+  updated: Datetime
 }
 
 """An input for mutations affecting `Task`"""
@@ -187,6 +198,7 @@ input TaskInput {
   lifecycle: TaskLifecycle
   title: String
   description: String
+  updated: Datetime
 }
 
 enum TaskLifecycle {
@@ -202,6 +214,7 @@ input TaskPatch {
   lifecycle: TaskLifecycle
   title: String
   description: String
+  updated: Datetime
 }
 
 """A connection to a list of `Task` values."""
@@ -241,6 +254,8 @@ enum TasksOrderBy {
   TITLE_DESC
   DESCRIPTION_ASC
   DESCRIPTION_DESC
+  UPDATED_ASC
+  UPDATED_DESC
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
 }

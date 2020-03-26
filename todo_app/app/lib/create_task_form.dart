@@ -48,6 +48,7 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
                   GetAllTasksResultTasksNodes(
                     (b) => b
                       ..id = returnedFields.id
+                      ..updated = returnedFields.updated
                       ..lifecycle = returnedFields.lifecycle
                       ..title = task.title
                       ..description = task.description,

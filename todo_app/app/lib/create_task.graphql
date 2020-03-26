@@ -5,6 +5,7 @@ mutation createTask($taskInput: CreateTaskInput!) {
       __typename
       id
       lifecycle
+      updated
     }
   }
 }

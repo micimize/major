@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/create_task_form.dart';
+import 'package:todo_app/dev_utils.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
 import 'package:todo_app/typed_query.dart';
@@ -49,7 +50,6 @@ class TaskListState extends State<TaskList> {
     return GetTasksQuery(
         variables: get_tasks.GetAllTasksVariables(),
         builder: ({data, exception, loading}) {
-          print(data.tasks.nodes.map((n) => n.lifecycle));
           return Scaffold(
             appBar: AppBar(
               title: Text('Task List'),
@@ -59,7 +59,7 @@ class TaskListState extends State<TaskList> {
                 children: <Widget>[
                   if (loading) CircularProgressIndicator(),
                   ...[
-                    if (!loading)
+                    if (!loading && data != null)
                       ...data.tasks.nodes.map(
                         (n) => n.toObjectBuilder().build(),
                       ),

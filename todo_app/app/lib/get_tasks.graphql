@@ -1,11 +1,12 @@
 query GetAllTasks {
-  tasks: allTasks(orderBy: ID_ASC) {
+  tasks: allTasks(orderBy: UPDATED_ASC) {
     nodes {
       __typename
       id
       lifecycle
       title
       description
+      updated
     }
   }
 }
