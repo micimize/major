@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
-import 'package:todo_app/task_stopwatch.dart';
+import 'package:todo_app/stopwatch/stopwatch.dart';
 import 'package:todo_app/typed_mutation.dart';
 import 'package:todo_app/update_task.graphql.dart' as update;
 
@@ -45,8 +45,9 @@ class TaskDisplay extends StatelessWidget {
             ),
             title: Text(task.title),
             subtitle: Text(task.description ?? ''),
-            trailing: TaskStopwatch(
+            trailing: DisplayStopwatch(
               value: task.stopwatchValue,
+              placeholder: 'todo',
               onChanged: (value) => runMutation(
                 update.UpdateTaskVariables(
                   (b) => b

@@ -1,8 +1,11 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/schema.graphql.dart';
-import 'package:todo_app/task_stopwatch.dart';
+
 import 'package:todo_app/stopwatch/arc_painter.dart';
+import 'package:todo_app/stopwatch/helpers.dart';
+
+export 'package:todo_app/stopwatch/helpers.dart';
 
 enum StopwatchLifecycle {
   Started,
@@ -14,14 +17,15 @@ class DisplayStopwatch extends StatefulWidget {
   DisplayStopwatch({
     @required this.onChanged,
     @required this.value,
-    this.title,
+    this.placeholder,
     this.period = const Duration(minutes: 1),
   });
 
   final OnStopwatchChanged onChanged;
   final Duration period;
-  final String title;
   final BuiltList<DatetimeInterval> value;
+
+  final String placeholder;
 
   @override
   DisplayStopwatchState createState() => DisplayStopwatchState();
@@ -43,7 +47,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
   @override
   void initState() {
     super.initState();
-    loops = ((value.elapsed ?? const Duration(minutes: 0)).inMilliseconds /
+    loops = ((value?.elapsed ?? const Duration(minutes: 0)).inMilliseconds /
             widget.period.inMilliseconds)
         .floorToDouble()
         .toInt();
@@ -52,7 +56,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
       duration: widget.period,
       value: _animationValue,
     )..addStatusListener(handleLoop);
-    if (value.isOngoing) {
+    if (value?.isOngoing ?? false) {
       animate();
     }
   }
@@ -62,7 +66,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
   // convert the elapsed into a part of the whole
   double get _animationValue {
     final dur = widget.period.inMilliseconds;
-    final elapsed = (value.elapsed?.inMilliseconds ?? 0) % dur;
+    final elapsed = (value?.elapsed?.inMilliseconds ?? 0) % dur;
     return 1.0 - ((dur - elapsed) / dur);
   }
 
@@ -71,6 +75,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
     final elapsedMilli = (dur * (loops + controller.value)).toInt();
 
     final duration = Duration(milliseconds: elapsedMilli);
+
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
@@ -90,7 +95,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
   }
 
   VoidCallback get timerToggle {
-    final lifecycle = value.isOngoing
+    final lifecycle = value?.isOngoing ?? false
         ? StopwatchLifecycle.Started
         : StopwatchLifecycle.Paused;
     switch (lifecycle) {
@@ -109,7 +114,7 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
           setState(() {
             animate();
             widget.onChanged(
-              value.started,
+              (value ?? <DatetimeInterval>[].build()).started,
             );
           });
         }
@@ -123,44 +128,49 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
     final colorA = Colors.white;
     final colorB = themeData.indicatorColor;
     return Container(
-      padding: EdgeInsets.all(8.0),
+      width: 108,
+      // padding: EdgeInsets.all(8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
+          AnimatedBuilder(
+              animation: controller,
+              builder: (BuildContext context, Widget child) {
+                return Text(
+                  value == null && widget.placeholder != null
+                      ? widget.placeholder
+                      : timerString,
+                  style: themeData.textTheme.caption,
+                );
+              }),
           StopwatchController(
             controller,
             timerToggle,
             backgroundColor: loops.isOdd ? colorA : colorB,
             color: loops.isOdd ? colorB : colorA,
           ),
-          AnimatedBuilder(
-              animation: controller,
-              builder: (BuildContext context, Widget child) {
-                return Text(
-                  timerString,
-                  style: themeData.textTheme.overline,
-                );
-              }),
-          ButtonContainer(
-              size: 30,
-              child: CircularButton(
-                padding: EdgeInsets.all(4),
-                iconColor: Colors.grey,
-                onPressed: value.isEmpty
-                    ? null
-                    : () => setState(() {
-                          controller
-                              .fling(velocity: -5.0)
-                              .then<void>((void cb) {
-                            setState(() {});
-                          });
-                          widget.onChanged([].build());
-                        }),
-                size: 25,
-                icon: Icons.clear,
-              )),
+          // TODO timer cancelation?
+          if (false)
+            ButtonContainer(
+                size: 30,
+                child: CircularButton(
+                  padding: EdgeInsets.all(4),
+                  iconColor: Colors.grey,
+                  onPressed: value?.isEmpty ?? true
+                      ? null
+                      : () => setState(() {
+                            controller
+                                .fling(velocity: -5.0)
+                                .then<void>((void cb) {
+                              setState(() {});
+                            });
+                            widget.onChanged([].build());
+                          }),
+                  size: 25,
+                  icon: Icons.clear,
+                )),
         ],
       ),
     );
@@ -207,24 +217,25 @@ class StopwatchController extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: <Widget>[
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: controller,
-              builder: (BuildContext context, Widget child) {
-                return CustomPaint(
-                  size: Size.square(size),
-                  painter: ArcPainter(
-                    animation: controller,
-                    backgroundColor: backgroundColor,
-                    color: color,
-                    direction: ArcDirection.Clockwise,
-                  ),
-                );
-              },
+          if (false)
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: controller,
+                builder: (BuildContext context, Widget child) {
+                  return CustomPaint(
+                    size: Size.square(size),
+                    painter: ArcPainter(
+                      animation: controller,
+                      backgroundColor: backgroundColor,
+                      color: color,
+                      direction: ArcDirection.Clockwise,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
           ButtonContainer(
-            margin: EdgeInsets.all(4.0),
+            margin: EdgeInsets.all(0.0),
             child: AnimatedBuilder(
               animation: controller,
               builder: (BuildContext context, Widget child) {
