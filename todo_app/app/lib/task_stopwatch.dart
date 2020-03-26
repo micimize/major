@@ -2,31 +2,50 @@ import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/dev_utils.dart';
 import 'package:todo_app/schema.graphql.dart';
+import 'package:todo_app/stopwatch/stopwatch.dart';
 
+typedef OnStopwatchChanged = void Function(BuiltList<DatetimeInterval>);
+
+// todo we want start to be non-null
 extension WithStopwatchHelpers on DatetimeInterval {
-  Duration get duration => end.difference(start);
+  Duration get duration => end == null ? null : end.difference(start);
 
-  DatetimeInterval get asIfCompleted =>
+  DatetimeInterval get stopped =>
       rebuild((b) => b.end ??= DateTime.now().toUtc());
 }
 
 extension StructuredStopwatch on BuiltList<DatetimeInterval> {
   bool get isOngoing => isNotEmpty && last.end == null;
 
-  BuiltList<DatetimeInterval> get asIfCompleted {
+  BuiltList<DatetimeInterval> get stopped {
     if (!isOngoing) {
       return this;
     }
-    return rebuild((b) => b..last = b.last.asIfCompleted);
+    return rebuild((b) => b..last = b.last.stopped);
   }
 
-  Duration get totalElapsed => asIfCompleted
-      .map((i) => i.duration)
-      .reduce((total, partial) => total + partial);
+  BuiltList<DatetimeInterval> get started {
+    if (isOngoing) {
+      return this;
+    }
+    return rebuild(
+      (b) => b.add(
+        DatetimeInterval(
+          (b) => b..start = DateTime.now().toUtc(),
+        ),
+      ),
+    );
+  }
+
+  Duration get elapsed => isEmpty
+      ? Duration.zero
+      : stopped.map((i) => i.duration).reduce(
+            (total, partial) => total + partial,
+          );
 
   // TODO grab iso duration
   String display() {
-    var d = totalElapsed.toString().split('.');
+    var d = elapsed.toString().split('.');
     d.removeLast();
     return d.join('.');
   }
@@ -44,25 +63,20 @@ class TaskStopwatch extends StatefulWidget {
 
   final BuiltList<DatetimeInterval> value;
 
-  final void Function(BuiltList<DatetimeInterval>) onChanged;
+  final OnStopwatchChanged onChanged;
 
   @override
   _TaskStopwatchState createState() => _TaskStopwatchState();
 }
 
 class _TaskStopwatchState extends State<TaskStopwatch>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   VoidCallback toggleWith(
     dynamic Function(ListBuilder<DatetimeInterval> list) updates,
   ) =>
       () => widget.onChanged(widget.value.rebuild(updates));
 
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      widget.value.display() ?? ' todo',
-      style: Theme.of(context).textTheme.caption,
-    );
+  IconButton get button {
     if (widget.value.isOngoing) {
       return IconButton(
         icon: Icon(Icons.pause),
@@ -85,5 +99,32 @@ class _TaskStopwatchState extends State<TaskStopwatch>
         ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('boom');
+    return DisplayStopwatch(
+      value: widget.value,
+      onChanged: widget.onChanged,
+    );
+    return Container(
+      width: 108,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Text(
+            widget.value.display() ?? ' todo',
+            style: Theme.of(context).textTheme.caption,
+          ),
+          button,
+        ],
+      ),
+    );
   }
 }

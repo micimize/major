@@ -43,16 +43,7 @@ class TaskDisplay extends StatelessWidget {
                     : Icons.check_box_outline_blank,
               ),
             ),
-            title: Row(
-              children: [
-                Expanded(child: Text(task.title)),
-                SizedBox(width: 12),
-                Text(
-                  task.stopwatchValue?.display() ?? ' todo',
-                  style: Theme.of(context).textTheme.caption,
-                )
-              ],
-            ),
+            title: Text(task.title),
             subtitle: Text(task.description ?? ''),
             trailing: TaskStopwatch(
               value: task.stopwatchValue,
