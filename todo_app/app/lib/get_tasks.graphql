@@ -1,11 +1,12 @@
 query GetAllTasks {
-  tasks: allTasks(orderBy: UPDATED_ASC) {
+  tasks: allTasks(orderBy: CREATED_DESC) {
     nodes {
       __typename
       id
       lifecycle
       title
       description
+      created
       updated
     }
   }

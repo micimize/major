@@ -78,6 +78,8 @@ type DeleteTaskPayload {
   ): TasksEdge
 }
 
+scalar FiniteDatetime
+
 """
 The root mutation type which contains root level fields which mutate data.
 """
@@ -169,6 +171,7 @@ type Task {
   title: String
   description: String
   updated: Datetime!
+  created: FiniteDatetime
 }
 
 """

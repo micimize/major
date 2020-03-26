@@ -49,6 +49,7 @@ class _CreateTaskFormState extends State<CreateTaskForm> {
                     (b) => b
                       ..id = returnedFields.id
                       ..updated = returnedFields.updated
+                      ..created = returnedFields.created
                       ..lifecycle = returnedFields.lifecycle
                       ..title = task.title
                       ..description = task.description,

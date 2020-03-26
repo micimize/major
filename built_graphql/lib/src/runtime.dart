@@ -46,8 +46,7 @@ class ConvenienceSerializers {
           return _serializers.deserializeWith(serializer, json);
         } catch (e) {
           print('Failed to deserialize $json');
-          return null;
-          //throw e;
+          rethrow;
         }
       };
 
