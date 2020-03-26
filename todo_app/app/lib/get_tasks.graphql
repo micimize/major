@@ -8,6 +8,10 @@ query GetAllTasks {
       description
       created
       updated
+      stopwatchValue {
+        start
+        end
+      }
     }
   }
 }

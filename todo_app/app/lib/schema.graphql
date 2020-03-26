@@ -42,6 +42,17 @@ A point in time as described by the [ISO
 """
 scalar Datetime
 
+type DatetimeInterval {
+  start: FiniteDatetime
+  end: FiniteDatetime
+}
+
+"""An input for mutations affecting `DatetimeInterval`"""
+input DatetimeIntervalInput {
+  start: FiniteDatetime
+  end: FiniteDatetime
+}
+
 """All input for the `deleteTaskById` mutation."""
 input DeleteTaskByIdInput {
   """
@@ -171,6 +182,7 @@ type Task {
   title: String
   description: String
   updated: Datetime!
+  stopwatchValue: [DatetimeInterval]
   created: FiniteDatetime
 }
 
@@ -192,6 +204,9 @@ input TaskCondition {
 
   """Checks for equality with the object’s `updated` field."""
   updated: Datetime
+
+  """Checks for equality with the object’s `stopwatchValue` field."""
+  stopwatchValue: [DatetimeIntervalInput]
 }
 
 """An input for mutations affecting `Task`"""
@@ -202,6 +217,7 @@ input TaskInput {
   title: String
   description: String
   updated: Datetime
+  stopwatchValue: [DatetimeIntervalInput]
 }
 
 enum TaskLifecycle {
@@ -218,6 +234,7 @@ input TaskPatch {
   title: String
   description: String
   updated: Datetime
+  stopwatchValue: [DatetimeIntervalInput]
 }
 
 """A connection to a list of `Task` values."""
@@ -259,6 +276,8 @@ enum TasksOrderBy {
   DESCRIPTION_DESC
   UPDATED_ASC
   UPDATED_DESC
+  STOPWATCH_VALUE_ASC
+  STOPWATCH_VALUE_DESC
   CREATED_ASC
   CREATED_DESC
   PRIMARY_KEY_ASC

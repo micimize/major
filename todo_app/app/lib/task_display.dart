@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
+import 'package:todo_app/task_stopwatch.dart';
 import 'package:todo_app/typed_mutation.dart';
-import 'package:todo_app/complete_task.graphql.dart' as complete;
+import 'package:todo_app/update_task.graphql.dart' as update;
 
-final CompleteTaskMutation = TypedMutation.factoryFor<
-    complete.CompleteTaskResult, complete.CompleteTaskVariables>(
-  documentNode: complete.document,
-  dataFromJson: complete.CompleteTaskResult.fromJson,
+final UpdateTaskMutation = TypedMutation.factoryFor<update.UpdateTaskResult,
+    update.UpdateTaskVariables>(
+  documentNode: update.document,
+  dataFromJson: update.UpdateTaskResult.fromJson,
 );
 
 class TaskDisplay extends StatelessWidget {
@@ -19,7 +20,7 @@ class TaskDisplay extends StatelessWidget {
   final Task task;
 
   @override
-  Widget build(BuildContext context) => CompleteTaskMutation(
+  Widget build(BuildContext context) => UpdateTaskMutation(
         builder: ({
           runMutation,
           data,
@@ -29,7 +30,12 @@ class TaskDisplay extends StatelessWidget {
           return ListTile(
             leading: IconButton(
               onPressed: () => runMutation(
-                complete.CompleteTaskVariables((b) => b..taskId = task.id),
+                update.UpdateTaskVariables(
+                  (b) => b
+                    ..taskId = task.id
+                    ..taskPatch = (TaskPatchBuilder()
+                      ..lifecycle = TaskLifecycle.COMPLETED),
+                ),
               ),
               icon: Icon(
                 task.isCompleted
@@ -39,6 +45,17 @@ class TaskDisplay extends StatelessWidget {
             ),
             title: Text(task.title),
             subtitle: Text(task.description),
+            trailing: TaskStopwatch(
+              value: task.stopwatchValue,
+              onChanged: (value) => runMutation(
+                update.UpdateTaskVariables(
+                  (b) => b
+                    ..taskId = task.id
+                    ..taskPatch = (TaskPatchBuilder()
+                      ..stopwatchValue = value.toBuilder()),
+                ),
+              ),
+            ),
           );
         },
       );

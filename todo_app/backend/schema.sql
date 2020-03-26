@@ -9,7 +9,7 @@ $$ LANGUAGE SQL
   IMMUTABLE
   RETURNS NULL ON NULL INPUT;
 
-create domain finite_datetime as timestamptz check (
+create DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
    value != 'infinity'
 );
 
@@ -20,20 +20,34 @@ CREATE TYPE task_lifecycle AS ENUM (
   'CANCELLED'
 );
 
+CREATE TYPE datetime_interval AS (
+  "start" finite_datetime,
+  "end" finite_datetime
+);
+
+/*
+CREATE DOMAIN stopwatch_interval AS datetime_interval[];
+CHECK (
+  SELECT * FROM UNNEST(VALUE)
+  WHERE "end" is null
+);
+*/
+
 
 CREATE TABLE task (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
-  lifecycle       task_lifecycle default 'TODO',
-  title           TEXT CHECK (char_length(title) < 280),
-  description     TEXT,
-  updated         finite_datetime NOT NULL DEFAULT NOW(),
+  id               UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+  updated          finite_datetime NOT NULL DEFAULT NOW(),
+  lifecycle        task_lifecycle default 'TODO',
+  title            TEXT CHECK (char_length(title) < 280),
+  description      TEXT,
+  stopwatch_value  datetime_interval[]
 );
 
 CREATE FUNCTION task_created(task task) RETURNS finite_datetime AS $$
-  SELECT cast(uuid_timestamp(task.id) as finite_datetime)
+  SELECT cast(uuid_timestamp(task.id) AS finite_datetime)
 $$ LANGUAGE sql STABLE;
 
-comment on function task_created(task) is E'@sortable';
+COMMENT ON FUNCTION task_created(task) IS E'@sortable';
 
 COMMENT ON COLUMN task.id IS 'Primary Key for Tasks';
 
