@@ -1,0 +1,39 @@
+# import './_home_fragment.graphql'
+
+fragment dimensions on Human {
+  height
+  mass
+}
+
+fragment friendNetwork on Character {
+  name
+  friends {
+    name
+    nestedFriends: friends {
+      name
+    }
+    # trying to get lots of nesting for testing
+    # test those nests!
+    ... on Human {
+      ...info
+    }
+  }
+}
+
+fragment relationships on Human {
+  friends {
+    name
+    ...friendNetwork
+  }
+  starships {
+    name
+    length
+    coordinates
+  }
+}
+
+fragment info on Human {
+  appearsIn
+  ...dimensions
+  ...home
+}
