@@ -1,4 +1,4 @@
-name: built_graphql
+name: built_graphql_core
 description: Runtime component of built_graphql
 version: 0.0.1
 homepage: https://github.com/micimize/built-graphql

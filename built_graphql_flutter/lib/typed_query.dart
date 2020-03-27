@@ -1,4 +1,4 @@
-import 'package:built_graphql/built_graphql.dart' as bg;
+import 'package:built_graphql_core/built_graphql_core.dart' as bg;
 import 'package:gql/ast.dart' show DocumentNode;
 import 'package:gql/language.dart' show printNode;
 import 'package:graphql_flutter/graphql_flutter.dart';

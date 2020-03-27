@@ -1,5 +1,5 @@
-import 'package:built_graphql/built_graphql.dart';
 import 'package:test/test.dart';
+import 'package:built_graphql_core/built_graphql_core.dart';
 
 void main() {
   group('A group of tests', () {

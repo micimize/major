@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:built_graphql_flutter/built_graphql_flutter.dart';
 
 void main() {
+  /*
   test('adds one to input values', () {
     final calculator = Calculator();
     expect(calculator.addOne(2), 3);
@@ -10,4 +11,5 @@ void main() {
     expect(calculator.addOne(0), 1);
     expect(() => calculator.addOne(null), throwsNoSuchMethodError);
   });
+  */
 }

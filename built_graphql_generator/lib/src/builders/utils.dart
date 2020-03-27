@@ -369,7 +369,7 @@ String printDirectives(
       .join('\n');
   if (importBg) {
     additional +=
-        "\nimport 'package:built_graphql/built_graphql.dart' as $bgPrefix;";
+        "\nimport 'package:built_graphql_core/built_graphql_core.dart' as $bgPrefix;";
   }
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND

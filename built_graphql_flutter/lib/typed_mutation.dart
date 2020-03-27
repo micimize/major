@@ -1,5 +1,5 @@
 import 'package:built_value/built_value.dart';
-import 'package:built_graphql/built_graphql.dart' as bg;
+import 'package:built_graphql_core/built_graphql_core.dart' as bg;
 import 'package:gql/ast.dart' show DocumentNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
