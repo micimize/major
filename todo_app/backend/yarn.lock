@@ -623,7 +623,7 @@ postgraphile-core@4.6.0:
     graphile-build "4.6.0"
     graphile-build-pg "4.6.0"
 
-postgraphile@^4.5.5:
+postgraphile@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/postgraphile/-/postgraphile-4.6.0.tgz#b564f5b13222f58516dfcbd3ffc2a504532ed03a"
   integrity sha512-396yETXafT2G/+Z7zqUEcuMyKk9j2m/7al/yzfH8zr5rSM0V45z7ikgnGweLHvLbSFudbcYNqs8UdKb/jaXE0A==

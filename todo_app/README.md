@@ -9,13 +9,17 @@ Soon we'll want a real release/lifecycel roadmap
 
 ### Road to 0.1.0: The "Janktown" MVP
 - [X] Basic ad-hoc tasks (creation / completion)
-- [ ] Task Stopwatch
+- [X] Task Stopwatch
 - [ ] Hide completed items at end of day
-- [ ] History page (with details)
+- [ ] History page (wit details like duration, created)
+
+### 0.2.0: Deployment
+- [ ] Google sign-in
 - [ ] Set up testflight / CI
+- [ ] Basic design work (sketch)
+- [ ] Implement Designs
 
-
-
+### 0.3.0
 - [ ] Visualizations / "serious" Quantification
 - [ ] Task "Ongoing / Partially complete" concept
       (richer bullet journal carryover) 

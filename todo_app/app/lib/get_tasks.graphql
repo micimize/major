@@ -1,5 +1,5 @@
 query GetAllTasks {
-  tasks: allTasks(orderBy: CREATED_DESC) {
+  tasks: currentTasks(closedBuffer: { hours: 2 }) {
     nodes {
       __typename
       id
@@ -8,6 +8,7 @@ query GetAllTasks {
       description
       created
       updated
+      closed
       stopwatchValue {
         start
         end

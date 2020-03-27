@@ -8,7 +8,7 @@
     "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X  --skip-plugins graphile-build:NodePlugin"
   },
   "dependencies": {
-    "postgraphile": "^4.5.5",
+    "postgraphile": "^4.6.0",
     "@graphile-contrib/pg-many-to-many": "^1.0.0-beta.12",
     "@graphile-contrib/pg-simplify-inflector": "^5.0.0-beta.1"
   },
