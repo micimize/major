@@ -11,7 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   graphql_flutter: ^3.0.0
-  built_graphql: ^0.0.1
+  built_graphql:
+    path: ../built_graphql
 
 dev_dependencies:
   flutter_test:
