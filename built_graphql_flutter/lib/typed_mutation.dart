@@ -3,6 +3,8 @@ import 'package:built_graphql/built_graphql.dart' as bg;
 import 'package:gql/ast.dart' show DocumentNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
+
+import './common.dart';
 import './dev_utils.dart';
 
 typedef TypedRunMutation<Variables, Result> = void Function(
@@ -65,11 +67,6 @@ typedef MutationChildBuilder<Data, Variables> = Widget Function({
   Data data,
   TypedRunMutation<Variables, Data> runMutation,
 });
-
-typedef SerializeFromJson<Data> = Data Function(Map<String, dynamic> jsonMap);
-typedef SerializeToJson<Variables> = Map<String, Object> Function(
-  Variables json,
-);
 
 /// A Strongly typed version of [Mutation]
 class TypedMutation<Data extends bg.BuiltToJson,

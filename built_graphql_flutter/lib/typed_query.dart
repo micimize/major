@@ -5,6 +5,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:built_graphql_flutter/dev_utils.dart';
 
+import './common.dart';
+
 typedef QueryFactory<ResultPayload extends bg.BuiltToJson,
         Variables extends bg.BuiltToJson>
     = TypedQuery<ResultPayload, Variables> Function({
@@ -17,8 +19,6 @@ typedef QueryChildBuilder<Data> = Widget Function({
   Data data,
   OperationException exception, // should be Exception
 });
-
-typedef SerializeFromJson<Data> = Data Function(Map<String, dynamic> jsonMap);
 
 class TypedQuery<Data extends bg.BuiltToJson, Variables extends bg.BuiltToJson>
     extends StatelessWidget {
