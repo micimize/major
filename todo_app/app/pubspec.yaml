@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   built_graphql:
     path: ../../built_graphql
+  built_graphql_flutter:
+    path: ../../built_graphql_flutter
 
 dev_dependencies:
   built_graphql_generator:

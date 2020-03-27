@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/stopwatch/stopwatch.dart';
-import 'package:todo_app/typed_mutation.dart';
+import 'package:built_graphql_flutter/typed_mutation.dart';
 import 'package:todo_app/update_task.graphql.dart' as update;
 
 final UpdateTaskMutation = TypedMutation.factoryFor<update.UpdateTaskResult,

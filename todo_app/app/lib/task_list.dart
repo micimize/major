@@ -3,7 +3,7 @@ import 'package:todo_app/create_task_form.dart';
 import 'package:todo_app/dev_utils.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
-import 'package:todo_app/typed_query.dart';
+import 'package:built_graphql_flutter/typed_query.dart';
 import 'package:todo_app/get_tasks.graphql.dart' as get_tasks;
 import 'package:todo_app/task_display.dart';
 
