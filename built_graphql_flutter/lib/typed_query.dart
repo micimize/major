@@ -3,7 +3,7 @@ import 'package:gql/ast.dart' show DocumentNode;
 import 'package:gql/language.dart' show printNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/dev_utils.dart';
+import 'package:built_graphql_flutter/dev_utils.dart';
 
 typedef QueryFactory<ResultPayload extends bg.BuiltToJson,
         Variables extends bg.BuiltToJson>
