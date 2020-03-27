@@ -1,7 +1,7 @@
 name: built_graphql
 description: Runtime component of built_graphql
 version: 0.0.1
-# homepage: https://www.example.com
+homepage: https://github.com/micimize/built-graphql
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
