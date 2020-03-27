@@ -1,8 +1,8 @@
 import 'package:build/build.dart' show AssetId;
 import 'package:built_collection/built_collection.dart';
-import 'package:built_graphql/src/builders/config.dart';
-import 'package:built_graphql/src/reader.dart';
-import 'package:built_graphql/src/schema/schema.dart'
+import 'package:built_graphql_generator/src/builders/config.dart';
+import 'package:built_graphql_generator/src/reader.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart'
     show GraphQLType, GraphQLEntity;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;

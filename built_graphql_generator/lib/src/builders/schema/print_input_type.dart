@@ -1,6 +1,6 @@
-import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
 
 String printInputObjectType(InputObjectTypeDefinition inputType) {
   if (!shouldGenerate(inputType.name)) {

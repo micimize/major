@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
-import 'package:built_graphql/src/schema/definitions/definitions.dart';
+import 'package:built_graphql_generator/src/schema/definitions/definitions.dart';
 
 part 'selections.dart';
 part 'type_resolver.dart';

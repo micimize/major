@@ -1,7 +1,7 @@
-import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/builders/utils.dart';
-import 'package:built_graphql/src/builders/schema/print_parametrized_field.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_parametrized_field.dart';
 
 String printObjectType(ObjectTypeDefinition objectType) {
   if (!shouldGenerate(objectType.name)) {

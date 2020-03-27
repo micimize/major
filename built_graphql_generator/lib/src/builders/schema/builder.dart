@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:built_graphql/src/builders/config.dart';
-import 'package:built_graphql/src/builders/utils.dart';
-import 'package:built_graphql/src/reader.dart';
-import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/builders/schema/print_schema.dart';
+import 'package:built_graphql_generator/src/builders/config.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/reader.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_schema.dart';
 
 class SchemaBuilder implements Builder {
   @override

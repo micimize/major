@@ -1,6 +1,6 @@
-import 'package:built_graphql/src/builders/config.dart' as config;
+import 'package:built_graphql_generator/src/builders/config.dart' as config;
 import 'package:meta/meta.dart';
-import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
 
 import '../../schema/definitions/definitions.dart' as d;
 

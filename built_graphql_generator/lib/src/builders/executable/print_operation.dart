@@ -1,10 +1,10 @@
-import 'package:built_graphql/built_graphql.dart';
-import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
-import 'package:built_graphql/src/executable/definitions.dart';
-import 'package:built_graphql/src/executable/selection_simplifier.dart'
+import 'package:built_graphql_generator/built_graphql_generator.dart';
+import 'package:built_graphql_generator/src/builders/executable/print_selection_set.dart';
+import 'package:built_graphql_generator/src/executable/definitions.dart';
+import 'package:built_graphql_generator/src/executable/selection_simplifier.dart'
     show GetSimplified;
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
 
 String printOperation(OperationDefinition operation, PathFocus root) {
   final path = root + (operation.name ?? 'Mutation');

@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
-import 'package:built_graphql/src/builders/config.dart';
-import 'package:built_graphql/src/builders/utils.dart';
-import 'package:built_graphql/src/schema/schema.dart';
+import 'package:built_graphql_generator/src/builders/config.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart';
 import 'package:meta/meta.dart';
-import 'package:built_graphql/src/reader.dart';
-import 'package:built_graphql/src/executable/executable.dart';
-import 'package:built_graphql/src/builders/executable/print_executable.dart';
+import 'package:built_graphql_generator/src/reader.dart';
+import 'package:built_graphql_generator/src/executable/executable.dart';
+import 'package:built_graphql_generator/src/builders/executable/print_executable.dart';
 
 class ExecutableDocumentBuilder implements Builder {
   final AssetId schemaId;

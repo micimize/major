@@ -1,11 +1,11 @@
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/schema/schema.dart';
-import 'package:built_graphql/src/builders/schema/print_enums.dart';
-import 'package:built_graphql/src/builders/schema/print_interface.dart';
-import 'package:built_graphql/src/builders/schema/print_object_type.dart';
-import 'package:built_graphql/src/builders/schema/print_input_type.dart';
-import 'package:built_graphql/src/builders/schema/print_union.dart';
-import 'package:built_graphql/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_enums.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_interface.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_object_type.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_input_type.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_union.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
 
 String printSchema(GraphQLSchema schema, String serializersUniqueName) {
   final serializables = schema.typeMap.values

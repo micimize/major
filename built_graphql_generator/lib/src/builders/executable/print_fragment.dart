@@ -1,10 +1,10 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:built_graphql/src/builders/config.dart' as config;
-import 'package:built_graphql/src/builders/executable/print_inline_in_fragment.dart';
-import 'package:built_graphql/src/builders/executable/print_selection_set.dart';
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/builders/utils.dart';
-import 'package:built_graphql/src/executable/selection_simplifier.dart';
+import 'package:built_graphql_generator/src/builders/config.dart' as config;
+import 'package:built_graphql_generator/src/builders/executable/print_inline_in_fragment.dart';
+import 'package:built_graphql_generator/src/builders/executable/print_selection_set.dart';
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart';
+import 'package:built_graphql_generator/src/executable/selection_simplifier.dart';
 
 String printFragmentMixin(
   ExecutableGraphQLEntity source,

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:built_graphql/src/builders/config.dart';
+import 'package:built_graphql_generator/src/builders/config.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:glob/glob.dart';

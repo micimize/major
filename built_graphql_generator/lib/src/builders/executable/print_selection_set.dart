@@ -1,11 +1,11 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:built_graphql/src/builders/config.dart' as config;
-import 'package:built_graphql/src/builders/executable/print_inline_fragments.dart';
+import 'package:built_graphql_generator/src/builders/config.dart' as config;
+import 'package:built_graphql_generator/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
-import 'package:built_graphql/src/executable/selection_simplifier.dart';
-import 'package:built_graphql/src/schema/schema.dart' as s;
-import 'package:built_graphql/src/builders/schema/print_type.dart';
-import 'package:built_graphql/src/builders/utils.dart' as u;
+import 'package:built_graphql_generator/src/executable/selection_simplifier.dart';
+import 'package:built_graphql_generator/src/schema/schema.dart' as s;
+import 'package:built_graphql_generator/src/builders/schema/print_type.dart';
+import 'package:built_graphql_generator/src/builders/utils.dart' as u;
 
 @immutable
 class SelectionSetPrinters {

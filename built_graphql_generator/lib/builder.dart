@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:meta/meta.dart';
-import 'package:built_graphql/src/builders/config.dart';
+import 'package:built_graphql_generator/src/builders/config.dart';
 
 import './src/builders/schema/builder.dart' show buildSchema;
 import './src/builders/executable/builder.dart' show buildExecutable;

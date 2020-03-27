@@ -1,4 +1,4 @@
-import 'package:built_graphql/built_graphql.dart';
+import 'package:built_graphql_generator/built_graphql_generator.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -9,7 +9,7 @@
 // * InterfaceTypeDefinition
 // * ObjectTypeDefinition
 // * UnionTypeDefinition
-import 'package:built_graphql/src/schema/defaults.dart';
+import 'package:built_graphql_generator/src/schema/defaults.dart';
 import 'package:meta/meta.dart';
 import 'package:gql/ast.dart';
 import 'package:gql/language.dart';
