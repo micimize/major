@@ -1,5 +1,5 @@
 query GetAllTasks {
-  tasks: currentTasks(closedBuffer: { hours: 16 }) {
+  tasks: allTasks(orderBy: CREATED_DESC) {
     nodes {
       __typename
       id

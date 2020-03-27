@@ -1,6 +1,5 @@
 include: package:pedantic/analysis_options.yaml
 
-
 linter:
   rules:
     sort_child_properties_last: true
@@ -14,9 +13,3 @@ analyzer:
   strong-mode:
     implicit-casts: true
     implicit-dynamic: true
-
-  exclude:
-   #- lib/graphql/schema.graphql.dart
-   #- lib/**.g.dart
-   #- lib/**.graphql.dart
-    - lib/**/_sloppy_*.dart

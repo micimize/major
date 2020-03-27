@@ -10,7 +10,7 @@ Soon we'll want a real release/lifecycel roadmap
 ### Road to 0.1.0: The "Janktown" MVP
 - [X] Basic ad-hoc tasks (creation / completion)
 - [X] Task Stopwatch
-- [ ] Hide completed items at end of day
+- [X] Hide completed items after X hours 
 - [ ] History page (wit details like duration, created)
 
 ### 0.2.0: Deployment
