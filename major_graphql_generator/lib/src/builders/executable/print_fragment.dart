@@ -6,6 +6,8 @@ import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
 import 'package:major_graphql_generator/src/executable/selection_simplifier.dart';
 
+final _hideSelectionSets = false;
+
 String printFragmentMixin(
   ExecutableGraphQLEntity source,
   SelectionSet selectionSet,

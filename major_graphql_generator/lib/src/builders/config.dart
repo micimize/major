@@ -116,6 +116,7 @@ class Configuration {
   final List<MixinConfig> forMixins;
 
   Iterable<String> mixinsWhen(Iterable<String> fieldNames) {
+    fieldNames ??= {};
     final fields = fieldNames.toSet();
     return forMixins
         .where((m) => fields.containsAll(m.whenFields))

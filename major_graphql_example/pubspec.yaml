@@ -24,8 +24,7 @@ dependencies:
   built_value: ^7.0.9
   dart_style: ^1.3.3
   graphql_flutter: ^3.0.0
-  major_graphql:
-    path: ../major_graphql
+  major_graphql: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -33,8 +32,14 @@ dev_dependencies:
   test: ^1.6.0
   build_runner: ^1.7.4
   build_test:
+  major_graphql_generator: ^0.0.1
+
+dependency_overrides:
+  major_graphql:
+    path: ../major_graphql
   major_graphql_generator:
     path: ../major_graphql_generator
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
