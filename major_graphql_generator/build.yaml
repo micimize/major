@@ -5,5 +5,5 @@ builders:
     build_extensions: { ".graphql": [".graphql.dart"] }
     auto_apply: none
     build_to: source
-    applies_builders:
-      ["gql_code_gen|ast_builder", "built_value_generator|built_value"]
+    applies_builders: ["gql_code_gen|ast_builder"]
+    runs_before: ["built_value_generator|built_value"]
