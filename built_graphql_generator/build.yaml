@@ -1,9 +1,0 @@
-builders:
-  builder:
-    import: "package:built_graphql_generator/builder.dart"
-    builder_factories: ["builtGraphQLBuilder"]
-    build_extensions: { ".graphql": [".graphql.dart"] }
-    auto_apply: none
-    build_to: source
-    applies_builders:
-      ["gql_code_gen|ast_builder", "built_value_generator|built_value"]

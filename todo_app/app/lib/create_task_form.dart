@@ -3,7 +3,7 @@ import 'package:todo_app/create_task.graphql.dart';
 import 'package:todo_app/dev_utils.dart';
 import 'package:todo_app/get_tasks.graphql.dart' hide document;
 import 'package:todo_app/schema.graphql.dart' as schema;
-import 'package:built_graphql_flutter/typed_mutation.dart';
+import 'package:major_graphql_flutter/typed_mutation.dart';
 
 import 'package:todo_app/task_list.dart' show getTasksCacheKey;
 

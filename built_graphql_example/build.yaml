@@ -1,7 +1,0 @@
-targets:
-  $default:
-    builders:
-      built_graphql_generator|builder:
-        enabled: true
-        options:
-          schema: built_graphql_example|lib/graphql/schema.graphql

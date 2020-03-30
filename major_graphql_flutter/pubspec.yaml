@@ -1,0 +1,23 @@
+name: major_graphql_flutter
+description: graphql_flutter bindings for major_graphql
+version: 0.0.1
+author: micimize
+homepage:
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  graphql_flutter: ^3.0.0
+  major_graphql:
+    path: ../major_graphql
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.6.0
+  pedantic: ^1.8.0
+
+flutter:
