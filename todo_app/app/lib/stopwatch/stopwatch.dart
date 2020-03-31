@@ -70,13 +70,11 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
     return 1.0 - ((dur - elapsed) / dur);
   }
 
-  String get timerString {
+  Duration get ellapsed {
     final dur = widget.period.inMilliseconds;
     final elapsedMilli = (dur * (loops + controller.value)).toInt();
 
-    final duration = Duration(milliseconds: elapsedMilli);
-
-    return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+    return Duration(milliseconds: elapsedMilli);
   }
 
   void handleLoop(AnimationStatus status) {
@@ -138,11 +136,9 @@ class DisplayStopwatchState extends State<DisplayStopwatch>
           AnimatedBuilder(
               animation: controller,
               builder: (BuildContext context, Widget child) {
-                return Text(
-                  value == null && widget.placeholder != null
-                      ? widget.placeholder
-                      : timerString,
-                  style: themeData.textTheme.caption,
+                return DisplayDuration(
+                  placeholder: widget.placeholder,
+                  value: ellapsed,
                 );
               }),
           StopwatchController(
@@ -307,6 +303,30 @@ class ButtonContainer extends StatelessWidget {
       width: size,
       margin: margin,
       child: child,
+    );
+  }
+}
+
+class DisplayDuration extends StatelessWidget {
+  const DisplayDuration({
+    Key key,
+    this.placeholder,
+    this.value,
+    this.style,
+  }) : super(key: key);
+
+  final String placeholder;
+  final Duration value;
+  final TextStyle style;
+
+  String get timerString =>
+      '${value.inMinutes}:${(value.inSeconds % 60).toString().padLeft(2, '0')}';
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      value == null && placeholder != null ? placeholder : timerString,
+      style: style ?? Theme.of(context).textTheme.caption,
     );
   }
 }

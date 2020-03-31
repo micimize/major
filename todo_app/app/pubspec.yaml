@@ -23,19 +23,24 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  major_graphql:
-    path: ../../major_graphql
-  major_graphql_flutter:
-    path: ../../major_graphql_flutter
+  major_graphql: ^0.0.1
+  major_graphql_flutter: ^0.0.1
 
 dev_dependencies:
-  major_graphql_generator:
-    path: ../../major_graphql_generator
+  major_graphql_generator: ^0.0.1
   flutter_test:
     sdk: flutter
   test: ^1.6.0
   build_runner: ^1.7.4
   pedantic: ^1.8.0
+
+dependency_overrides:
+  major_graphql:
+    path: ../../major_graphql
+  major_graphql_flutter:
+    path: ../../major_graphql_flutter
+  major_graphql_generator:
+    path: ../../major_graphql_generator
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -14,13 +14,13 @@ Soon we'll want a real release/lifecycel roadmap
 - [ ] History page (wit details like duration, created)
     - [X] bottom nav + new page
     - [X] an "all tasks" query 
-    - [ ] listing tasks
-
-
+    - [X] listing tasks
 
 ### 0.2.0: Deployment
 - [ ] Google sign-in
 - [ ] Set up testflight / CI
+
+### 0.2.5: Design
 - [ ] Basic design work (sketch)
 - [ ] Implement Designs
 
@@ -31,6 +31,10 @@ Soon we'll want a real release/lifecycel roadmap
 - [ ] Task Notes
 - [ ] Import/Export format
 - [ ] CLI? Web version?
+- [ ] copy / paste? possibly task templates? 
+- [ ] structured tasks / grouped tasks:
+      considerations: do tasks complete along with their constituent parts?
+      should the be implemented recursively? Or a seperate concept
 
 
 

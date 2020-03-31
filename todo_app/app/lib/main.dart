@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:todo_app/history/history_page.dart';
 import 'package:todo_app/navigation.dart';
-import 'package:todo_app/task_list.dart';
+import 'package:todo_app/history/history_page.dart';
+import 'package:todo_app/task_list/task_list.dart';
 
 void main() => runApp(App());
 

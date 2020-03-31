@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/navigation.dart';
 import 'package:major_graphql_flutter/typed_query.dart';
 import 'package:todo_app/history/all_tasks.graphql.dart' as all_tasks;
-import 'package:todo_app/task_display.dart';
+import 'package:todo_app/history/historic_task.dart';
 
 final AllTasksQuery = TypedQuery.factoryFor<all_tasks.GetAllTasksResult,
     all_tasks.GetAllTasksVariables>(

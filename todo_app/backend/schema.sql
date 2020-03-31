@@ -48,6 +48,7 @@ CREATE TABLE task (
   description        TEXT,
   stopwatch_value    datetime_interval[]
 );
+
 -- TODO check completed when lifecycle is completed
 
 CREATE FUNCTION task_created(task task) RETURNS finite_datetime AS $$
