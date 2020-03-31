@@ -4,19 +4,33 @@
   "description": "todo'clock",
   "private": true,
   "scripts": {
-    "start": "postgraphile -c postgres:///todo_app -s public -j --skip-plugins graphile-build:NodePlugin",
-    "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X  --skip-plugins graphile-build:NodePlugin"
+    "start": "node graphile/dist/index.js",
+    "export-schema": "postgraphile -c postgres:///todo_app -s public -j --export-schema-graphql ../app/lib/schema.graphql -X  --skip-plugins graphile-build:NodePlugin",
+    "build-graphile": "webpack --config graphile/webpack.config.js"
   },
   "dependencies": {
-    "postgraphile": "^4.6.0",
-    "@graphile-contrib/pg-many-to-many": "^1.0.0-beta.12",
-    "@graphile-contrib/pg-simplify-inflector": "^5.0.0-beta.1"
+    "express": "^4.17.1",
+    "google-auth-library": "^5.9.1",
+    "graphile-build-pg": "^4.5.3",
+    "graphile-upsert-plugin": "^1.0.0",
+    "graphql": "^14.1.1",
+    "pg": "^7.17.1",
+    "pg-native": "^3.0.0",
+    "postgraphile": "^4.5.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@graphile-contrib/pg-many-to-many": "^1.0.0-beta.12",
+    "@graphile-contrib/pg-simplify-inflector": "^5.0.0-beta.1",
+    "globstar": "^1.0.0",
+    "run.env": "^1.1.0",
+    "terser-webpack-plugin": "^2.3.2",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
   "sideEffects": [],
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/micimize/built-graphql.git"
+    "url": "git+https://bitbucket.org/micimize/major.git"
   },
   "author": "Michael Joseph Rosenthal"
 }

@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:todo_app/navigation.dart';
 import 'package:todo_app/history/history_page.dart';
 import 'package:todo_app/task_list/task_list.dart';
+import 'package:todo_app/user_auth.dart';
 
 void main() => runApp(App());
 
@@ -14,7 +15,12 @@ class App extends StatelessWidget {
         cache: OptimisticCache(
           dataIdFromObject: typenameDataIdFromObject,
         ),
-        link: HttpLink(uri: 'http://localhost:5000/graphql'),
+        link: googleSignInLink.concat(
+          HttpLink(
+            uri: 'http://localhost:5000/graphql',
+            headers: {"Accept": "application/json"},
+          ),
+        ),
       ),
     );
     return GraphQLProvider(
@@ -25,12 +31,14 @@ class App extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: SafeArea(
-            maintainBottomViewPadding: true,
-            child: ControlledTabView(children: [
-              TaskList(),
-              TaskHistory(),
-            ]),
+          home: AuthenticationProvider(
+            child: SafeArea(
+              maintainBottomViewPadding: true,
+              child: ControlledTabView(children: [
+                TaskList(),
+                TaskHistory(),
+              ]),
+            ),
           ),
         ),
       ),

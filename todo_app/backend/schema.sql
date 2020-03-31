@@ -14,6 +14,98 @@ $$ LANGUAGE SQL
   IMMUTABLE
   RETURNS NULL ON NULL INPUT;
 
+-- a bit of a stub for future configurations 
+-- / an orchestration point for user facets
+CREATE TABLE app_user (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v1mc()
+);
+
+
+CREATE TYPE google_sign_in AS (
+  -- google id
+  id             TEXT,
+  email          TEXT,
+  email_verified TEXT,
+  name           TEXT,
+  picture        TEXT,
+  given_name     TEXT,
+  family_name    TEXT,
+  locale         TEXT
+);
+
+CREATE TABLE google_user (
+  id                    TEXT PRIMARY KEY,
+  data                  google_sign_in,
+  app_user_id           uuid not null
+    UNIQUE REFERENCES app_user (id)
+    ON UPDATE CASCADE
+);
+
+
+create function current_sign_in()
+  returns google_sign_in as $$
+    select (
+      nullif(current_setting('google_user.id', true), '')::text,
+      nullif(current_setting('google_user.email', true), '')::text,
+      nullif(current_setting('google_user.email_verified', true), '')::text,
+      nullif(current_setting('google_user.name', true), '')::text,
+      nullif(current_setting('google_user.picture', true), '')::text,
+      nullif(current_setting('google_user.given_name', true), '')::text,
+      nullif(current_setting('google_user.family_name', true), '')::text,
+      nullif(current_setting('google_user.locale', true), '')::text
+    )::google_sign_in;
+$$ language sql stable;
+
+
+CREATE FUNCTION current_app_user()
+  RETURNS app_user AS $$
+DECLARE
+  signed_in google_sign_in;
+  full_user app_user;
+BEGIN
+    signed_in := current_sign_in();
+
+    IF signed_in.id IS NULL THEN
+      RAISE EXCEPTION 'Authentication not provided';
+    END IF;
+
+
+    select * into full_user
+    from app_user
+    where id in (
+      select app_user_id
+      from google_user
+      where id = signed_in.id limit 1
+    ) limit 1;
+
+    IF full_user.id IS NULL THEN
+      insert into app_user default values
+      returning * into full_user;
+
+      insert into google_user (
+        app_user_id,
+        id,
+        data
+      ) values (
+        full_user.id,
+        signed_in.id,
+        signed_in
+      );
+    END IF;
+
+    RETURN full_user;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE FUNCTION current_user_id()
+RETURNS uuid AS $$
+  select (current_app_user()).id;
+$$ language sql stable;
+
+
+
+
 create DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
    value != 'infinity'
 );
@@ -39,6 +131,7 @@ CHECK (
 
 CREATE TABLE task (
   id                 UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+  app_user_id        UUID NOT NULL,
   updated            finite_datetime NOT NULL DEFAULT NOW(),
 
   lifecycle          task_lifecycle default 'TODO',

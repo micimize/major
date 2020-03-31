@@ -1,0 +1,36 @@
+beta_settings:
+  cloud_sql_instances: get-savvy-app:us-central1:savvy-staging
+
+# [START runtime]
+runtime: nodejs12
+env: standard
+entrypoint: node dist/index.js
+
+# manual_scaling:
+#   instances: 1
+resources:
+  cpu: .5
+  memory_gb: .5
+  disk_size_gb: 10
+
+health_check:
+  enable_health_check: False
+
+# [END runtime]
+
+
+# handlers:
+#   - url: /.*
+#     static_files: ./\1
+#     upload: ./(.*)
+#
+env_variables:
+  DATABASE_HOST: '/cloudsql/get-savvy-app:us-central1:savvy-staging'
+  DATABASE_PORT: '5432'
+  DATABASE_USER: postgres
+  DATABASE_PASSWORD: LOLNO
+  DEBUG: postgraphql:*
+  GOOGLE_CLIENT_IDS: 605031163183-mb09djq5dvq4u47gc3i3b6jn2n41hsft.apps.googleusercontent.com,605031163183-ob4hpc55gefdkas3ojur2rja8ojijc2e.apps.googleusercontent.com
+  HOST: 0.0.0.0
+  NODE_ENV: production
+  PORT: "8080"

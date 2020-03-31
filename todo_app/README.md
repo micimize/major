@@ -11,7 +11,7 @@ Soon we'll want a real release/lifecycel roadmap
 - [X] Basic ad-hoc tasks (creation / completion)
 - [X] Task Stopwatch
 - [X] Hide completed items after X hours 
-- [ ] History page (wit details like duration, created)
+- [X] History page (wit details like duration, created)
     - [X] bottom nav + new page
     - [X] an "all tasks" query 
     - [X] listing tasks
