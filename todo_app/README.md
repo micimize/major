@@ -12,6 +12,11 @@ Soon we'll want a real release/lifecycel roadmap
 - [X] Task Stopwatch
 - [X] Hide completed items after X hours 
 - [ ] History page (wit details like duration, created)
+    - [X] bottom nav + new page
+    - [X] an "all tasks" query 
+    - [ ] listing tasks
+
+
 
 ### 0.2.0: Deployment
 - [ ] Google sign-in

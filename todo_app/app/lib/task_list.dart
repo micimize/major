@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/create_task_form.dart';
 import 'package:todo_app/dev_utils.dart';
+import 'package:todo_app/navigation.dart';
 import 'package:todo_app/schema.graphql.dart' hide document;
 import 'package:todo_app/pointless_helpers.dart';
 import 'package:major_graphql_flutter/typed_query.dart';
@@ -54,6 +55,7 @@ class TaskListState extends State<TaskList> {
             appBar: AppBar(
               title: Text('Task List'),
             ),
+            bottomNavigationBar: NavBar(),
             body: Center(
               child: ListView(
                 children: <Widget>[
