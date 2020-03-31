@@ -1,5 +1,5 @@
-import express from 'express'
-import { postgraphile } from 'postgraphile'
+import express from "express";
+import { postgraphile } from "postgraphile";
 
 import {
   options,
@@ -7,28 +7,28 @@ import {
   SCHEMAS,
   GOOGLE_CLIENT_IDS,
   HOST,
-  PORT,
-} from './options'
+  PORT
+} from "./options";
 
-import googleJWT from './google-jwt-verifier'
+import googleJWT from "./google-jwt-verifier";
 
-const app = express()
+const app = express();
 
 const handleAuthorizationErrors = (err, req, response, next) => {
-  if (err.name === 'UnauthorizedError') {
-    console.error(err)
-    const payload = { errors: [{ message: err.message }] }
+  if (err.name === "UnauthorizedError") {
+    console.error(err);
+    const payload = { errors: [{ message: err.message }] };
     response
       .status(err.status)
       .json(payload)
-      .end()
+      .end();
   }
-  next()
-}
+  next();
+};
 
-app.use('/graphql', googleJWT(GOOGLE_CLIENT_IDS))
+app.use("/graphql", googleJWT(GOOGLE_CLIENT_IDS));
 
-app.use('/graphql', handleAuthorizationErrors)
+app.use("/graphql", handleAuthorizationErrors);
 
 app.use(
   postgraphile(pgConnectionConfig, SCHEMAS, {
@@ -37,19 +37,19 @@ app.use(
       ? { readCache: `${__dirname}/postgraphile.cache` }
       : {}),
     pgSettings: request => {
-      const settings = {}
+      const settings = {};
       if (request.user) {
         Object.keys(request.user).forEach(key => {
-          settings[`google_user.${key}`] = request.user[key]
-        })
+          settings[`google_user.${key}`] = request.user[key];
+        });
       }
-      return settings
-    },
-  }),
-)
+      return settings;
+    }
+  })
+);
 
-app.get('/health', (req, res) => res.send('is healthy'))
+app.get("/health", (req, res) => res.send("is healthy"));
 
 app.listen(PORT, HOST, () =>
-  console.log(`Graphile Server running at ${HOST}:${PORT}`),
-)
+  console.log(`Graphile Server running at ${HOST}:${PORT}`)
+);

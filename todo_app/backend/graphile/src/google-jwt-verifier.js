@@ -1,4 +1,4 @@
-import { OAuth2Client } from 'google-auth-library'
+import { OAuth2Client } from "google-auth-library";
 
 function decodedTokenToUser({
   // protocole concerns
@@ -17,7 +17,7 @@ function decodedTokenToUser({
   given_name,
   family_name,
   picture,
-  locale,
+  locale
 }) {
   return {
     id,
@@ -27,49 +27,50 @@ function decodedTokenToUser({
     picture,
     given_name,
     family_name,
-    locale,
-  }
+    locale
+  };
 }
 
 function verifier(client_id) {
   async function verifyAndDecode(token) {
     // building this outside of scope breaks after ~5 days
     // trying inside of scope
-    const client = new OAuth2Client(client_id)
+    const client = new OAuth2Client(client_id);
 
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: client_id,
-    })
-    return ticket.getPayload()
+      audience: client_id
+    });
+    return ticket.getPayload();
   }
 
-  return verifyAndDecode
+  return verifyAndDecode;
 }
 
 export default function express(client_id) {
-  const verify = verifier(client_id)
+  if (!client_id) {
+    throw Error("No client_id Provided!");
+  }
+  const verify = verifier(client_id);
 
   return async (request, response, next) => {
-    const auth_header = request.get('Authorization')
-    const unauthorized = body => response.status(401).send(body)
+    const auth_header = request.get("Authorization");
+    const unauthorized = body => response.status(401).send(body);
 
     if (!auth_header || !auth_header.match(/^Bearer\s/)) {
-      return unauthorized('missing authorization header')
+      return unauthorized("missing authorization header");
     }
 
-    const token = auth_header.replace(/^Bearer\s/, '')
-    console.log(token);
+    const token = auth_header.replace(/^Bearer\s/, "");
 
     try {
-      const payload = await verify(token)
-      request.user = decodedTokenToUser(payload)
-      next()
+      const payload = await verify(token);
+      request.user = decodedTokenToUser(payload);
+      next();
     } catch (err) {
-      console.log({err});
-      return unauthorized(err)
+      return unauthorized(err);
     }
-  }
+  };
 }
 
 /* USAGE *
