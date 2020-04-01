@@ -1,4 +1,4 @@
-package com.example.todo_app
+package app.majortodo
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

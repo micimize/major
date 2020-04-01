@@ -17,7 +17,11 @@ Soon we'll want a real release/lifecycel roadmap
     - [X] listing tasks
 
 ### 0.2.0: Deployment
-- [ ] Google sign-in
+- [ ] Complete Google sign-in integration
+  - [X] Tables
+  - [X] jwt validation
+  - [X] login screen
+  - [ ] https://github.com/micimize/major/issues/10
 - [ ] Set up testflight / CI
 
 ### 0.2.5: Design
@@ -38,3 +42,4 @@ Soon we'll want a real release/lifecycel roadmap
 
 
 
+ios/Runner/GoogleService-Info.plist needs to be added
