@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "yarn workspaces foreach --parallel --exclude worker run dev "
+    "dev": "yarn workspaces foreach --parallel --exclude worker run dev"
   },
   "resolutions": {
     "graphql": "14.x"

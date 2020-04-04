@@ -1,3 +1,57 @@
+
+CREATE OR REPLACE FUNCTION uuid_timestamp(id uuid) RETURNS timestamptz AS $$
+  SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
+      (
+        (
+          (('x' || lpad(split_part(id::text, '-', 1), 16, '0'))::bit(64)::bigint) +
+          (('x' || lpad(split_part(id::text, '-', 2), 16, '0'))::bit(64)::bigint << 32) +
+          ((('x' || lpad(split_part(id::text, '-', 3), 16, '0'))::bit(64)::bigint&4095) << 48) -
+          122192928000000000
+        ) / 10000000
+      ) * INTERVAL '1 second';
+$$ LANGUAGE SQL
+  IMMUTABLE
+  RETURNS NULL ON NULL INPUT;
+
+
+DROP DOMAIN IF EXISTS finite_datetime;
+CREATE DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
+   value != 'infinity'
+);
+
+DROP TYPE IF EXISTS task_lifecycle;
+CREATE TYPE task_lifecycle AS ENUM (
+  'TODO',
+  'COMPLETED',
+  'CANCELLED'
+);
+
+DROP TYPE IF EXISTS datetime_interval;
+CREATE TYPE datetime_interval AS (
+  "start" finite_datetime,
+  "end" finite_datetime
+);
+
+
+
+DROP TABLE IF EXISTS task;
+CREATE TABLE task (
+  id                 UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
+  user_id            UUID NOT NULL,
+  updated            finite_datetime NOT NULL DEFAULT NOW(),
+
+  lifecycle          task_lifecycle default 'TODO',
+  closed             finite_datetime,
+
+  title              TEXT CHECK (char_length(title) < 280),
+  description        TEXT,
+  stopwatch_value    datetime_interval[]
+);
+
+
+
+
+
 /*
 
 This project is using Graphile Migrate to manage migrations; please be aware

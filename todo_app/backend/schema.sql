@@ -106,17 +106,17 @@ $$ language sql stable;
 
 
 
-create DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
+CREATE OR REPLACE DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
    value != 'infinity'
 );
 
-CREATE TYPE task_lifecycle AS ENUM (
+CREATE OR REPLACE TYPE task_lifecycle AS ENUM (
   'TODO',
   'COMPLETED',
   'CANCELLED'
 );
 
-CREATE TYPE datetime_interval AS (
+CREATE OR REPLACE TYPE datetime_interval AS (
   "start" finite_datetime,
   "end" finite_datetime
 );
@@ -129,9 +129,10 @@ CHECK (
 );
 */
 
+DROP TABLE IF EXISTS task;
 CREATE TABLE task (
   id                 UUID PRIMARY KEY DEFAULT uuid_generate_v1mc(),
-  app_user_id        UUID NOT NULL,
+  user_id            UUID NOT NULL,
   updated            finite_datetime NOT NULL DEFAULT NOW(),
 
   lifecycle          task_lifecycle default 'TODO',
