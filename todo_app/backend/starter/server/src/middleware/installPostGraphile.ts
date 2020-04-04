@@ -1,4 +1,5 @@
 // TODO remove : any types
+import { resolve } from "path";
 import {
   postgraphile,
   makePluginHook,
@@ -18,7 +19,6 @@ import SubscriptionsPlugin from "../plugins/SubscriptionsPlugin";
 import handleErrors from "../utils/handleErrors";
 import { getWebsocketMiddlewares, getHttpServer } from "../app";
 import { getAuthPgPool, getRootPgPool } from "./installDatabasePools";
-import { resolve } from "path";
 
 const TagsFilePlugin = makePgSmartTagsFromFilePlugin(
   // We're using JSONC for VSCode compatibility; also using an explicit file

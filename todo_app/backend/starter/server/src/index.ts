@@ -5,7 +5,7 @@ import { createServer } from "http";
 import { makeApp, getShutdownActions } from "./app";
 
 // @ts-ignore
-const packageJson = require("../../../package.json");
+const packageJson = require("../package.json");
 
 async function main() {
   // Create our HTTP server
@@ -54,7 +54,7 @@ async function main() {
   });
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error("Fatal error occurred starting server!");
   console.error(e);
   process.exit(101);
