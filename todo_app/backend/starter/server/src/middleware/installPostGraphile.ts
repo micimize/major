@@ -242,7 +242,7 @@ export function getPostGraphileOptions({
       };
     },
 
-    // Pro plugin options (requires process.env.GRAPHILE_LICENSE)
+    /* Pro plugin options (requires process.env.GRAPHILE_LICENSE)
     defaultPaginationCap:
       parseInt(process.env.GRAPHQL_PAGINATION_CAP || "", 10) || 50,
     graphqlDepthLimit:
@@ -251,7 +251,7 @@ export function getPostGraphileOptions({
       parseInt(process.env.GRAPHQL_COST_LIMIT || "", 10) || 30000,
     exposeGraphQLCost:
       (parseInt(process.env.HIDE_QUERY_COST || "", 10) || 0) < 1,
-    // readReplicaPgPool ...,
+    // readReplicaPgPool ..., */
   };
   return options;
 }
