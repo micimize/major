@@ -1,0 +1,21 @@
+{
+  "name": "todo_app_backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "yarn workspaces foreach --parallel --exclude worker run dev "
+  },
+  "resolutions": {
+    "graphql": "14.x"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  },
+  "workspaces": {
+    "packages": [
+      "db",
+      "server",
+      "worker"
+    ]
+  }
+}

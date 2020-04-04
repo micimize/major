@@ -72,7 +72,6 @@ export async function makeApp({
    * operate very rapidly to enable quick as possible server startup.
    */
   await middleware.installDatabasePools(app);
-  await middleware.installHelmet(app);
   await middleware.installSession(app);
   await middleware.installPassport(app);
   await middleware.installLogging(app);
@@ -82,7 +81,6 @@ export async function makeApp({
     await middleware.installCypressServerCommand(app);
   }
   await middleware.installPostGraphile(app);
-  await middleware.installSSR(app);
 
   /*
    * Error handling middleware

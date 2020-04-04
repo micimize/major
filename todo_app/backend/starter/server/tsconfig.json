@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
     "rootDir": "src",
@@ -10,6 +10,5 @@
     "target": "es2018",
     "module": "commonjs"
   },
-  "include": ["src"],
-  "references": [{ "path": "../config" }]
+  "include": ["src"]
 }

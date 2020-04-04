@@ -1,3 +1,4 @@
+// TODO remove : any types
 import {
   postgraphile,
   makePluginHook,
@@ -11,7 +12,6 @@ import { Pool } from "pg";
 import { Express, Request, Response } from "express";
 import PgPubsub from "@graphile/pg-pubsub";
 import PgSimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
-import GraphilePro from "@graphile/pro"; // Requires license key
 import PassportLoginPlugin from "../plugins/PassportLoginPlugin";
 import PrimaryKeyMutationsOnlyPlugin from "../plugins/PrimaryKeyMutationsOnlyPlugin";
 import SubscriptionsPlugin from "../plugins/SubscriptionsPlugin";
@@ -50,9 +50,6 @@ const isDev = process.env.NODE_ENV === "development";
 const pluginHook = makePluginHook([
   // Add the pub/sub realtime provider
   PgPubsub,
-
-  // If we have a Graphile Pro license, then enable the plugin
-  ...(process.env.GRAPHILE_LICENSE ? [GraphilePro] : []),
 ]);
 
 interface IPostGraphileOptionsOptions {
@@ -196,7 +193,7 @@ export function getPostGraphileOptions({
      * extension settings. We find `jwt.claims.*` to be a safe namespace,
      * whether or not you're using JWTs.
      */
-    async pgSettings(req) {
+    async pgSettings(req: any) {
       const sessionId = req.user && uuidOrNull(req.user.session_id);
       if (sessionId) {
         // Update the last_active timestamp (but only do it at most once every 15 seconds to avoid too much churn).
@@ -224,7 +221,7 @@ export function getPostGraphileOptions({
      * resolvers). This is useful if you write your own plugins that need
      * access to, e.g., the logged in user.
      */
-    async additionalGraphQLContextFromRequest(req) {
+    async additionalGraphQLContextFromRequest(req: any) {
       return {
         // The current session id
         sessionId: req.user && uuidOrNull(req.user.session_id),
@@ -235,7 +232,7 @@ export function getPostGraphileOptions({
         // Use this to tell Passport.js we're logged in
         login: (user: any) =>
           new Promise((resolve, reject) => {
-            req.login(user, err => (err ? reject(err) : resolve()));
+            req.login(user, (err: any) => (err ? reject(err) : resolve()));
           }),
 
         logout: () => {

@@ -1,4 +1,4 @@
-# @app/db
+# database
 
 We're using PostGraphile in a database-driven fashion in this project; so our
 database is paramount. This package includes all the database migrations (one to

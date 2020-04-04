@@ -82,3 +82,18 @@ google-play-key.json
 
 **/ios/Runner.app.dSYM.zip
 **/ios/Runner.ipa
+
+
+**/.yarn/unplugged
+**/.yarn/build-state.yml
+
+# consider switching to zero installs
+# https://github.com/yarnpkg/berry/issues/454
+**/.yarn/*
+!**/.yarn/releases
+!**/.yarn/plugins
+**/.pnp.*
+
+**/yarn.lock
+
+**/.env
