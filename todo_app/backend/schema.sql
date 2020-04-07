@@ -106,9 +106,10 @@ $$ language sql stable;
 
 
 
-CREATE OR REPLACE DOMAIN finite_datetime AS TIMESTAMPTZ CHECK (
-   value != 'infinity'
+CREATE OR REPLACE DOMAIN app_public.finite_datetime AS TIMESTAMPTZ CHECK (
+  isfinite(value)
 );
+COMMENT ON DOMAIN finite_datetime IS E'A timezone-enabled timestamp that is guaranteed to be finite';
 
 CREATE OR REPLACE TYPE task_lifecycle AS ENUM (
   'TODO',
@@ -160,7 +161,7 @@ BEGIN
     NEW.updated = now();
     RETURN NEW;   
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE 'plpgsql';
 
 CREATE TRIGGER update_task_updated
 BEFORE UPDATE ON task

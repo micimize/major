@@ -10,7 +10,7 @@
     "afterReset.sql",
     {
       "_": "command",
-      "command": "yarn workspace @app/worker install-db-schema"
+      "command": "cd ../worker && yarn install-db-schema"
     }
   ],
   "afterAllMigrations": [

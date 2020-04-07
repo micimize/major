@@ -1,5 +1,5 @@
 --! Previous: -
---! Hash: sha1:4be49e527161e4b03af6630d795e00271405d754
+--! Hash: sha1:644b7894c8933c1b40dd513d78d3e46fec03f182
 
 drop schema if exists app_public cascade;
 
@@ -45,15 +45,22 @@ comment on function app_private.tg__add_job() is
 
 /**********/
 
+create domain app_public.finite_datetime as timestamptz check (
+  isfinite(value)
+);
+comment on domain finite_datetime is E'A timezone-enabled timestamp that is guaranteed to be finite';
+
+/**********/
+
 create function app_private.tg__timestamps() returns trigger as $$
 begin
-  NEW.created_at = (case when TG_OP = 'INSERT' then NOW() else OLD.created_at end);
-  NEW.updated_at = (case when TG_OP = 'UPDATE' and OLD.updated_at >= NOW() then OLD.updated_at + interval '1 millisecond' else NOW() end);
+  NEW.created = (case when TG_OP = 'INSERT' then NOW() else OLD.created end);
+  NEW.updated = (case when TG_OP = 'UPDATE' and OLD.updated >= NOW() then OLD.updated + interval '1 millisecond' else NOW() end);
   return NEW;
 end;
 $$ language plpgsql volatile set search_path to pg_catalog, public, pg_temp;
 comment on function app_private.tg__timestamps() is
-  E'This trigger should be called on all tables with created_at, updated_at - it ensures that they cannot be manipulated and that updated_at will always be larger than the previous updated_at.';
+  E'This trigger should be called on all tables with created, updated - it ensures that they cannot be manipulated and that updated will always be larger than the previous updated.';
 
 /**********/
 
@@ -84,8 +91,8 @@ create table app_private.sessions (
   uuid uuid not null default gen_random_uuid() primary key,
   user_id int not null,
   -- You could add access restriction columns here if you want, e.g. for OAuth scopes.
-  created_at timestamptz not null default now(),
-  last_active timestamptz not null default now()
+  created app_public.finite_datetime not null default now(),
+  last_active app_public.finite_datetime not null default now()
 );
 alter table app_private.sessions enable row level security;
 
@@ -124,8 +131,8 @@ create table app_public.users (
   avatar_url text check(avatar_url ~ '^https?://[^/]+'),
   is_admin boolean not null default false,
   is_verified boolean not null default false,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  created app_public.finite_datetime not null default now(),
+  updated app_public.finite_datetime not null default now()
 );
 alter table app_public.users enable row level security;
 
@@ -184,15 +191,15 @@ comment on function app_public.current_user() is
 create table app_private.user_secrets (
   user_id int not null primary key references app_public.users on delete cascade,
   password_hash text,
-  last_login_at timestamptz not null default now(),
+  last_login_at app_public.finite_datetime not null default now(),
   failed_password_attempts int not null default 0,
-  first_failed_password_attempt timestamptz,
+  first_failed_password_attempt app_public.finite_datetime,
   reset_password_token text,
-  reset_password_token_generated timestamptz,
+  reset_password_token_generated app_public.finite_datetime,
   failed_reset_password_attempts int not null default 0,
-  first_failed_reset_password_attempt timestamptz,
+  first_failed_reset_password_attempt app_public.finite_datetime,
   delete_account_token text,
-  delete_account_token_generated timestamptz
+  delete_account_token_generated app_public.finite_datetime
 );
 alter table app_private.user_secrets enable row level security;
 comment on table app_private.user_secrets is
@@ -223,8 +230,8 @@ create table app_public.user_emails (
   email citext not null check (email ~ '[^@]+@[^@]+\.[^@]+'),
   is_verified boolean not null default false,
   is_primary boolean not null default false,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
+  created app_public.finite_datetime not null default now(),
+  updated app_public.finite_datetime not null default now(),
   constraint user_emails_user_id_email_key unique(user_id, email),
   constraint user_emails_must_be_verified_to_be_primary check(is_primary is false or is_verified is true)
 );
@@ -277,8 +284,8 @@ grant delete on app_public.user_emails to :DATABASE_VISITOR;
 create table app_private.user_email_secrets (
   user_email_id int primary key references app_public.user_emails on delete cascade,
   verification_token text,
-  verification_email_sent_at timestamptz,
-  password_reset_email_sent_at timestamptz
+  verification_email_sent_at app_public.finite_datetime,
+  password_reset_email_sent_at app_public.finite_datetime
 );
 alter table app_private.user_email_secrets enable row level security;
 comment on table app_private.user_email_secrets is
@@ -332,8 +339,8 @@ create table app_public.user_authentications (
   service text not null,
   identifier text not null,
   details jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
+  created app_public.finite_datetime not null default now(),
+  updated app_public.finite_datetime not null default now(),
   constraint uniq_user_authentications unique(service, identifier)
 );
 
@@ -388,7 +395,7 @@ begin
     where user_emails.email = login.username
     order by
       user_emails.is_verified desc, -- Prefer verified email
-      user_emails.created_at asc -- Failing that, prefer the first registered (unverified users _should_ verify before logging in)
+      user_emails.created asc -- Failing that, prefer the first registered (unverified users _should_ verify before logging in)
     limit 1;
   else
     -- It's a username
@@ -459,7 +466,7 @@ $$ language plpgsql security definer volatile set search_path to pg_catalog, pub
 create table app_private.unregistered_email_password_resets (
   email citext constraint unregistered_email_pkey primary key,
   attempts int not null default 1,
-  latest_attempt timestamptz not null
+  latest_attempt app_public.finite_datetime not null
 );
 comment on table app_private.unregistered_email_password_resets is
   E'If someone tries to recover the password for an email that is not registered in our system, this table enables us to rate-limit outgoing emails to avoid spamming.';
@@ -476,8 +483,8 @@ declare
   v_token text;
   v_token_min_duration_between_emails interval = interval '3 minutes';
   v_token_max_duration interval = interval '3 days';
-  v_now timestamptz = clock_timestamp(); -- Function can be called multiple during transaction
-  v_latest_attempt timestamptz;
+  v_now app_public.finite_datetime = clock_timestamp(); -- Function can be called multiple during transaction
+  v_latest_attempt app_public.finite_datetime;
 begin
   -- Find the matching user_email:
   select user_emails.* into v_user_email

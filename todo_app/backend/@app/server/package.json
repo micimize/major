@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && chmod +x dist/index.js",
-    "start": "run.env -p ../.env dist/index.js",
-    "dev": "nodemon --signal SIGINT --watch 'dist/**/*.js' -x 'run.env -p ../.env node --inspect=9678 -r source-map-support/register' dist/index.js"
+    "start": "node -r @app/config/env dist/index.js",
+    "dev": "nodemon --signal SIGINT --watch 'dist/**/*.js' -x 'node --inspect=9678 -r @app/config/env -r source-map-support/register' dist/index.js"
   },
   "dependencies": {
     "@graphile-contrib/pg-simplify-inflector": "^5.0.0-beta.1",
@@ -45,7 +45,6 @@
     "graphql": "^14.4.2",
     "mock-req": "^0.2.0",
     "nodemon": "^2.0.2",
-    "run.env": "^1.1.0",
     "typescript": "^3.8.3"
   }
 }

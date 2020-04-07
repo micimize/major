@@ -32,7 +32,15 @@
     "noEmit": true,
     "declaration": true,
     "declarationMap": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["@app/*"]
+    }
   },
-  "include": []
+  "include": [],
+  "exclude": [],
+  "references": [
+    { "path": "@app/server" },
+    { "path": "@app/worker" }
+  ]
 }
