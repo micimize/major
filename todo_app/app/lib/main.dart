@@ -17,7 +17,7 @@ class App extends StatelessWidget {
         ),
         link: googleSignInLink.concat(
           HttpLink(
-            uri: 'http://localhost:5000/graphql',
+            uri: 'http://localhost:3000/graphql',
             headers: {"Accept": "application/json"},
           ),
         ),

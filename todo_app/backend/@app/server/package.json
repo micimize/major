@@ -38,13 +38,14 @@
     "pg": "^7.17.1",
     "postgraphile": "^4.5.5",
     "redis": "^2.8.0",
-    "source-map-support": "^0.5.13",
+    "source-map-support": "^0.5.16",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "graphql": "^14.4.2",
     "mock-req": "^0.2.0",
     "nodemon": "^2.0.2",
+    "source-map-support": "^0.5.16",
     "typescript": "^3.8.3"
   }
 }

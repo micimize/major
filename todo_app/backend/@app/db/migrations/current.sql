@@ -1,12 +1,15 @@
-
+drop trigger if exists _100_timestamps on app_public.task;
+drop function if exists current_tasks;
+drop table if exists task;
 drop type if exists task_lifecycle;
+drop type if exists datetime_interval;
+
 create type task_lifecycle as enum (
   'TODO',
   'COMPLETED',
   'CANCELLED'
 );
 
-drop type if exists datetime_interval;
 create type datetime_interval as (
   "start" finite_datetime,
   "end" finite_datetime
@@ -21,8 +24,7 @@ CHECK (
 );
 */
 
-drop table if exists task;
-create table task (
+create table app_public.task (
   id                 uuid primary key default uuid_generate_v1mc(),
   user_id            uuid not null,
   created            finite_datetime not null default now(),
@@ -35,29 +37,45 @@ create table task (
   description        text,
   stopwatch_value    datetime_interval[]
 );
+alter table app_public.task enable row level security;
+
+grant
+  select,
+  insert (lifecycle, closed, title, description, stopwatch_value),
+  update (lifecycle, closed, title, description, stopwatch_value),
+  delete
+on app_public.task to :DATABASE_VISITOR;
+
+
 create trigger _100_timestamps before insert or update on app_public.task
   for each row execute procedure app_private.tg__timestamps();
 
--- grant
---   select,
---   insert (headline, body, topic),
---   update (headline, body, topic),
---   delete
--- on app_public.posts to :DATABASE_VISITOR;
+/*
+CREATE DOMAIN timezone AS TEXT NOT NULL CHECK (
+  now() AT TIME ZONE VALUE IS NOT NULL
+);
+ -- finite_datetime user_start_of_day)
+*/
+
+-- TODO should we surface a simple last "24 hours"
+-- OR surface everything > user's "start of day"
+CREATE OR REPLACE FUNCTION app_public.current_tasks(
+  closed_buffer INTERVAL DEFAULT '24 hours'
+)
+  RETURNS SETOF app_public.task AS $$
+    SELECT * FROM app_public.task
+    WHERE
+      COALESCE(closed, now()) > (
+        now() - $1
+      )
+    ORDER BY
+      created
+    DESC
+$$ LANGUAGE SQL STABLE;
 
 -- create policy select_all on app_public.posts for select using (true);
 -- create policy manage_own on app_public.posts for all using (author_id = app_public.current_user_id());
 -- create policy manage_as_admin on app_public.posts for all using (exists (select 1 from app_public.users where is_admin is true and id = app_public.current_user_id()));
-
--- comment on table app_public.posts is 'A forum post written by a `User`.';
--- comment on column app_public.posts.id is 'The primary key for the `Post`.';
--- comment on column app_public.posts.headline is 'The title written by the `User`.';
--- comment on column app_public.posts.author_id is 'The id of the author `User`.';
--- comment on column app_public.posts.topic is 'The `Topic` this has been posted in.';
--- comment on column app_public.posts.body is 'The main body text of our `Post`.';
--- comment on column app_public.posts.created_at is 'The time this `Post` was created.';
--- comment on column app_public.posts.updated_at is 'The time this `Post` was last modified (or created).';
-
 -- create table app_public.user_feed_posts (
 --   id               serial primary key,
 --   user_id          int not null references app_public.users on delete cascade,

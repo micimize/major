@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test:watch": "node @app/test.js --watch",
-    "dev": "yarn && tsc -b && concurrently --kill-others --names 'TSC,WATCH,RUN,TEST' --prefix '({name})' --prefix-colors 'yellow.bold,yellow.bold,cyan.bold,greenBright.bold' 'tsc -b --watch --preserveWatchOutput' 'lerna run --parallel watch' #'lerna run --parallel dev' 'sleep 10; yarn test:watch'"
+    "dev": "yarn && tsc -b && concurrently --kill-others --names 'TSC,WATCH,RUN,TEST' --prefix '({name})' --prefix-colors 'yellow.bold,yellow.bold,cyan.bold,greenBright.bold' 'tsc -b --watch --preserveWatchOutput' 'lerna run --parallel watch' 'lerna run --parallel dev' #'sleep 10; yarn test:watch'"
   },
   "resolutions": {
     "graphql": "14.x"
