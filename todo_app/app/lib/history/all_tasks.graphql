@@ -1,5 +1,5 @@
 query GetAllTasks {
-  tasks: allTasks(orderBy: CREATED_DESC) {
+  tasks(orderBy: [CREATED_DESC]) {
     nodes {
       __typename
       id

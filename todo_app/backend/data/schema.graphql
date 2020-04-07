@@ -1,0 +1,1434 @@
+"""All input for the `changePassword` mutation."""
+input ChangePasswordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  newPassword: String!
+  oldPassword: String!
+}
+
+"""The output of our `changePassword` mutation."""
+type ChangePasswordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}
+
+"""All input for the `confirmAccountDeletion` mutation."""
+input ConfirmAccountDeletionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  token: String!
+}
+
+"""The output of our `confirmAccountDeletion` mutation."""
+type ConfirmAccountDeletionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}
+
+"""All input for the create `Task` mutation."""
+input CreateTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Task` to be created by this mutation."""
+  task: TaskInput!
+}
+
+"""The output of our create `Task` mutation."""
+type CreateTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `Task` that was created by this mutation."""
+  task: Task
+
+  """An edge for our `Task`. May be used by Relay 1."""
+  taskEdge(
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""All input for the create `UserAuthentication` mutation."""
+input CreateUserAuthenticationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `UserAuthentication` to be created by this mutation."""
+  userAuthentication: UserAuthenticationInput!
+}
+
+"""The output of our create `UserAuthentication` mutation."""
+type CreateUserAuthenticationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserAuthentication`."""
+  user: User
+
+  """The `UserAuthentication` that was created by this mutation."""
+  userAuthentication: UserAuthentication
+}
+
+"""All input for the create `UserEmail` mutation."""
+input CreateUserEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `UserEmail` to be created by this mutation."""
+  userEmail: UserEmailInput!
+}
+
+"""The output of our create `UserEmail` mutation."""
+type CreateUserEmailPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+
+  """The `UserEmail` that was created by this mutation."""
+  userEmail: UserEmail
+
+  """An edge for our `UserEmail`. May be used by Relay 1."""
+  userEmailEdge(
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsEdge
+}
+
+"""All input for the create `User` mutation."""
+input CreateUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `User` to be created by this mutation."""
+  user: UserInput!
+}
+
+"""The output of our create `User` mutation."""
+type CreateUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `User` that was created by this mutation."""
+  user: User
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""A location in a connection that can be used for resuming pagination."""
+scalar Cursor
+
+type DatetimeInterval {
+  end: FiniteDatetime
+  start: FiniteDatetime
+}
+
+"""An input for mutations affecting `DatetimeInterval`"""
+input DatetimeIntervalInput {
+  end: FiniteDatetime
+  start: FiniteDatetime
+}
+
+"""All input for the `deleteTask` mutation."""
+input DeleteTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+}
+
+"""The output of our delete `Task` mutation."""
+type DeleteTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedTaskNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `Task` that was deleted by this mutation."""
+  task: Task
+
+  """An edge for our `Task`. May be used by Relay 1."""
+  taskEdge(
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""All input for the `deleteUserAuthentication` mutation."""
+input DeleteUserAuthenticationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+}
+
+"""The output of our delete `UserAuthentication` mutation."""
+type DeleteUserAuthenticationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedUserAuthenticationNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserAuthentication`."""
+  user: User
+
+  """The `UserAuthentication` that was deleted by this mutation."""
+  userAuthentication: UserAuthentication
+}
+
+"""All input for the `deleteUserEmail` mutation."""
+input DeleteUserEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+}
+
+"""The output of our delete `UserEmail` mutation."""
+type DeleteUserEmailPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedUserEmailNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+
+  """The `UserEmail` that was deleted by this mutation."""
+  userEmail: UserEmail
+
+  """An edge for our `UserEmail`. May be used by Relay 1."""
+  userEmailEdge(
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsEdge
+}
+
+"""All input for the `deleteUser` mutation."""
+input DeleteUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """Unique identifier for the user."""
+  id: Int!
+}
+
+"""The output of our delete `User` mutation."""
+type DeleteUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+  deletedUserNodeId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `User` that was deleted by this mutation."""
+  user: User
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""A timezone-enabled timestamp that is guaranteed to be finite"""
+scalar FiniteDatetime
+
+"""All input for the `forgotPassword` mutation."""
+input ForgotPasswordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  email: String!
+}
+
+"""The output of our `forgotPassword` mutation."""
+type ForgotPasswordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+}
+
+"""
+An interval of time that has passed where the smallest distinct unit is a second.
+"""
+input IntervalInput {
+  """A quantity of days."""
+  days: Int
+
+  """A quantity of hours."""
+  hours: Int
+
+  """A quantity of minutes."""
+  minutes: Int
+
+  """A quantity of months."""
+  months: Int
+
+  """
+  A quantity of seconds. This is the only non-integer field, as all the other
+  fields will dump their overflow into a smaller unit of time. Intervals don’t
+  have a smaller unit than seconds.
+  """
+  seconds: Float
+
+  """A quantity of years."""
+  years: Int
+}
+
+input LoginInput {
+  password: String!
+  username: String!
+}
+
+type LoginPayload {
+  user: User!
+}
+
+type LogoutPayload {
+  success: Boolean
+}
+
+"""All input for the `makeEmailPrimary` mutation."""
+input MakeEmailPrimaryInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  emailId: Int!
+}
+
+"""The output of our `makeEmailPrimary` mutation."""
+type MakeEmailPrimaryPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+  userEmail: UserEmail
+
+  """An edge for our `UserEmail`. May be used by Relay 1."""
+  userEmailEdge(
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsEdge
+}
+
+"""
+The root mutation type which contains root level fields which mutate data.
+"""
+type Mutation {
+  """Enter your old password and a new password to change your password."""
+  changePassword(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: ChangePasswordInput!
+  ): ChangePasswordPayload
+
+  """
+  If you're certain you want to delete your account, use
+  `requestAccountDeletion` to request an account deletion token, and then supply
+  the token through this mutation to complete account deletion.
+  """
+  confirmAccountDeletion(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: ConfirmAccountDeletionInput!
+  ): ConfirmAccountDeletionPayload
+
+  """Creates a single `Task`."""
+  createTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTaskInput!
+  ): CreateTaskPayload
+
+  """Creates a single `User`."""
+  createUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUserInput!
+  ): CreateUserPayload
+
+  """Creates a single `UserAuthentication`."""
+  createUserAuthentication(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUserAuthenticationInput!
+  ): CreateUserAuthenticationPayload
+
+  """Creates a single `UserEmail`."""
+  createUserEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUserEmailInput!
+  ): CreateUserEmailPayload
+
+  """Deletes a single `Task` using a unique key."""
+  deleteTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTaskInput!
+  ): DeleteTaskPayload
+
+  """Deletes a single `User` using a unique key."""
+  deleteUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserInput!
+  ): DeleteUserPayload
+
+  """Deletes a single `UserAuthentication` using a unique key."""
+  deleteUserAuthentication(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserAuthenticationInput!
+  ): DeleteUserAuthenticationPayload
+
+  """Deletes a single `UserEmail` using a unique key."""
+  deleteUserEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserEmailInput!
+  ): DeleteUserEmailPayload
+
+  """
+  If you've forgotten your password, give us one of your email addresses and
+  we'll send you a reset token. Note this only works if you have added an email address!
+  """
+  forgotPassword(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: ForgotPasswordInput!
+  ): ForgotPasswordPayload
+
+  """
+  Use this mutation to log in to your account; this login uses sessions so you do not need to take further action.
+  """
+  login(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: LoginInput!
+  ): LoginPayload
+
+  """
+  Use this mutation to logout from your account. Don't forget to clear the client state!
+  """
+  logout: LogoutPayload
+
+  """
+  Your primary email is where we'll notify of account events; other emails may
+  be used for discovery or login. Use this when you're changing your email address.
+  """
+  makeEmailPrimary(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: MakeEmailPrimaryInput!
+  ): MakeEmailPrimaryPayload
+
+  """
+  Use this mutation to create an account on our system. This may only be used if you are logged out.
+  """
+  register(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: RegisterInput!
+  ): RegisterPayload
+
+  """Begin the account deletion flow by requesting the confirmation email"""
+  requestAccountDeletion(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: RequestAccountDeletionInput!
+  ): RequestAccountDeletionPayload
+
+  """
+  If you didn't receive the verification code for this email, we can resend it.
+  We silently cap the rate of resends on the backend, so calls to this function
+  may not result in another email being sent if it has been called recently.
+  """
+  resendEmailVerificationCode(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: ResendEmailVerificationCodeInput!
+  ): ResendEmailVerificationCodePayload
+
+  """
+  After triggering forgotPassword, you'll be sent a reset token. Combine this
+  with your user ID and a new password to reset your password.
+  """
+  resetPassword(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: ResetPasswordInput!
+  ): ResetPasswordPayload
+
+  """Updates a single `Task` using a unique key and a patch."""
+  updateTask(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTaskInput!
+  ): UpdateTaskPayload
+
+  """Updates a single `User` using a unique key and a patch."""
+  updateUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserInput!
+  ): UpdateUserPayload
+
+  """Updates a single `UserAuthentication` using a unique key and a patch."""
+  updateUserAuthentication(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserAuthenticationInput!
+  ): UpdateUserAuthenticationPayload
+
+  """Updates a single `UserEmail` using a unique key and a patch."""
+  updateUserEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserEmailInput!
+  ): UpdateUserEmailPayload
+
+  """
+  Once you have received a verification token for your email, you may call this
+  mutation with that token to make your email verified.
+  """
+  verifyEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: VerifyEmailInput!
+  ): VerifyEmailPayload
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: Cursor
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: Cursor
+}
+
+"""The root query type which gives access points into the data universe."""
+type Query {
+  """Reads and enables pagination through a set of `Task`."""
+  currentTasks(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+    closedBuffer: IntervalInput
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+  ): TasksConnection!
+
+  """The currently logged in user (or null if not logged in)."""
+  currentUser: User
+
+  """
+  Exposes the root query type nested one level down. This is helpful for Relay 1
+  which can only query top level fields if they are in a particular form.
+  """
+  query: Query!
+  task(id: UUID!): Task
+
+  """Reads and enables pagination through a set of `Task`."""
+  tasks(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TaskCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksConnection
+  user(id: Int!): User
+  userAuthentication(id: Int!): UserAuthentication
+  userByUsername(username: String!): User
+  userEmail(id: Int!): UserEmail
+}
+
+input RegisterInput {
+  avatarUrl: String
+  email: String!
+  name: String
+  password: String!
+  username: String!
+}
+
+type RegisterPayload {
+  user: User!
+}
+
+"""All input for the `requestAccountDeletion` mutation."""
+input RequestAccountDeletionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+}
+
+"""The output of our `requestAccountDeletion` mutation."""
+type RequestAccountDeletionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}
+
+"""All input for the `resendEmailVerificationCode` mutation."""
+input ResendEmailVerificationCodeInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  emailId: Int!
+}
+
+"""The output of our `resendEmailVerificationCode` mutation."""
+type ResendEmailVerificationCodePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}
+
+"""All input for the `resetPassword` mutation."""
+input ResetPasswordInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  newPassword: String!
+  resetToken: String!
+  userId: Int!
+}
+
+"""The output of our `resetPassword` mutation."""
+type ResetPasswordPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}
+
+"""
+The root subscription type: contains realtime events you can subscribe to with the `subscription` operation.
+"""
+type Subscription {
+  """Triggered when the logged in user's record is updated in some way."""
+  currentUserUpdated: UserSubscriptionPayload
+}
+
+type Task {
+  closed: FiniteDatetime
+  created: FiniteDatetime!
+  description: String
+  id: UUID!
+  lifecycle: TaskLifecycle
+  stopwatchValue: [DatetimeInterval]
+  title: String
+  updated: FiniteDatetime!
+  userId: Int
+}
+
+"""
+A condition to be used against `Task` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TaskCondition {
+  """Checks for equality with the object’s `created` field."""
+  created: FiniteDatetime
+
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+}
+
+"""An input for mutations affecting `Task`"""
+input TaskInput {
+  closed: FiniteDatetime
+  created: FiniteDatetime
+  description: String
+  id: UUID
+  lifecycle: TaskLifecycle
+  stopwatchValue: [DatetimeIntervalInput]
+  title: String
+  updated: FiniteDatetime
+  userId: Int
+}
+
+enum TaskLifecycle {
+  CANCELLED
+  COMPLETED
+  TODO
+}
+
+"""Represents an update to a `Task`. Fields that are set will be updated."""
+input TaskPatch {
+  closed: FiniteDatetime
+  created: FiniteDatetime
+  description: String
+  id: UUID
+  lifecycle: TaskLifecycle
+  stopwatchValue: [DatetimeIntervalInput]
+  title: String
+  updated: FiniteDatetime
+  userId: Int
+}
+
+"""A connection to a list of `Task` values."""
+type TasksConnection {
+  """
+  A list of edges which contains the `Task` and cursor to aid in pagination.
+  """
+  edges: [TasksEdge!]!
+
+  """A list of `Task` objects."""
+  nodes: [Task!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Task` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Task` edge in the connection."""
+type TasksEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Task` at the end of the edge."""
+  node: Task!
+}
+
+"""Methods to use when ordering `Task`."""
+enum TasksOrderBy {
+  CREATED_ASC
+  CREATED_DESC
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""All input for the `updateTask` mutation."""
+input UpdateTaskInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+
+  """
+  An object where the defined keys will be set on the `Task` being updated.
+  """
+  patch: TaskPatch!
+}
+
+"""The output of our update `Task` mutation."""
+type UpdateTaskPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `Task` that was updated by this mutation."""
+  task: Task
+
+  """An edge for our `Task`. May be used by Relay 1."""
+  taskEdge(
+    """The method to use when ordering `Task`."""
+    orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TasksEdge
+}
+
+"""All input for the `updateUserAuthentication` mutation."""
+input UpdateUserAuthenticationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+
+  """
+  An object where the defined keys will be set on the `UserAuthentication` being updated.
+  """
+  patch: UserAuthenticationPatch!
+}
+
+"""The output of our update `UserAuthentication` mutation."""
+type UpdateUserAuthenticationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserAuthentication`."""
+  user: User
+
+  """The `UserAuthentication` that was updated by this mutation."""
+  userAuthentication: UserAuthentication
+}
+
+"""All input for the `updateUserEmail` mutation."""
+input UpdateUserEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+
+  """
+  An object where the defined keys will be set on the `UserEmail` being updated.
+  """
+  patch: UserEmailPatch!
+}
+
+"""The output of our update `UserEmail` mutation."""
+type UpdateUserEmailPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+
+  """The `UserEmail` that was updated by this mutation."""
+  userEmail: UserEmail
+
+  """An edge for our `UserEmail`. May be used by Relay 1."""
+  userEmailEdge(
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsEdge
+}
+
+"""All input for the `updateUser` mutation."""
+input UpdateUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """Unique identifier for the user."""
+  id: Int!
+
+  """
+  An object where the defined keys will be set on the `User` being updated.
+  """
+  patch: UserPatch!
+}
+
+"""The output of our update `User` mutation."""
+type UpdateUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """The `User` that was updated by this mutation."""
+  user: User
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""A user who can log in to the application."""
+type User {
+  """Optional avatar URL."""
+  avatarUrl: String
+  created: FiniteDatetime!
+  hasPassword: Boolean
+
+  """Unique identifier for the user."""
+  id: Int!
+
+  """If true, the user has elevated privileges."""
+  isAdmin: Boolean!
+  isVerified: Boolean!
+
+  """Public-facing name (or pseudonym) of the user."""
+  name: String
+  updated: FiniteDatetime!
+
+  """Reads and enables pagination through a set of `UserAuthentication`."""
+  userAuthenticationsList(
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserAuthenticationCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `UserAuthentication`."""
+    orderBy: [UserAuthenticationsOrderBy!]
+  ): [UserAuthentication!]!
+
+  """Reads and enables pagination through a set of `UserEmail`."""
+  userEmails(
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserEmailCondition
+
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """The method to use when ordering `UserEmail`."""
+    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UserEmailsConnection!
+
+  """Public-facing username (or 'handle') of the user."""
+  username: String!
+}
+
+"""
+Contains information about the login providers this user has used, so that they may disconnect them should they wish.
+"""
+type UserAuthentication {
+  created: FiniteDatetime!
+  id: Int!
+
+  """A unique identifier for the user within the login service."""
+  identifier: String!
+
+  """The login service used, e.g. `twitter` or `github`."""
+  service: String!
+  updated: FiniteDatetime!
+
+  """Reads a single `User` that is related to this `UserAuthentication`."""
+  user: User
+  userId: Int!
+}
+
+"""
+A condition to be used against `UserAuthentication` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input UserAuthenticationCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `service` field."""
+  service: String
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+"""An input for mutations affecting `UserAuthentication`"""
+input UserAuthenticationInput {
+  created: FiniteDatetime
+  id: Int
+
+  """A unique identifier for the user within the login service."""
+  identifier: String!
+
+  """The login service used, e.g. `twitter` or `github`."""
+  service: String!
+  updated: FiniteDatetime
+  userId: Int!
+}
+
+"""
+Represents an update to a `UserAuthentication`. Fields that are set will be updated.
+"""
+input UserAuthenticationPatch {
+  created: FiniteDatetime
+  id: Int
+
+  """A unique identifier for the user within the login service."""
+  identifier: String
+
+  """The login service used, e.g. `twitter` or `github`."""
+  service: String
+  updated: FiniteDatetime
+  userId: Int
+}
+
+"""Methods to use when ordering `UserAuthentication`."""
+enum UserAuthenticationsOrderBy {
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  SERVICE_ASC
+  SERVICE_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+}
+
+"""Information about a user's email address."""
+type UserEmail {
+  created: FiniteDatetime!
+
+  """The users email address, in `a@b.c` format."""
+  email: String!
+  id: Int!
+  isPrimary: Boolean!
+
+  """
+  True if the user has is_verified their email address (by clicking the link in
+  the email we sent them, or logging in with a social login provider), false otherwise.
+  """
+  isVerified: Boolean!
+  updated: FiniteDatetime!
+
+  """Reads a single `User` that is related to this `UserEmail`."""
+  user: User
+  userId: Int!
+}
+
+"""
+A condition to be used against `UserEmail` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input UserEmailCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+
+  """Checks for equality with the object’s `isPrimary` field."""
+  isPrimary: Boolean
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: Int
+}
+
+"""An input for mutations affecting `UserEmail`"""
+input UserEmailInput {
+  created: FiniteDatetime
+
+  """The users email address, in `a@b.c` format."""
+  email: String!
+  id: Int
+  isPrimary: Boolean
+
+  """
+  True if the user has is_verified their email address (by clicking the link in
+  the email we sent them, or logging in with a social login provider), false otherwise.
+  """
+  isVerified: Boolean
+  updated: FiniteDatetime
+  userId: Int
+}
+
+"""
+Represents an update to a `UserEmail`. Fields that are set will be updated.
+"""
+input UserEmailPatch {
+  created: FiniteDatetime
+
+  """The users email address, in `a@b.c` format."""
+  email: String
+  id: Int
+  isPrimary: Boolean
+
+  """
+  True if the user has is_verified their email address (by clicking the link in
+  the email we sent them, or logging in with a social login provider), false otherwise.
+  """
+  isVerified: Boolean
+  updated: FiniteDatetime
+  userId: Int
+}
+
+"""A connection to a list of `UserEmail` values."""
+type UserEmailsConnection {
+  """
+  A list of edges which contains the `UserEmail` and cursor to aid in pagination.
+  """
+  edges: [UserEmailsEdge!]!
+
+  """A list of `UserEmail` objects."""
+  nodes: [UserEmail!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `UserEmail` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `UserEmail` edge in the connection."""
+type UserEmailsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `UserEmail` at the end of the edge."""
+  node: UserEmail!
+}
+
+"""Methods to use when ordering `UserEmail`."""
+enum UserEmailsOrderBy {
+  ID_ASC
+  ID_DESC
+  IS_PRIMARY_ASC
+  IS_PRIMARY_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+}
+
+"""An input for mutations affecting `User`"""
+input UserInput {
+  """Optional avatar URL."""
+  avatarUrl: String
+  created: FiniteDatetime
+
+  """Unique identifier for the user."""
+  id: Int
+
+  """If true, the user has elevated privileges."""
+  isAdmin: Boolean
+  isVerified: Boolean
+
+  """Public-facing name (or pseudonym) of the user."""
+  name: String
+  updated: FiniteDatetime
+
+  """Public-facing username (or 'handle') of the user."""
+  username: String!
+}
+
+"""Represents an update to a `User`. Fields that are set will be updated."""
+input UserPatch {
+  """Optional avatar URL."""
+  avatarUrl: String
+  created: FiniteDatetime
+
+  """Unique identifier for the user."""
+  id: Int
+
+  """If true, the user has elevated privileges."""
+  isAdmin: Boolean
+  isVerified: Boolean
+
+  """Public-facing name (or pseudonym) of the user."""
+  name: String
+  updated: FiniteDatetime
+
+  """Public-facing username (or 'handle') of the user."""
+  username: String
+}
+
+"""A `User` edge in the connection."""
+type UsersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `User` at the end of the edge."""
+  node: User!
+}
+
+"""Methods to use when ordering `User`."""
+enum UsersOrderBy {
+  ID_ASC
+  ID_DESC
+  NATURAL
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+  USERNAME_ASC
+  USERNAME_DESC
+}
+
+type UserSubscriptionPayload {
+  event: String
+  user: User
+}
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID
+
+"""All input for the `verifyEmail` mutation."""
+input VerifyEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  token: String!
+  userEmailId: Int!
+}
+
+"""The output of our `verifyEmail` mutation."""
+type VerifyEmailPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+  success: Boolean
+}

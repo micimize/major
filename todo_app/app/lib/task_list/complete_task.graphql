@@ -1,6 +1,6 @@
 # TODO updateTaskById => updateTask in postgraphql
 mutation completeTask($taskId: UUID!) {
-  updateTaskById(input: { id: $taskId, taskPatch: { lifecycle: COMPLETED } }) {
+  updateTask(input: { id: $taskId, patch: { lifecycle: COMPLETED } }) {
     clientMutationId
     task {
       __typename

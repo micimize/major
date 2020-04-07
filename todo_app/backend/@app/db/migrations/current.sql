@@ -25,10 +25,11 @@ CHECK (
 */
 
 create table app_public.task (
-  id                 uuid primary key default uuid_generate_v1mc(),
-  user_id            uuid not null,
+  user_id            int default app_public.current_user_id() references app_public.users(id) on delete set null,
   created            finite_datetime not null default now(),
   updated            finite_datetime not null default now(),
+
+  id                 uuid primary key default uuid_generate_v1mc(),
 
   lifecycle          task_lifecycle default 'TODO',
   closed             finite_datetime,
@@ -38,6 +39,9 @@ create table app_public.task (
   stopwatch_value    datetime_interval[]
 );
 alter table app_public.task enable row level security;
+
+create index task_created_index ON app_public.task (created);
+
 
 grant
   select,
