@@ -1,7 +1,7 @@
 on:
   push:
-    paths:
-      - 'todo_app/backend/@app/server/*'
+   #paths:
+   #  - 'todo_app/backend/@app/server/*'
     branches:
       - master
 
