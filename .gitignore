@@ -96,4 +96,6 @@ google-play-key.json
 
 **/yarn.lock
 
+**/deployment_variables.json
+
 **/.env

@@ -1,4 +1,3 @@
-# TODO updateTaskById => updateTask in postgraphql
 mutation updateTask($taskId: UUID!, $taskPatch: TaskPatch!) {
   updateTask(input: { id: $taskId, patch: $taskPatch }) {
     clientMutationId
