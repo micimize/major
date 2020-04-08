@@ -5,20 +5,27 @@ on:
     branches:
       - master
 
-- name: Initialize Google Cloud SDK
-  working-directory: 'todo_app/backend/@app/server/'
-  uses: zxyle/publish-gae-action@master
-  with:
-    service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-    service_account_key: ${{ secrets.GCP_SA_KEY }}
-    project_id: ${{ secrets.PROJECT_ID }}
-    # An optional variables parameter can be used
-    gae_variables: ${{ secrets.GAE_VARIABLES }}
+jobs:
+  deploy-server:
+    name: Deploy
+    runs-on: ubuntu-latest
 
-- name: Publish Server to Google App Engine
-  working-directory: 'todo_app/backend/@app/server/'
-  run: |
-    # This client-secret.json is converted by GCP_SA_KEY.
-    gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
-    gcloud config set project ${{ secrets.PROJECT_ID }}
-    gcloud -q app deploy app.yaml --promote
+    steps:
+    - name: Initialize Google Cloud SDK
+      uses: micimize/publish-gae-action@master 
+      with:
+        gae_config_path: 'todo_app/backend/@app/server/app.yml'
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.PROJECT_ID }}
+        # An optional variables parameter can be used
+        gae_variables: ${{ secrets.GAE_VARIABLES }}
+
+    - name: Publish Server to Google App Engine
+      working-directory: 'todo_app/backend/@app/server/'
+      run: |
+        # This client-secret.json is converted by GCP_SA_KEY.
+        gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
+        gcloud config set project ${{ secrets.PROJECT_ID }}
+        gcloud -q app deploy app.yaml --promote
+
