@@ -10,23 +10,60 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
 
+    env:
+      NODE_ENV: 'production'
+      DATABASE_HOST: 'localhost'
+      DATABASE_PORT: '5432'
+      DATABASE_NAME: 'todo_app'
+      ENABLE_GRAPHIQL: 'true'
+      DATABASE_VISITOR: 'todo_app_visitor'
+
+      DATABASE_SUPERUSER: 'postgres'
+      DATABASE_SUPERUSER_PASSWORD: ${{ secrets.DATABASE_SUPERUSER_PASSWORD }}
+
+      DATABASE_OWNER: 'todo_app'
+      DATABASE_OWNER_PASSWORD: ${{ secrets.DATABASE_OWNER_PASSWORD }}
+
+      DATABASE_AUTHENTICATOR: 'todo_app_authenticator'
+      DATABASE_AUTHENTICATOR_PASSWORD: ${{ secrets.DATABASE_AUTHENTICATOR_PASSWORD }}
+
+      PROJECT_NAME: ${{ secrets.GCP_PROJECT_ID }}
+
     steps:
     - uses: actions/checkout@v2
-    - name: Initialize Google Cloud SDK
-      uses: micimize/publish-gae-action@master 
+
+    - name: Initialize Google Cloud SDK & Saturate App Engine Config
+      uses: micimize/publish-gae-action@master
       with:
         gae_config_path: 'todo_app/backend/@app/server/app.yml'
-        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.PROJECT_ID }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         # An optional variables parameter can be used
         gae_variables: ${{ secrets.GAE_VARIABLES }}
+
+    - name: Activate Service Account
+      run: |
+        # This client-secret.json is reconstructed from GCP_SERVICE_ACCOUNT_KEY.
+        gcloud auth activate-service-account \
+          ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }} \
+          --key-file=client-secret.json
+        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+
+    - name: Run DB Migrations
+      working-directory: 'todo_app/backend/@app/db/'
+      run: |
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+        chmod +x cloud_sql_proxy
+        ./cloud_sql_proxy -instances=${{ secrets.DATABASE_INSTANCE  }}=tcp:5432 &
+        yarn && yarn migrate
+
 
     - name: Publish Server to Google App Engine
       working-directory: 'todo_app/backend/@app/server/'
       run: |
-        # This client-secret.json is converted by GCP_SA_KEY.
-        gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=client-secret.json
-        gcloud config set project ${{ secrets.PROJECT_ID }}
-        gcloud -q app deploy app.yaml --promote
+        yarn && yarn build
+        gcloud -q app deploy app.yml --promote
+
 
