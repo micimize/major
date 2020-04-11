@@ -99,3 +99,6 @@ google-play-key.json
 **/deployment_variables.json
 
 **/.env
+
+act/*.json
+act/*.env
