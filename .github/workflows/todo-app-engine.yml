@@ -1,13 +1,15 @@
+# TODO It might make more sense to have two different flows for the backend,
+# 
 on:
   push:
-   #paths:
-   #  - 'todo_app/backend/@app/server/*'
+    paths:
+      - 'todo_app/backend/@app/*'
     branches:
       - master
 
 jobs:
-  deploy-server:
-    name: Deploy
+  deploy-backend:
+    name: Deploy Backend
     runs-on: ubuntu-latest
 
     env:
@@ -32,7 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Initialize Google Cloud SDK & Saturate App Engine Config
+    - name: Saturate App Engine Config & GCP Credentials
       uses: micimize/publish-gae-action@master
       with:
         gae_config_path: 'todo_app/backend/@app/server/app.yml'
@@ -45,17 +47,31 @@ jobs:
     - name: Activate Service Account
       run: |
         # This client-secret.json is reconstructed from GCP_SERVICE_ACCOUNT_KEY.
+        # The service account needs the following roles:
+        # * App Engine Deployer
+        # * App Engine Service Admin
+        # * Cloud Build Service Account
+        # * Cloud SQL Client
+        # * Storage Object Creator
+        # * Storage Object Viewer 
+        #
+        # You also need:
+        # * a Cloud SQL instance created, secured, and setup (todo_app/act/cloud_sql_setup.sh),
+        # * a GAE created & Cloud Build API enabled
         gcloud auth activate-service-account \
           ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }} \
           --key-file=client-secret.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
 
-    - name: Run DB Migrations
+    - name: Run Database Migrations
       working-directory: 'todo_app/backend/@app/db/'
       run: |
+        # we use the cloud_sql_proxy so we can auth with the service account
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
         chmod +x cloud_sql_proxy
+        # We background the proxy, which (I'm pretty sure) gets auto-garbage collected
+        # TODO this only works without a race condition because yarn is slowish
         ./cloud_sql_proxy -instances=${{ secrets.DATABASE_INSTANCE  }}=tcp:5432 &
         yarn && yarn migrate
 
@@ -65,5 +81,4 @@ jobs:
       run: |
         yarn && yarn build
         gcloud -q app deploy app.yml --promote
-
 

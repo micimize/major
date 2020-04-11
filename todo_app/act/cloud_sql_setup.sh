@@ -20,6 +20,8 @@ source $DIR/secrets.env
   # includes:
   # DATABASE_OWNER_PASSWORD
   # DATABASE_AUTHENTICATOR_PASSWORD
+
+source $DIR/database_superuser.env
   # DATABASE_SUPERUSER_PASSWORD
 
 DATABASE_NAME='todo_app'

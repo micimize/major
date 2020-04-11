@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-cd $DIR/..
+cd $DIR/../../
 
 source $DIR/secrets.env
 
@@ -22,6 +22,5 @@ act \
   -s GCP_SERVICE_ACCOUNT_KEY \
   -s GAE_VARIABLES \
   -s DATABASE_INSTANCE \
-  -s DATABASE_SUPERUSER_PASSWORD \
   -s DATABASE_OWNER_PASSWORD \
   -s DATABASE_AUTHENTICATOR_PASSWORD \
