@@ -15,8 +15,8 @@ const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-const { SECRET } = process.env;
-if (!SECRET) {
+const { JWT_SECRET } = process.env;
+if (!JWT_SECRET) {
   throw new Error("Server misconfigured");
 }
 const MAXIMUM_SESSION_DURATION_IN_MILLISECONDS =
@@ -57,7 +57,7 @@ export default (app: Express) => {
       maxAge: MAXIMUM_SESSION_DURATION_IN_MILLISECONDS,
     },
     store,
-    secret: SECRET,
+    secret: JWT_SECRET,
   });
 
   app.use(sessionMiddleware);

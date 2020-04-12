@@ -1,3 +1,7 @@
+
+beta_settings:
+  cloud_sql_instances: 'major-todo-app:us-central1:major'
+
 # [START runtime]
 runtime: nodejs12
 env: standard
@@ -14,3 +18,30 @@ health_check:
   enable_health_check: False
 
 # [END runtime]
+
+
+env_variables:
+  # Secrets 
+  DATABASE_INSTANCE: 'major-todo-app:us-central1:major'
+  DATABASE_HOST: "/cloudsql/major-todo-app:us-central1:major"
+  JWT_SECRET: 'secret'
+  
+  
+
+  # Env
+  DATABASE_NAME: 'todo_app'
+  PORT: '80'
+  NODE_ENV: 'development'
+  
+  DATABASE_VISITOR: 'todo_app_visitor'
+  AUTH_DATABASE_URL: 'postgres://todo_app_authenticator:todo_app_authenticator@localhost/todo_app'
+  DATABASE_URL: 'postgres://todo_app:todo_app@localhost/todo_app'
+  
+  ENABLE_GRAPHIQL: 'true'
+  
+  
+  
+  
+  
+  
+  

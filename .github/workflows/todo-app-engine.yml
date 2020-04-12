@@ -29,24 +29,17 @@ jobs:
       DATABASE_AUTHENTICATOR: 'todo_app_authenticator'
       DATABASE_AUTHENTICATOR_PASSWORD: ${{ secrets.DATABASE_AUTHENTICATOR_PASSWORD }}
 
-      PROJECT_NAME: ${{ secrets.GCP_PROJECT_ID }}
+      DATABASE_INSTANCE: ${{ secrets.DATABASE_INSTANCE }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GITHUB_KEY: ${{ secrets.GITHUB_KEY }}
+      GITHUB_SECRET: ${{ secrets.GITHUB_SECRET }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Saturate App Engine Config & GCP Credentials
-      uses: micimize/publish-gae-action@master
-      with:
-        gae_config_path: 'todo_app/backend/@app/server/app.yml'
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-        service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
-        service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        # An optional variables parameter can be used
-        gae_variables: ${{ secrets.GAE_VARIABLES }}
-
     - name: Activate Service Account
       run: |
-        # This client-secret.json is reconstructed from GCP_SERVICE_ACCOUNT_KEY.
         # The service account needs the following roles:
         # * App Engine Deployer
         # * App Engine Service Admin
@@ -58,11 +51,12 @@ jobs:
         # You also need:
         # * a Cloud SQL instance created, secured, and setup (todo_app/act/cloud_sql_setup.sh),
         # * a GAE created & Cloud Build API enabled
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" |
+          base64 --decode /dev/stdin > client-secret.json
         gcloud auth activate-service-account \
           ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }} \
           --key-file=client-secret.json
         gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-
 
     - name: Run Database Migrations
       working-directory: 'todo_app/backend/@app/db/'
@@ -79,6 +73,7 @@ jobs:
     - name: Publish Server to Google App Engine
       working-directory: 'todo_app/backend/@app/server/'
       run: |
-        yarn && yarn build
+        yarn && yarn build && yarn gae:configure
+        cat app.yml
         gcloud -q app deploy app.yml --promote
 
