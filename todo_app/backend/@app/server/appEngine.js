@@ -102,8 +102,8 @@ env_variables:
 
 
   # Env
+  # PORT provided by app engine
   ${writeAsYaml("DATABASE_NAME", { required: true })}
-  ${writeAsYaml("PORT", { default: "80" })}
   ${writeAsYaml("NODE_ENV", { default: "production" })}
   ${writeAsYaml("ROOT_URL")}
   ${writeAsYaml("DATABASE_VISITOR", config.DATABASE_NAME + "_visitor")}
