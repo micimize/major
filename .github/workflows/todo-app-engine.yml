@@ -14,7 +14,6 @@ jobs:
 
     env:
       NODE_ENV: 'production'
-      DATABASE_HOST: 'localhost'
       DATABASE_PORT: '5432'
       DATABASE_NAME: 'todo_app'
       ENABLE_GRAPHIQL: 'true'
@@ -68,6 +67,8 @@ jobs:
         # TODO this only works without a race condition because yarn is slowish
         ./cloud_sql_proxy -instances=${{ secrets.DATABASE_INSTANCE  }}=tcp:5432 &
         yarn && yarn migrate
+      env:
+        DATABASE_HOST: 'localhost'
 
 
     - name: Publish Server to Google App Engine
@@ -76,4 +77,5 @@ jobs:
         yarn && yarn build && yarn gae:configure
         cat app.yml
         gcloud -q app deploy app.yml --promote
+
 

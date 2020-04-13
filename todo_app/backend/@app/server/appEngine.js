@@ -7,16 +7,15 @@ require("@app/config/extra");
 interface Secrets {
   DATABASE_INSTANCE: string;
   JWT_SECRET: string;
-  JWT_SECRET: string;
   GITHUB_KEY: string;
   GITHUB_SECRET: string;
+  DATABASE_OWNER_PASSWORD: string;
+  DATABASE_AUTHENTICATOR_PASSWORD: string;
 }
 
 interface Env {
   DATABASE_NAME: string;
   DATABASE_VISITOR: string;
-  AUTH_DATABASE_URL: string;
-  DATABASE_URL: string;
   ENABLE_CYPRESS_COMMANDS?: string;
   ENABLE_GRAPHIQL?: string;
   GRAPHILE_LICENSE?: string;
@@ -66,7 +65,7 @@ beta_settings:
 
 # [START runtime]
 runtime: nodejs12
-env: standard
+env: flex
 entrypoint: node dist/index.js
 
 # manual_scaling:
@@ -84,11 +83,23 @@ health_check:
 
 env_variables:
   # Secrets 
-  ${writeAsYaml("DATABASE_INSTANCE", { required: true })}
   DATABASE_HOST: "/cloudsql/${config.DATABASE_INSTANCE}"
+  DATABASE_URL: "socket:/cloudsql/${config.DATABASE_INSTANCE}?user=${
+    config.DATABASE_OWNER
+  }&password=${config.DATABASE_OWNER_PASSWORD}"
+  ${writeAsYaml("DATABASE_INSTANCE", { required: true })}
   ${writeAsYaml("JWT_SECRET", { required: true })}
   ${writeAsYaml("GITHUB_KEY")}
   ${writeAsYaml("GITHUB_SECRET")}
+  ${writeAsYaml("DATABASE_OWNER", {
+    default: config.DATABASE_NAME,
+  })}
+  ${writeAsYaml("DATABASE_OWNER_PASSWORD", { required: true })}
+  ${writeAsYaml("DATABASE_AUTHENTICATOR", {
+    default: `${config.DATABASE_NAME}_authenticator`,
+  })}
+  ${writeAsYaml("DATABASE_AUTHENTICATOR_PASSWORD", { required: true })}
+
 
   # Env
   ${writeAsYaml("DATABASE_NAME", { required: true })}
@@ -96,8 +107,6 @@ env_variables:
   ${writeAsYaml("NODE_ENV", { default: "production" })}
   ${writeAsYaml("ROOT_URL")}
   ${writeAsYaml("DATABASE_VISITOR", config.DATABASE_NAME + "_visitor")}
-  ${writeAsYaml("AUTH_DATABASE_URL")}
-  ${writeAsYaml("DATABASE_URL")}
   ${writeAsYaml("ENABLE_CYPRESS_COMMANDS")}
   ${writeAsYaml("ENABLE_GRAPHIQL")}
   ${writeAsYaml("GRAPHILE_LICENSE")}

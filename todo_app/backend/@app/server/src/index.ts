@@ -19,7 +19,7 @@ async function main() {
 
   // And finally, we open the listen port
   const PORT = parseInt(process.env.PORT || "", 10) || 3000;
-  httpServer.listen(PORT, () => {
+  httpServer.listen(PORT, "0.0.0.0", () => {
     const address = httpServer.address();
     const actualPort: string =
       typeof address === "string"
@@ -37,11 +37,11 @@ async function main() {
     );
     console.log();
     console.log(
-      `  Site:     ${chalk.bold.underline(`http://localhost:${actualPort}`)}`
+      `  Site:     ${chalk.bold.underline(`http://0.0.0.0:${actualPort}`)}`
     );
     console.log(
       `  GraphiQL: ${chalk.bold.underline(
-        `http://localhost:${actualPort}/graphiql`
+        `http://0.0.0.0:${actualPort}/graphiql`
       )}`
     );
     console.log();

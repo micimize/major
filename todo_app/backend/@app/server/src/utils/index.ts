@@ -1,7 +1,9 @@
 export function sanitizeEnv() {
   const requiredEnvvars = [
-    "AUTH_DATABASE_URL",
-    "DATABASE_URL",
+    "DATABASE_OWNER",
+    "DATABASE_OWNER_PASSWORD",
+    "DATABASE_AUTHENTICATOR",
+    "DATABASE_AUTHENTICATOR_PASSWORD",
     "JWT_SECRET",
     "NODE_ENV",
   ];

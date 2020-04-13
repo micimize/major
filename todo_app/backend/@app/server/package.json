@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc -b && chmod +x dist/index.js",
     "start": "node -r @app/config/env dist/index.js",
-    "gae:configure": "node -r @app/config/extra appEngine.js",
+    "gae:configure": "node appEngine.js",
     "dev": "nodemon --signal SIGINT --watch 'dist/**/*.js' -x 'node --inspect=9678 -r @app/config/env -r source-map-support/register' dist/index.js"
   },
   "dependencies": {

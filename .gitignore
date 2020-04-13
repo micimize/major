@@ -102,3 +102,5 @@ google-play-key.json
 
 **/act/*.json
 **/act/*.env
+**/app.yml
+**/app.yaml
