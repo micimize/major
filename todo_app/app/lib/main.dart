@@ -4,6 +4,7 @@ import 'package:todo_app/navigation.dart';
 import 'package:todo_app/history/history_page.dart';
 import 'package:todo_app/task_list/task_list.dart';
 import 'package:todo_app/user_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() => runApp(App());
 

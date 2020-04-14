@@ -1,0 +1,34 @@
+# TODO It might make more sense to have two different flows for the backend,
+# 
+on:
+  push:
+    paths:
+      - 'todo_app/app/*'
+    branches:
+      - master
+
+jobs:
+  deliver-flutter:
+    name: Deploy Flutter App
+    runs-on: ubuntu-latest
+
+    env:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      SERVER_URL: 'blahblah'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Deliver iOS build to testflight
+      uses: maierj/fastlane-action@v1.4.0
+      with:
+        subdirectory: 'todo_app/app/ios'
+        lane: 'beta'
+
+   #- name: Deliver Android build to store
+   #  uses: maierj/fastlane-action@v1.4.0
+   #  with:
+   #    subdirectory: 'todo_app/app/android'
+   #    lane: 'beta'
+
