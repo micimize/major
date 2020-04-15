@@ -190,25 +190,13 @@ export function getPostGraphileOptions({
      * whether or not you're using JWTs.
      */
     async pgSettings(req: any) {
-      const sessionId = req.user && uuidOrNull(req.user.session_id);
-      if (sessionId) {
-        // Update the last_active timestamp (but only do it at most once every 15 seconds to avoid too much churn).
-        await rootPgPool.query(
-          "UPDATE app_private.sessions SET last_active = NOW() WHERE uuid = $1 AND last_active < NOW() - INTERVAL '15 seconds'",
-          [sessionId]
-        );
-      }
+      const firebaseId = req.user && uuidOrNull(req.firebaseUser.uid);
       return {
         // Everyone uses the "visitor" role currently
         role: process.env.DATABASE_VISITOR,
 
-        /*
-         * Note, though this says "jwt" it's not actually anything to do with
-         * JWTs, we just know it's a safe namespace to use, and it means you
-         * can use JWTs too, if you like, and they'll use the same settings
-         * names reducing the amount of code you need to write.
-         */
-        "jwt.claims.session_id": sessionId,
+        // Pass the firebase user id
+        "firebase.user.uid": firebaseId,
       };
     },
 
