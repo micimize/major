@@ -25,7 +25,8 @@ CHECK (
 */
 
 create table app_public.task (
-  user_id            int default app_public.current_user_id() references app_public.users(id) on delete set null,
+  user_id            uuid default app_public.current_user_id()
+                        references app_public.app_user(id) on delete set null,
   created            finite_datetime not null default now(),
   updated            finite_datetime not null default now(),
 
