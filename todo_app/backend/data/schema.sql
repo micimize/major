@@ -1798,11 +1798,27 @@ ALTER TABLE app_public.user_emails ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_public.users ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: SCHEMA app_hidden; Type: ACL; Schema: -; Owner: -
+--
+
+GRANT USAGE ON SCHEMA app_hidden TO todo_app_visitor;
+
+
+--
+-- Name: SCHEMA app_public; Type: ACL; Schema: -; Owner: -
+--
+
+GRANT USAGE ON SCHEMA app_public TO todo_app_visitor;
+
+
+--
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO mjr;
+GRANT ALL ON SCHEMA public TO todo_app;
+GRANT USAGE ON SCHEMA public TO todo_app_visitor;
 
 
 --
@@ -1813,24 +1829,31 @@ REVOKE ALL ON FUNCTION app_private.assert_valid_password(new_password text) FROM
 
 
 --
+-- Name: TABLE users; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT ON TABLE app_public.users TO todo_app_visitor;
+
+
+--
 -- Name: COLUMN users.username; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT UPDATE(username) ON TABLE app_public.users TO postgres;
+GRANT UPDATE(username) ON TABLE app_public.users TO todo_app_visitor;
 
 
 --
 -- Name: COLUMN users.name; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT UPDATE(name) ON TABLE app_public.users TO postgres;
+GRANT UPDATE(name) ON TABLE app_public.users TO todo_app_visitor;
 
 
 --
 -- Name: COLUMN users.avatar_url; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT UPDATE(avatar_url) ON TABLE app_public.users TO postgres;
+GRANT UPDATE(avatar_url) ON TABLE app_public.users TO todo_app_visitor;
 
 
 --
@@ -1901,6 +1924,7 @@ REVOKE ALL ON FUNCTION app_private.tg_users__make_first_user_admin() FROM PUBLIC
 --
 
 REVOKE ALL ON FUNCTION app_public.change_password(old_password text, new_password text) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.change_password(old_password text, new_password text) TO todo_app_visitor;
 
 
 --
@@ -1908,6 +1932,7 @@ REVOKE ALL ON FUNCTION app_public.change_password(old_password text, new_passwor
 --
 
 REVOKE ALL ON FUNCTION app_public.confirm_account_deletion(token text) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.confirm_account_deletion(token text) TO todo_app_visitor;
 
 
 --
@@ -1915,6 +1940,7 @@ REVOKE ALL ON FUNCTION app_public.confirm_account_deletion(token text) FROM PUBL
 --
 
 REVOKE ALL ON FUNCTION app_public.current_session_id() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.current_session_id() TO todo_app_visitor;
 
 
 --
@@ -1922,6 +1948,7 @@ REVOKE ALL ON FUNCTION app_public.current_session_id() FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION app_public."current_user"() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public."current_user"() TO todo_app_visitor;
 
 
 --
@@ -1929,6 +1956,7 @@ REVOKE ALL ON FUNCTION app_public."current_user"() FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION app_public.current_user_id() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.current_user_id() TO todo_app_visitor;
 
 
 --
@@ -1936,6 +1964,7 @@ REVOKE ALL ON FUNCTION app_public.current_user_id() FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION app_public.forgot_password(email public.citext) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.forgot_password(email public.citext) TO todo_app_visitor;
 
 
 --
@@ -1943,13 +1972,21 @@ REVOKE ALL ON FUNCTION app_public.forgot_password(email public.citext) FROM PUBL
 --
 
 REVOKE ALL ON FUNCTION app_public.logout() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.logout() TO todo_app_visitor;
+
+
+--
+-- Name: TABLE user_emails; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,DELETE ON TABLE app_public.user_emails TO todo_app_visitor;
 
 
 --
 -- Name: COLUMN user_emails.email; Type: ACL; Schema: app_public; Owner: -
 --
 
-GRANT INSERT(email) ON TABLE app_public.user_emails TO postgres;
+GRANT INSERT(email) ON TABLE app_public.user_emails TO todo_app_visitor;
 
 
 --
@@ -1957,6 +1994,7 @@ GRANT INSERT(email) ON TABLE app_public.user_emails TO postgres;
 --
 
 REVOKE ALL ON FUNCTION app_public.make_email_primary(email_id integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.make_email_primary(email_id integer) TO todo_app_visitor;
 
 
 --
@@ -1964,6 +2002,7 @@ REVOKE ALL ON FUNCTION app_public.make_email_primary(email_id integer) FROM PUBL
 --
 
 REVOKE ALL ON FUNCTION app_public.request_account_deletion() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.request_account_deletion() TO todo_app_visitor;
 
 
 --
@@ -1971,6 +2010,7 @@ REVOKE ALL ON FUNCTION app_public.request_account_deletion() FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION app_public.resend_email_verification_code(email_id integer) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.resend_email_verification_code(email_id integer) TO todo_app_visitor;
 
 
 --
@@ -1978,6 +2018,7 @@ REVOKE ALL ON FUNCTION app_public.resend_email_verification_code(email_id intege
 --
 
 REVOKE ALL ON FUNCTION app_public.reset_password(user_id integer, reset_token text, new_password text) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.reset_password(user_id integer, reset_token text, new_password text) TO todo_app_visitor;
 
 
 --
@@ -1985,6 +2026,7 @@ REVOKE ALL ON FUNCTION app_public.reset_password(user_id integer, reset_token te
 --
 
 REVOKE ALL ON FUNCTION app_public.tg__graphql_subscription() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.tg__graphql_subscription() TO todo_app_visitor;
 
 
 --
@@ -1992,6 +2034,7 @@ REVOKE ALL ON FUNCTION app_public.tg__graphql_subscription() FROM PUBLIC;
 --
 
 REVOKE ALL ON FUNCTION app_public.tg_user_emails__forbid_if_verified() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.tg_user_emails__forbid_if_verified() TO todo_app_visitor;
 
 
 --
@@ -1999,6 +2042,7 @@ REVOKE ALL ON FUNCTION app_public.tg_user_emails__forbid_if_verified() FROM PUBL
 --
 
 REVOKE ALL ON FUNCTION app_public.tg_user_emails__verify_account_on_verified() FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.tg_user_emails__verify_account_on_verified() TO todo_app_visitor;
 
 
 --
@@ -2006,6 +2050,7 @@ REVOKE ALL ON FUNCTION app_public.tg_user_emails__verify_account_on_verified() F
 --
 
 REVOKE ALL ON FUNCTION app_public.users_has_password(u app_public.users) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.users_has_password(u app_public.users) TO todo_app_visitor;
 
 
 --
@@ -2013,58 +2058,93 @@ REVOKE ALL ON FUNCTION app_public.users_has_password(u app_public.users) FROM PU
 --
 
 REVOKE ALL ON FUNCTION app_public.verify_email(user_email_id integer, token text) FROM PUBLIC;
+GRANT ALL ON FUNCTION app_public.verify_email(user_email_id integer, token text) TO todo_app_visitor;
+
+
+--
+-- Name: TABLE user_authentications; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,DELETE ON TABLE app_public.user_authentications TO todo_app_visitor;
+
+
+--
+-- Name: SEQUENCE user_authentications_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.user_authentications_id_seq TO todo_app_visitor;
+
+
+--
+-- Name: SEQUENCE user_emails_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.user_emails_id_seq TO todo_app_visitor;
+
+
+--
+-- Name: SEQUENCE users_id_seq; Type: ACL; Schema: app_public; Owner: -
+--
+
+GRANT SELECT,USAGE ON SEQUENCE app_public.users_id_seq TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: app_hidden; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_hidden REVOKE ALL ON SEQUENCES  FROM postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_hidden REVOKE ALL ON SEQUENCES  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_hidden GRANT SELECT,USAGE ON SEQUENCES  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: app_hidden; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_hidden REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_hidden REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_hidden REVOKE ALL ON FUNCTIONS  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_hidden GRANT ALL ON FUNCTIONS  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: app_public; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_public REVOKE ALL ON SEQUENCES  FROM postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_public GRANT SELECT,USAGE ON SEQUENCES  TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_public REVOKE ALL ON SEQUENCES  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_public GRANT SELECT,USAGE ON SEQUENCES  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: app_public; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA app_public REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_public REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_public REVOKE ALL ON FUNCTIONS  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA app_public GRANT ALL ON FUNCTIONS  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR SEQUENCES; Type: DEFAULT ACL; Schema: public; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON SEQUENCES  FROM postgres;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,USAGE ON SEQUENCES  TO postgres;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA public REVOKE ALL ON SEQUENCES  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA public GRANT SELECT,USAGE ON SEQUENCES  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: public; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA public REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA public REVOKE ALL ON FUNCTIONS  FROM todo_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app IN SCHEMA public GRANT ALL ON FUNCTIONS  TO todo_app_visitor;
 
 
 --
 -- Name: DEFAULT PRIVILEGES FOR FUNCTIONS; Type: DEFAULT ACL; Schema: -; Owner: -
 --
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE todo_app REVOKE ALL ON FUNCTIONS  FROM PUBLIC;
 
 
 --

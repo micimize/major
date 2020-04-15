@@ -84,38 +84,6 @@ type CreateTaskPayload {
   ): TasksEdge
 }
 
-"""All input for the create `UserAuthentication` mutation."""
-input CreateUserAuthenticationInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """The `UserAuthentication` to be created by this mutation."""
-  userAuthentication: UserAuthenticationInput!
-}
-
-"""The output of our create `UserAuthentication` mutation."""
-type CreateUserAuthenticationPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """Reads a single `User` that is related to this `UserAuthentication`."""
-  user: User
-
-  """The `UserAuthentication` that was created by this mutation."""
-  userAuthentication: UserAuthentication
-}
-
 """All input for the create `UserEmail` mutation."""
 input CreateUserEmailInput {
   """
@@ -152,41 +120,6 @@ type CreateUserEmailPayload {
     """The method to use when ordering `UserEmail`."""
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
-}
-
-"""All input for the create `User` mutation."""
-input CreateUserInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """The `User` to be created by this mutation."""
-  user: UserInput!
-}
-
-"""The output of our create `User` mutation."""
-type CreateUserPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """The `User` that was created by this mutation."""
-  user: User
-
-  """An edge for our `User`. May be used by Relay 1."""
-  userEdge(
-    """The method to use when ordering `User`."""
-    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UsersEdge
 }
 
 """A location in a connection that can be used for resuming pagination."""
@@ -303,42 +236,6 @@ type DeleteUserEmailPayload {
     """The method to use when ordering `UserEmail`."""
     orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
   ): UserEmailsEdge
-}
-
-"""All input for the `deleteUser` mutation."""
-input DeleteUserInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-
-  """Unique identifier for the user."""
-  id: Int!
-}
-
-"""The output of our delete `User` mutation."""
-type DeleteUserPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-  deletedUserNodeId: ID
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """The `User` that was deleted by this mutation."""
-  user: User
-
-  """An edge for our `User`. May be used by Relay 1."""
-  userEdge(
-    """The method to use when ordering `User`."""
-    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UsersEdge
 }
 
 """A timezone-enabled timestamp that is guaranteed to be finite"""
@@ -474,22 +371,6 @@ type Mutation {
     input: CreateTaskInput!
   ): CreateTaskPayload
 
-  """Creates a single `User`."""
-  createUser(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: CreateUserInput!
-  ): CreateUserPayload
-
-  """Creates a single `UserAuthentication`."""
-  createUserAuthentication(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: CreateUserAuthenticationInput!
-  ): CreateUserAuthenticationPayload
-
   """Creates a single `UserEmail`."""
   createUserEmail(
     """
@@ -505,14 +386,6 @@ type Mutation {
     """
     input: DeleteTaskInput!
   ): DeleteTaskPayload
-
-  """Deletes a single `User` using a unique key."""
-  deleteUser(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: DeleteUserInput!
-  ): DeleteUserPayload
 
   """Deletes a single `UserAuthentication` using a unique key."""
   deleteUserAuthentication(
@@ -623,22 +496,6 @@ type Mutation {
     """
     input: UpdateUserInput!
   ): UpdateUserPayload
-
-  """Updates a single `UserAuthentication` using a unique key and a patch."""
-  updateUserAuthentication(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: UpdateUserAuthenticationInput!
-  ): UpdateUserAuthenticationPayload
-
-  """Updates a single `UserEmail` using a unique key and a patch."""
-  updateUserEmail(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: UpdateUserEmailInput!
-  ): UpdateUserEmailPayload
 
   """
   Once you have received a verification token for your email, you may call this
@@ -857,14 +714,10 @@ input TaskCondition {
 """An input for mutations affecting `Task`"""
 input TaskInput {
   closed: FiniteDatetime
-  created: FiniteDatetime
   description: String
-  id: UUID
   lifecycle: TaskLifecycle
   stopwatchValue: [DatetimeIntervalInput]
   title: String
-  updated: FiniteDatetime
-  userId: Int
 }
 
 enum TaskLifecycle {
@@ -876,14 +729,10 @@ enum TaskLifecycle {
 """Represents an update to a `Task`. Fields that are set will be updated."""
 input TaskPatch {
   closed: FiniteDatetime
-  created: FiniteDatetime
   description: String
-  id: UUID
   lifecycle: TaskLifecycle
   stopwatchValue: [DatetimeIntervalInput]
   title: String
-  updated: FiniteDatetime
-  userId: Int
 }
 
 """A connection to a list of `Task` values."""
@@ -959,82 +808,6 @@ type UpdateTaskPayload {
     """The method to use when ordering `Task`."""
     orderBy: [TasksOrderBy!] = [PRIMARY_KEY_ASC]
   ): TasksEdge
-}
-
-"""All input for the `updateUserAuthentication` mutation."""
-input UpdateUserAuthenticationInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-  id: Int!
-
-  """
-  An object where the defined keys will be set on the `UserAuthentication` being updated.
-  """
-  patch: UserAuthenticationPatch!
-}
-
-"""The output of our update `UserAuthentication` mutation."""
-type UpdateUserAuthenticationPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """Reads a single `User` that is related to this `UserAuthentication`."""
-  user: User
-
-  """The `UserAuthentication` that was updated by this mutation."""
-  userAuthentication: UserAuthentication
-}
-
-"""All input for the `updateUserEmail` mutation."""
-input UpdateUserEmailInput {
-  """
-  An arbitrary string value with no semantic meaning. Will be included in the
-  payload verbatim. May be used to track mutations by the client.
-  """
-  clientMutationId: String
-  id: Int!
-
-  """
-  An object where the defined keys will be set on the `UserEmail` being updated.
-  """
-  patch: UserEmailPatch!
-}
-
-"""The output of our update `UserEmail` mutation."""
-type UpdateUserEmailPayload {
-  """
-  The exact same `clientMutationId` that was provided in the mutation input,
-  unchanged and unused. May be used by a client to track mutations.
-  """
-  clientMutationId: String
-
-  """
-  Our root query field type. Allows us to run any query from our mutation payload.
-  """
-  query: Query
-
-  """Reads a single `User` that is related to this `UserEmail`."""
-  user: User
-
-  """The `UserEmail` that was updated by this mutation."""
-  userEmail: UserEmail
-
-  """An edge for our `UserEmail`. May be used by Relay 1."""
-  userEmailEdge(
-    """The method to use when ordering `UserEmail`."""
-    orderBy: [UserEmailsOrderBy!] = [PRIMARY_KEY_ASC]
-  ): UserEmailsEdge
 }
 
 """All input for the `updateUser` mutation."""
@@ -1179,36 +952,6 @@ input UserAuthenticationCondition {
   userId: Int
 }
 
-"""An input for mutations affecting `UserAuthentication`"""
-input UserAuthenticationInput {
-  created: FiniteDatetime
-  id: Int
-
-  """A unique identifier for the user within the login service."""
-  identifier: String!
-
-  """The login service used, e.g. `twitter` or `github`."""
-  service: String!
-  updated: FiniteDatetime
-  userId: Int!
-}
-
-"""
-Represents an update to a `UserAuthentication`. Fields that are set will be updated.
-"""
-input UserAuthenticationPatch {
-  created: FiniteDatetime
-  id: Int
-
-  """A unique identifier for the user within the login service."""
-  identifier: String
-
-  """The login service used, e.g. `twitter` or `github`."""
-  service: String
-  updated: FiniteDatetime
-  userId: Int
-}
-
 """Methods to use when ordering `UserAuthentication`."""
 enum UserAuthenticationsOrderBy {
   ID_ASC
@@ -1260,40 +1003,8 @@ input UserEmailCondition {
 
 """An input for mutations affecting `UserEmail`"""
 input UserEmailInput {
-  created: FiniteDatetime
-
   """The users email address, in `a@b.c` format."""
   email: String!
-  id: Int
-  isPrimary: Boolean
-
-  """
-  True if the user has is_verified their email address (by clicking the link in
-  the email we sent them, or logging in with a social login provider), false otherwise.
-  """
-  isVerified: Boolean
-  updated: FiniteDatetime
-  userId: Int
-}
-
-"""
-Represents an update to a `UserEmail`. Fields that are set will be updated.
-"""
-input UserEmailPatch {
-  created: FiniteDatetime
-
-  """The users email address, in `a@b.c` format."""
-  email: String
-  id: Int
-  isPrimary: Boolean
-
-  """
-  True if the user has is_verified their email address (by clicking the link in
-  the email we sent them, or logging in with a social login provider), false otherwise.
-  """
-  isVerified: Boolean
-  updated: FiniteDatetime
-  userId: Int
 }
 
 """A connection to a list of `UserEmail` values."""
@@ -1335,43 +1046,13 @@ enum UserEmailsOrderBy {
   USER_ID_DESC
 }
 
-"""An input for mutations affecting `User`"""
-input UserInput {
-  """Optional avatar URL."""
-  avatarUrl: String
-  created: FiniteDatetime
-
-  """Unique identifier for the user."""
-  id: Int
-
-  """If true, the user has elevated privileges."""
-  isAdmin: Boolean
-  isVerified: Boolean
-
-  """Public-facing name (or pseudonym) of the user."""
-  name: String
-  updated: FiniteDatetime
-
-  """Public-facing username (or 'handle') of the user."""
-  username: String!
-}
-
 """Represents an update to a `User`. Fields that are set will be updated."""
 input UserPatch {
   """Optional avatar URL."""
   avatarUrl: String
-  created: FiniteDatetime
-
-  """Unique identifier for the user."""
-  id: Int
-
-  """If true, the user has elevated privileges."""
-  isAdmin: Boolean
-  isVerified: Boolean
 
   """Public-facing name (or pseudonym) of the user."""
   name: String
-  updated: FiniteDatetime
 
   """Public-facing username (or 'handle') of the user."""
   username: String
