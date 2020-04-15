@@ -13,14 +13,13 @@ import {
   createSession,
 } from "../../__tests__/helpers";
 import handleErrors from "../src/utils/handleErrors";
-import { TEST_DATABASE_URL } from "../src/utils/config";
 
 export * from "../../__tests__/helpers";
 
 const MockReq = require("mock-req");
 
 export async function createUserAndLogIn() {
-  const pool = poolFromUrl(TEST_DATABASE_URL);
+  const pool = poolFromUrl(process.env.TEST_DATABASE_URL!);
   const client = await pool.connect();
   try {
     const [user] = await createUsers(pool, 1, true);
