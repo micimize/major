@@ -29,20 +29,6 @@ type UUID = string;
 
 const isTest = process.env.NODE_ENV === "test";
 
-function uuidOrNull(input: string | number | null): UUID | null {
-  if (!input) return null;
-  const str = String(input);
-  if (
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      str
-    )
-  ) {
-    return str;
-  } else {
-    return null;
-  }
-}
-
 const isDev = process.env.NODE_ENV === "development";
 //const isTest = process.env.NODE_ENV === "test";
 
@@ -190,7 +176,8 @@ export function getPostGraphileOptions({
      * whether or not you're using JWTs.
      */
     async pgSettings(req: any) {
-      const firebaseId = req.user && uuidOrNull(req.firebaseUser.uid);
+      const firebaseId = (req.firebaseUser && req.firebaseUser.uid) || null;
+
       return {
         // Everyone uses the "visitor" role currently
         role: process.env.DATABASE_VISITOR,
@@ -207,9 +194,6 @@ export function getPostGraphileOptions({
      */
     async additionalGraphQLContextFromRequest(req: any) {
       return {
-        // The current session id
-        sessionId: req.user && uuidOrNull(req.user.session_id),
-
         // Needed so passport can write to the database
         rootPgPool,
 

@@ -32,7 +32,7 @@ CHECK (
 */
 
 create table app_public.task (
-  user_id            uuid default app_public.app_user_id()
+  user_id            app_public.firebase_uid default app_public.current_user_id()
                         references app_public.app_user(id)
                         on delete set null,
   created            finite_datetime not null default now(),

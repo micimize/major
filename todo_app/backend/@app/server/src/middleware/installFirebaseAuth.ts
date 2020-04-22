@@ -16,7 +16,6 @@ export default (app: Express) => (
 
     try {
       request.firebaseUser = await auth().verifyIdToken(idToken);
-      console.log(request.firebaseUser);
       next();
     } catch (err) {
       return unauthorized(err);
