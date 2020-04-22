@@ -27,6 +27,7 @@ dependencies:
   major_graphql: ^0.0.1
   major_graphql_flutter: ^0.0.1
   flutter_dotenv: 2.0.3
+  firebase_auth: 0.16.0
 
 dev_dependencies:
   major_graphql_generator: ^0.0.1
