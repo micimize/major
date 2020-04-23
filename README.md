@@ -8,7 +8,7 @@
 - [`major_graphql_generator`](https://pub.dev/packages/major_graphql_generator)
 - [`major_graphql_flutter`](https://pub.dev/packages/major_graphql_flutter)
 
-There is also an example [`todo_app`](https://github.com/micimize/built-graphql/tree/master/todo_app) which is livecoded on [youtube](https://www.youtube.com/channel/UCj39MVr1fuFtE1eDNXDGJuQ).
+There is also an example [`major_todo_app`](https://github.com/micimize/major_todo_app) which is livecoded on [youtube](https://www.youtube.com/channel/UCj39MVr1fuFtE1eDNXDGJuQ).
 
 ## Usage
 
