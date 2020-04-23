@@ -19,9 +19,6 @@ doc/api/
 .history/
 .vscode/
 
-## backend
-node_modules/
-
 ## Flutter Git Ignore
 # Miscellaneous
 *.class
@@ -63,10 +60,6 @@ lib/generated_plugin_registrant.dart
 
 dist/
 
-todo_app/app/ios/Runner/GoogleService-Info.plist
-
-google-play-key.json
-
 # fastlane specific
 **/fastlane/report.xml
 
@@ -83,24 +76,3 @@ google-play-key.json
 **/ios/Runner.app.dSYM.zip
 **/ios/Runner.ipa
 
-
-**/.yarn/unplugged
-**/.yarn/build-state.yml
-
-# consider switching to zero installs
-# https://github.com/yarnpkg/berry/issues/454
-**/.yarn/*
-!**/.yarn/releases
-!**/.yarn/plugins
-**/.pnp.*
-
-**/yarn.lock
-
-**/deployment_variables.json
-
-**/.env
-
-**/act/*.json
-**/act/*.env
-**/app.yml
-**/app.yaml
