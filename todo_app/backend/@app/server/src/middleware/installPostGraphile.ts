@@ -13,9 +13,8 @@ import { Pool } from "pg";
 import { Express, Request, Response } from "express";
 import PgPubsub from "@graphile/pg-pubsub";
 import PgSimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
-import PassportLoginPlugin from "../plugins/PassportLoginPlugin";
 import PrimaryKeyMutationsOnlyPlugin from "../plugins/PrimaryKeyMutationsOnlyPlugin";
-import SubscriptionsPlugin from "../plugins/SubscriptionsPlugin";
+//import SubscriptionsPlugin from "../plugins/SubscriptionsPlugin";
 import handleErrors from "../utils/handleErrors";
 import { getWebsocketMiddlewares, getHttpServer } from "../app";
 import { getAuthPgPool, getRootPgPool } from "./installDatabasePools";
@@ -29,20 +28,6 @@ const TagsFilePlugin = makePgSmartTagsFromFilePlugin(
 type UUID = string;
 
 const isTest = process.env.NODE_ENV === "test";
-
-function uuidOrNull(input: string | number | null): UUID | null {
-  if (!input) return null;
-  const str = String(input);
-  if (
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      str
-    )
-  ) {
-    return str;
-  } else {
-    return null;
-  }
-}
 
 const isDev = process.env.NODE_ENV === "development";
 //const isTest = process.env.NODE_ENV === "test";
@@ -157,11 +142,8 @@ export function getPostGraphileOptions({
       // Omits by default non-primary-key constraint mutations
       PrimaryKeyMutationsOnlyPlugin,
 
-      // Adds the `login` mutation to enable users to log in
-      PassportLoginPlugin,
-
       // Adds realtime features to our GraphQL schema
-      SubscriptionsPlugin,
+      // SubscriptionsPlugin,
     ],
 
     /*
@@ -194,25 +176,14 @@ export function getPostGraphileOptions({
      * whether or not you're using JWTs.
      */
     async pgSettings(req: any) {
-      const sessionId = req.user && uuidOrNull(req.user.session_id);
-      if (sessionId) {
-        // Update the last_active timestamp (but only do it at most once every 15 seconds to avoid too much churn).
-        await rootPgPool.query(
-          "UPDATE app_private.sessions SET last_active = NOW() WHERE uuid = $1 AND last_active < NOW() - INTERVAL '15 seconds'",
-          [sessionId]
-        );
-      }
+      const firebaseId = (req.firebaseUser && req.firebaseUser.uid) || null;
+
       return {
         // Everyone uses the "visitor" role currently
         role: process.env.DATABASE_VISITOR,
 
-        /*
-         * Note, though this says "jwt" it's not actually anything to do with
-         * JWTs, we just know it's a safe namespace to use, and it means you
-         * can use JWTs too, if you like, and they'll use the same settings
-         * names reducing the amount of code you need to write.
-         */
-        "jwt.claims.session_id": sessionId,
+        // Pass the firebase user id
+        "firebase.user.uid": firebaseId,
       };
     },
 
@@ -223,9 +194,6 @@ export function getPostGraphileOptions({
      */
     async additionalGraphQLContextFromRequest(req: any) {
       return {
-        // The current session id
-        sessionId: req.user && uuidOrNull(req.user.session_id),
-
         // Needed so passport can write to the database
         rootPgPool,
 

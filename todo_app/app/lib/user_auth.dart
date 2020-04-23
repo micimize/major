@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:graphql_flutter/graphql_flutter.dart' show AuthLink;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: <String>['email', 'profile'],
 );
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
-GoogleSignInAccount _currentUser;
+FirebaseUser _currentUser;
 
-final _onUserChange = _googleSignIn.onCurrentUserChanged.listen;
+Future<FirebaseUser> _googleToFirebase(GoogleSignInAccount googleUser) async {
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  final AuthCredential credential = GoogleAuthProvider.getCredential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+
+  final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+  print("signed in " + user.displayName);
+  return user;
+}
+
+Future<FirebaseUser> _handleSignIn() async =>
+    _googleToFirebase(await _googleSignIn.signIn());
+
+final _onUserChange = _auth.onAuthStateChanged.listen;
 
 bool get isAuthenticated => _currentUser != null;
 
-Future<String> get _token async {
-  final auth = await _googleSignIn.currentUser?.authentication;
-  return auth?.idToken;
-}
-
 final googleSignInLink = AuthLink(getToken: () async {
-  final token = await _token;
+  final token = (await _currentUser?.getIdToken()).token;
   return 'Bearer $token';
 });
 
@@ -48,21 +61,24 @@ class _AuthenticationProviderState extends State<AuthenticationProvider> {
   @override
   void initState() {
     super.initState();
-    _onUserChange((GoogleSignInAccount account) {
+    _onUserChange((FirebaseUser account) {
       setState(() {
         _currentUser = account;
       });
     });
-    _googleSignIn.signInSilently(suppressErrors: true);
+    _silentSignIn();
   }
 
   void _handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      await _handleSignIn();
     } catch (error) {
       print(error);
     }
   }
+
+  void _silentSignIn() async => _googleToFirebase(
+      await _googleSignIn.signInSilently(suppressErrors: true));
 
   Widget get signInPage => Scaffold(
       appBar: AppBar(

@@ -12,11 +12,11 @@
   "config": {
     "class": {
       // Equivalent to:
-      // COMMENT ON TABLE app_public.users IS E'@omit all\nA user who can log in to the application.';
-      "app_public.users": {
+      // COMMENT ON TABLE app_public.app_user IS E'@omit all\nA user who can log in to the application.';
+      "app_public.app_user": {
         "tags": {
           /*
-           * By doing `@omit all` we prevent the `allUsers` field from appearing in
+           * By doing `@omit all` we prevent the `allAppUsers` field from appearing in
            * our GraphQL schema. User discovery is still possible by browsing the
            * rest of the data, but it makes it harder for people to receive a
            * `totalCount` of users, or enumerate them fully. Of course if you
@@ -27,98 +27,11 @@
           "omit": "all"
         },
         "description": "A user who can log in to the application."
-      },
-      "app_public.user_emails": {
-        "tags": {
-          /*
-           * `@omit all` because there's no point exposing `allUserEmails` -
-           * you can only see your own, and having this behaviour can lead to
-           * bad practices from frontend teams.
-           */
-          "omit": "all"
-        },
-        "constraint": {
-          "user_emails_pkey": {
-            "tags": {
-              "omit": "all"
-            }
-          },
-          "user_emails_user_id_email_key": {
-            "tags": {
-              // We don't need custom finders/relations for this
-              "omit": true
-            }
-          }
-        }
-      },
-      "app_public.user_authentications": {
-        "tags": {
-          "omit": "all",
-          "simpleCollections": "only"
-        },
-        "attribute": {
-          "details": {
-            "tags": {
-              "omit": true
-            }
-          }
-        },
-        "constraint": {
-          "uniq_user_authentications": {
-            "tags": {
-              "omit": true
-            }
-          },
-          "user_authentications_pkey": {
-            "tags": {
-              "omit": "all"
-            }
-          }
-        }
       }
     },
     "procedure": {
-      "app_public.current_session_id": {
-        "tags": { "omit": true }
-      },
       "app_public.current_user_id": {
         "tags": { "omit": true }
-      },
-      "app_public.logout": {
-        "tags": {
-          // We add our own logout method, so we don't want to expose this via GraphQL
-          "omit": true
-        }
-      },
-      "app_public.change_password": {
-        "tags": {
-          "resultFieldName": "success"
-        }
-      },
-      "app_public.reset_password": {
-        "tags": {
-          "resultFieldName": "success"
-        }
-      },
-      "app_public.request_account_deletion": {
-        "tags": {
-          "resultFieldName": "success"
-        }
-      },
-      "app_public.confirm_account_deletion": {
-        "tags": {
-          "resultFieldName": "success"
-        }
-      },
-      "app_public.resend_email_verification_code": {
-        "tags": {
-          "resultFieldName": "success"
-        }
-      },
-      "app_public.verify_email": {
-        "tags": {
-          "resultFieldName": "success"
-        }
       }
     }
   }

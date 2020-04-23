@@ -1,3 +1,11 @@
+/*
+  TASKS
+    * Instantiates app_public, app_private, and app_hidden 
+    * sets permissions
+    * creates a few helper functions
+    * creates app_user table and current_user_id auth function
+*/
+
 drop trigger if exists _100_timestamps on app_public.task;
 drop function if exists current_tasks;
 drop table if exists task;
@@ -15,7 +23,6 @@ create type datetime_interval as (
   "end" finite_datetime
 );
 
-
 /*
 CREATE DOMAIN stopwatch_interval AS datetime_interval[];
 CHECK (
@@ -25,7 +32,9 @@ CHECK (
 */
 
 create table app_public.task (
-  user_id            int default app_public.current_user_id() references app_public.users(id) on delete set null,
+  user_id            app_public.firebase_uid default app_public.current_user_id()
+                        references app_public.app_user(id)
+                        on delete set null,
   created            finite_datetime not null default now(),
   updated            finite_datetime not null default now(),
 
@@ -49,6 +58,10 @@ grant
   update (lifecycle, closed, title, description, stopwatch_value),
   delete
 on app_public.task to :DATABASE_VISITOR;
+
+create policy manage_own on app_public.task for all using (
+  user_id = app_public.current_user_id()
+);
 
 
 create trigger _100_timestamps before insert or update on app_public.task

@@ -1,3 +1,4 @@
+// TODO de-integrated for now
 import { Build } from "graphile-build";
 import { SQL, QueryBuilder } from "graphile-build-pg";
 import {
@@ -61,7 +62,7 @@ const currentUserTopicFromContext = async (
  *
  * And see the database trigger function `app_public.tg__graphql_subscription()`.
  */
-const SubscriptionsPlugin = makeExtendSchemaPlugin(build => {
+const SubscriptionsPlugin = makeExtendSchemaPlugin((build) => {
   const { pgSql: sql } = build;
   return {
     typeDefs: gql`
