@@ -3,7 +3,7 @@ import 'package:major_graphql_generator/src/builders/config.dart' as config;
 import 'package:major_graphql_generator/src/builders/executable/print_fragment.dart';
 import 'package:major_graphql_generator/src/builders/executable/print_selection_set.dart';
 import 'package:meta/meta.dart';
-import 'package:major_graphql_generator/src/executable/selection_simplifier.dart';
+import 'package:major_graphql_generator/src/operation.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart' as u;
 

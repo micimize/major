@@ -2,8 +2,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:major_graphql_generator/src/builders/config.dart' as config;
 import 'package:major_graphql_generator/src/builders/executable/print_inline_fragments.dart';
 import 'package:meta/meta.dart';
-import 'package:major_graphql_generator/src/executable/selection_simplifier.dart';
-import 'package:major_graphql_generator/src/schema/schema.dart' as s;
+import 'package:major_graphql_generator/src/operation.dart';
+import 'package:gql/schema.dart' as s;
 import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart' as u;
 

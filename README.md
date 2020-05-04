@@ -35,3 +35,4 @@ dev_dependencies:
   major_graphql_generator: ^0.0.1
   build_runner: ^1.7.4
 ```
+

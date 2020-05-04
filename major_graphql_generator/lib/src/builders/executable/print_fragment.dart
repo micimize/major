@@ -4,7 +4,7 @@ import 'package:major_graphql_generator/src/builders/executable/print_inline_in_
 import 'package:major_graphql_generator/src/builders/executable/print_selection_set.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
-import 'package:major_graphql_generator/src/executable/selection_simplifier.dart';
+import 'package:major_graphql_generator/src/operation.dart';
 
 final _hideSelectionSets = false;
 

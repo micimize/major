@@ -1,4 +1,7 @@
-/// Simplifies operation selection set structures into more easily/logically traversable forms.
+// TODO clean this up and PR into gql/operation.dart
+
+/// An enhanced version of `package gql/operation.dart` that
+/// simplifies operation selection set structures into more easily/logically traversable forms.
 ///
 /// GraphQL Selection Sets can get fairly complicated, and resolve into structures that don't coorespond to the declaration graph.
 ///
@@ -40,9 +43,10 @@
 /// NOTE: mutually recursive fragment spreads aren't valid in graphql
 /// TODO: this is kinda a sloppy mess. The entire path mechanic seems unnecessary
 import 'package:built_collection/built_collection.dart';
-import './definitions.dart' as d;
 
-export './definitions.dart' hide SelectionSet, InlineFragment, Field;
+import 'package:gql/operation.dart' as d;
+
+export 'package:gql/operation.dart' hide SelectionSet, InlineFragment, Field;
 
 abstract class Simplified {
   /// There should be a path to this field for every fragment it's defined within,

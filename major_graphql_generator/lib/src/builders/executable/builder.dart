@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:build/build.dart';
 import 'package:major_graphql_generator/src/builders/config.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
-import 'package:major_graphql_generator/src/schema/schema.dart';
+import 'package:gql/schema.dart';
 import 'package:meta/meta.dart';
 import 'package:major_graphql_generator/src/reader.dart';
-import 'package:major_graphql_generator/src/executable/executable.dart';
+import 'package:major_graphql_generator/src/operation.dart';
 import 'package:major_graphql_generator/src/builders/executable/print_executable.dart';
 
 class ExecutableDocumentBuilder implements Builder {

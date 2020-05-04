@@ -1,8 +1,5 @@
-import 'package:major_graphql_generator/major_graphql_generator.dart';
 import 'package:major_graphql_generator/src/builders/executable/print_selection_set.dart';
-import 'package:major_graphql_generator/src/executable/definitions.dart';
-import 'package:major_graphql_generator/src/executable/selection_simplifier.dart'
-    show GetSimplified;
+import 'package:major_graphql_generator/src/operation.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
 

@@ -2,8 +2,7 @@ import 'package:build/build.dart' show AssetId;
 import 'package:built_collection/built_collection.dart';
 import 'package:major_graphql_generator/src/builders/config.dart';
 import 'package:major_graphql_generator/src/reader.dart';
-import 'package:major_graphql_generator/src/schema/schema.dart'
-    show GraphQLType, GraphQLEntity;
+import 'package:gql/schema.dart' show GraphQLType, GraphQLEntity;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';

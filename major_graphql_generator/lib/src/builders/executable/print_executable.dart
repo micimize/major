@@ -1,6 +1,6 @@
 import 'package:major_graphql_generator/src/builders/executable/print_fragment.dart';
 import 'package:major_graphql_generator/src/builders/executable/print_operation.dart';
-import 'package:major_graphql_generator/src/executable/executable.dart';
+import 'package:major_graphql_generator/src/operation.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
 
 String printExecutable(

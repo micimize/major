@@ -1,5 +1,5 @@
 import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
-import 'package:major_graphql_generator/src/schema/schema.dart';
+import 'package:gql/schema.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_enums.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_interface.dart';
 import 'package:major_graphql_generator/src/builders/schema/print_object_type.dart';

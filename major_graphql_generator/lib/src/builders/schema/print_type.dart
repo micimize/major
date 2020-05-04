@@ -2,7 +2,7 @@ import 'package:major_graphql_generator/src/builders/config.dart' as config;
 import 'package:meta/meta.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
 
-import '../../schema/definitions/definitions.dart' as d;
+import 'package:gql/schema.dart' as d;
 
 String identity(String i) => i;
 
