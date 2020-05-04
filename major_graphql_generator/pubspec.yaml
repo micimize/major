@@ -1,6 +1,6 @@
 name: major_graphql_generator
 description: Generator component of major_graphql
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/micimize/major/tree/master/major_graphql_generator
 
 environment:
@@ -15,10 +15,10 @@ dependencies:
   build: ^1.2.2
   dart_style: ^1.3.3
   get_it: ^4.0.0
-  gql: ^0.12.2
+  gql: ^0.12.3
   built_collection: ^4.3.2
   built_value: ^7.0.9
-  major_graphql: ^0.0.1
+  major_graphql: ^0.0.2
 
   # We automatically apply these builders
   # TODO: waiting on https://github.com/google/built_value.dart/pull/836 
