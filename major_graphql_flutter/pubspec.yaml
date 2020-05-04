@@ -1,7 +1,6 @@
 name: major_graphql_flutter
 description: graphql_flutter bindings for major_graphql
 version: 0.0.2
-author: micimize
 homepage: https://github.com/micimize/major/tree/master/major_graphql_flutter
 
 environment:
@@ -10,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  graphql_flutter: ^3.0.0
+  graphql: ^3.0.1
+  graphql_flutter: ^3.0.1
   gql: ^0.12.2
   major_graphql: ^0.0.2
   #path: ../major_graphql
