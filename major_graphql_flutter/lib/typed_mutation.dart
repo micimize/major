@@ -1,4 +1,3 @@
-import 'package:built_value/built_value.dart';
 import 'package:major_graphql/major_graphql.dart' as bg;
 import 'package:gql/ast.dart' show DocumentNode;
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -93,8 +92,8 @@ class TypedMutation<Data extends bg.BuiltToJson,
   T logErrors<T>(T Function() block) {
     try {
       return block();
-    } on BuiltValueNullFieldError catch (e) {
-      //print(e.field);
+    } on Error catch (e) {
+      print(e);
       rethrow;
     }
   }
