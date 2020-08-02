@@ -8,12 +8,6 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:dart_style/dart_style.dart';
 
-/// The prefix the `major_graphql` is imported into generated files as
-final bgPrefix = '_bg';
-
-// 1. Stop using "as" when importing "package:built_value/built_value.dart". It prevents the generated code from finding helper methods.
-// final builtPrefix = '_bg';
-
 String nullable([GraphQLType type]) =>
     (type != null && type.isNonNull) ? '' : '@nullable';
 
@@ -68,7 +62,7 @@ String builtClass(
     mixins: mixins,
     implements: [
       ...implements,
-      if (serializable ?? !className.startsWith('_')) '$bgPrefix.BuiltToJson',
+      if (serializable ?? !className.startsWith('_')) '$mgPrefix.BuiltToJson',
       'Built<$className, ${className}Builder>',
       ...configuration.mixinsWhen(fieldNames),
     ],
@@ -334,8 +328,7 @@ String moduleSerializers(String serializersUniqueName) => '''
   @SerializersFor(${serializersUniqueName})
   final Serializers serializers = _\$serializers;
 
-
-  final _serializers = ${bgPrefix}.ConvenienceSerializers(serializers);
+  final _serializers = ${configuration.convenienceSerializersFunction}(serializers);
 ''';
 
 String printDirective(AssetId asset,
@@ -368,7 +361,7 @@ String printDirectives(
       .join('\n');
   if (importBg) {
     additional +=
-        "\nimport 'package:major_graphql/major_graphql.dart' as $bgPrefix;";
+        "\nimport 'package:major_graphql/major_graphql.dart' as $mgPrefix;";
   }
   return format('''
     /// GENERATED CODE, DO NOT MODIFY BY HAND
@@ -391,7 +384,7 @@ String printDirectives(
 }
 
 String selectionSetOf(String schemaClass) =>
-    '${bgPrefix}.SelectionSet<$schemaClass, ${schemaClass}Builder>';
+    '${mgPrefix}.SelectionSet<$schemaClass, ${schemaClass}Builder>';
 
 final ignoreLints = '// ignore_for_file: ' +
     [

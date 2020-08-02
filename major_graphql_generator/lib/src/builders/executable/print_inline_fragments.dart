@@ -107,7 +107,7 @@ String printInlineFragments(
   }).semicolons;
 
   final implementations = BuiltSet<String>(<String>[
-    '${u.bgPrefix}.BuiltToJson',
+    '${config.mgPrefix}.BuiltToJson',
     //u.selectionSetOf(schemaClass),
     ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
     ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
@@ -142,7 +142,7 @@ String printInlineFragments(
       }
 
       @BuiltValueSerializer(custom: true)
-      static Serializer<$className> get serializer => ${u.bgPrefix}.InterfaceSerializer<$className>(
+      static Serializer<$className> get serializer => ${config.mgPrefix}.InterfaceSerializer<$className>(
         wireName: '$schemaClass',
         typeMap: {
           ${fragmentsTemplate.map((f) => [

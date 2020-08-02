@@ -1,4 +1,5 @@
 import 'package:build/build.dart';
+import 'package:major_graphql/major_graphql.dart';
 import 'package:yaml/yaml.dart';
 import 'package:meta/meta.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,9 @@ const extensions = _Extensions(
   generatedPart: '.graphql.g.dart',
   generatedAstToAlias: '.ast.g.dart',
 );
+
+/// The prefix the `major_graphql` is imported into generated files as
+final mgPrefix = '_mg';
 
 @immutable
 class _Extensions {
@@ -105,6 +109,7 @@ class Configuration {
     this.schemaImports,
     this.forTypes,
     this.forMixins,
+    this.convenienceSerializersFunction,
   });
 
   final AssetId schemaId;
@@ -114,6 +119,11 @@ class Configuration {
   final TypeConfig forTypes;
 
   final List<MixinConfig> forMixins;
+
+  /// Function injected from an import that wraps serializers in a [ConvenienceSerializers] instance
+  ///
+  /// defaults to `'_mg.ConvenienceSerializers'`
+  final String convenienceSerializersFunction;
 
   Iterable<String> mixinsWhen(Iterable<String> fieldNames) {
     fieldNames ??= {};
@@ -131,6 +141,9 @@ class Configuration {
     final schemaId = AssetId.parse(schemaConf['path'] as String);
     final imports = _fromYamlList<String>(schemaConf['imports'] ?? YamlList());
     final exports = _fromYamlList<String>(schemaConf['exports'] ?? YamlList());
+    final convenienceSerializersFunction =
+        schemaConf['convenienceSerializersFunction'] as String ??
+            '${mgPrefix}.ConvenienceSerializers';
 
     final mixins = _fromYamlList<Map>(config['mixins'] ?? YamlList());
     return Configuration(
@@ -165,6 +178,7 @@ class Configuration {
             ),
           )
           .toList(),
+      convenienceSerializersFunction: convenienceSerializersFunction,
     );
   }
 }

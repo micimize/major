@@ -18,7 +18,8 @@ dependencies:
   gql: ^0.12.3
   built_collection: ^4.3.2
   built_value: ^7.0.9
-  major_graphql: ^0.0.2
+  major_graphql: #^0.0.2
+    path: ../major_graphql
 
   # We automatically apply these builders
   # TODO: waiting on https://github.com/google/built_value.dart/pull/836 

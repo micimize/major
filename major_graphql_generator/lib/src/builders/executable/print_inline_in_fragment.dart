@@ -102,7 +102,7 @@ String printInlineFragmentMixin(
   //final parentClass = u.selectionSetOf(schemaClass);
 
   final implementations = BuiltSet<String>(<String>[
-    // '${u.bgPrefix}.BuiltToJson',
+    // '${config.mgPrefix}.BuiltToJson',
     //parentClass,
     ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
     ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
