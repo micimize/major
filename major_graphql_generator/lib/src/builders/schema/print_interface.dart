@@ -26,7 +26,10 @@ String printInterface(
           ])
       .semicolons;
 
-  final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
+  final factories = ListPrinter(
+    items: possibleTypes.map((o) => o.name),
+    divider: '\n',
+  ).map(
     (objectClass) => [
       '''
         if (selectionSet is ${selectionSetOf(objectClass)}){

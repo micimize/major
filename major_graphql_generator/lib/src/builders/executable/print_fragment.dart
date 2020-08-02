@@ -67,7 +67,8 @@ String printFragmentMixin(
   final schemaClass = className(selectionSet.schemaType.name);
 
   final parentClass = selectionSetOf(schemaClass);
-  final concreteClassName = '${path.className}SelectionSet';
+
+  final concreteClassName = path.append('SelectionSet').className;
 
   final built = builtClass(
     concreteClassName,
@@ -94,6 +95,7 @@ String printFragmentMixin(
         return [
           docstring(field.schemaType.description),
           if (field.fragmentPaths.isNotEmpty) '@override',
+          if (!field.type.isNonNull) '@nullable',
           type.type,
           'get',
           dartName(field.alias),
