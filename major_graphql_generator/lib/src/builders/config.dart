@@ -142,7 +142,7 @@ class Configuration {
     final imports = _fromYamlList<String>(schemaConf['imports'] ?? YamlList());
     final exports = _fromYamlList<String>(schemaConf['exports'] ?? YamlList());
     final convenienceSerializersFunction =
-        schemaConf['convenienceSerializersFunction'] as String ??
+        config['convenienceSerializersFunction'] as String ??
             '${mgPrefix}.ConvenienceSerializers';
 
     final mixins = _fromYamlList<Map>(config['mixins'] ?? YamlList());
