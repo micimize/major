@@ -29,7 +29,7 @@ String printInterface(
   final factories = ListPrinter(items: possibleTypes.map((o) => o.name)).map(
     (objectClass) => [
       '''
-        if (selectionSet is $selectionSetOf($objectClass)){
+        if (selectionSet is ${selectionSetOf(objectClass)}){
           return ${objectClass}Builder();
         }
         '''

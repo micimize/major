@@ -12,8 +12,8 @@ dependencies:
   graphql: ^3.0.1
   graphql_flutter: ^3.0.1
   gql: ^0.12.2
-  major_graphql: ^0.0.2
-  #path: ../major_graphql
+  major_graphql: #^0.0.2
+    path: ../major_graphql
 
 dev_dependencies:
   flutter_test:
