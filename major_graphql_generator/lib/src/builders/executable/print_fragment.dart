@@ -70,10 +70,11 @@ String printFragmentMixin(
 
   final concreteClassName = path.append('SelectionSet').className;
 
+  final ssFields = (selectionSet.fields + additionalFields).toList();
   final built = builtClass(
     concreteClassName,
     mixins: [path.className],
-    fieldNames: ((selectionSet.fields + additionalFields).map((e) => e.name)),
+    fieldNames: ssFields.map((e) => e.name),
     body: '''
     ${builtFactories(
       concreteClassName,
@@ -82,6 +83,8 @@ String printFragmentMixin(
       selectionSet.fields,
       path,
     )}
+
+    ${_concretizeFactory(path.className, concreteClassName, ssFields)}
     
     ${additionalBody ?? ''}
     ''',
@@ -114,6 +117,7 @@ String printFragmentMixin(
       ${getters}
 
       ${toObjectBuilder(selectionSet.schemaType, selectionSet.fields)}
+
     }
 
     $built
@@ -136,6 +140,41 @@ String builtMixinFactories(
 ) =>
     '''
       static ${className} of(${schemaClass} objectType) => ${selectionSetClassName}.of(objectType);
+
+      static ${selectionSetClassName} selectionSet(${className} fragmentInstance) => ${selectionSetClassName}.concretize(fragmentInstance);
+
+      static ${selectionSetClassName}Builder builderFor(${className} fragmentInstance) =>
+        selectionSet(fragmentInstance).toBuilder();
     ''';
 
 // static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);
+
+String _concretizeFactory(
+  String mixinClassName,
+  String concreteClassName,
+  Iterable<Field> fields,
+) {
+  final mappers = ListPrinter(items: fields).map((field) {
+    /*
+    final type = printBuilderType(
+      field.type,
+      path: PathFocus.root(field.path),
+    );
+    */
+
+    return [
+      '${dartName(field.alias)}: baseMixin.${dartName(field.alias)}',
+      //type.cast('baseMixin.${dartName(field.name)}')
+      //printSetter(field.type, field.alias),
+    ];
+  }).copyWith(divider: ',\n');
+
+  // TODO instead of selectionset -> selectionset, we should do objecttype(selecitonset) or something.
+  // TODO maybe .of should take a builder instead
+  // factory ${className}.from(${focusClass} focus) => ${className}.of(focus.toObjectBuilder)
+  return '''
+      factory ${unhide(concreteClassName)}.concretize(${mixinClassName} baseMixin) => _\$${unhide(concreteClassName)}._(
+        $mappers
+      );
+    ''';
+}
