@@ -1,7 +1,7 @@
 ## 0.0.3
 
 - `convenienceSerializersFunction` for injecting custom serializers
-- (possibly broken) selection set helpers (`selectionSetOf`)
+- (possibly broken) selection set helpers (`selectionSet`, `concretize`)
 - improved `scalar`, `irreducibleTypes` and `replaceTypes` behavior
 - custom json serialization plugin to address [empty map brittleness](https://github.com/google/built_value.dart/issues/902)
 - fix #18 by adding nullable to mixins, fix #17 by using className mechanics
