@@ -1,7 +1,7 @@
-import 'package:built_value/iso_8601_date_time_serializer.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:major_graphql/src/json_plugin.dart';
 import 'package:meta/meta.dart';
 import 'package:built_value/serializer.dart';
-import 'package:built_value/standard_json_plugin.dart';
 
 abstract class BuiltToJson {
   Map<String, Object> toJson();
@@ -18,22 +18,12 @@ abstract class SelectionSet<Fields, FieldsBuilder> {
   FieldsBuilder toObjectBuilder();
 }
 
-/*
-/// unwrap a [Focus] into it's full [Fields] type from the schema.
-///
-/// The api is structured this way to allow for consuming projects
-/// to optionally expose and extend the inner fields with custom logic,
-/// while still allowing the generated types to name their internal field reference $fields
-/// so as to avoid all possible field name collisions
-Fields unfocus<Fields>(Focus<Fields> focus) => focus.$fields;
-*/
-
 @immutable
 class ConvenienceSerializers {
   ConvenienceSerializers(Serializers serializers)
       : _serializers = (serializers.toBuilder()
-              ..add(Iso8601DateTimeSerializer())
-              ..addPlugin(StandardJsonPlugin()))
+              ..add(AutoUtcIso8601DateTimeSerializer())
+              ..addPlugin(MajorGraphQLJsonPlugin()))
             .build();
 
   final Serializers _serializers;
@@ -119,4 +109,25 @@ String _getTypeName(Iterable<Object> serialized) {
     }
   }
   throw ArgumentError('$serialized contains no __typename');
+}
+
+class AutoUtcIso8601DateTimeSerializer
+    implements PrimitiveSerializer<DateTime> {
+  final bool structured = false;
+  @override
+  final Iterable<Type> types = BuiltList(<Type>[DateTime]);
+  @override
+  final String wireName = 'DateTime';
+
+  @override
+  Object serialize(Serializers serializers, DateTime dateTime,
+      {FullType specifiedType = FullType.unspecified}) {
+    return dateTime.toUtc().toIso8601String();
+  }
+
+  @override
+  DateTime deserialize(Serializers serializers, Object serialized,
+      {FullType specifiedType = FullType.unspecified}) {
+    return DateTime.parse(serialized as String).toUtc();
+  }
 }

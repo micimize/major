@@ -19,8 +19,10 @@ class TypeTemplate {
   String toString() => type;
 }
 
+bool isScalar(d.NamedType type) => typeConfig.scalars.containsKey(type.name);
+
 TypeTemplate _printPrimitive(d.NamedType type) {
-  if (typeConfig.scalars.containsKey(type.name)) {
+  if (isScalar(type)) {
     return TypeTemplate(typeConfig.scalars[type.name]);
   }
   return null;
@@ -116,14 +118,13 @@ String printObjTypeSetter(d.GraphQLType type,
     [String value = 'value', bool nested = false]) {
   if (type is d.NamedType &&
       type.hasResolver &&
-      type.type is d.TypeDefinitionWithFieldSet) {
+      type.type is d.TypeDefinitionWithFieldSet &&
+      !isScalar(type)) {
     return [
       value,
       // config.protectedFields,
-      if (!nested)
-        'toObjectBuilder()',
-      if (!nested && type.type is d.InterfaceTypeDefinition)
-        'build()'
+      if (!nested) 'toObjectBuilder()',
+      if (!nested && type.type is d.InterfaceTypeDefinition) 'build()'
     ].join('?.');
   }
   if (type is d.ListType) {

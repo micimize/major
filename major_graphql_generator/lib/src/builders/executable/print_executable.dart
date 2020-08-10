@@ -14,13 +14,41 @@ String printExecutable(
 
   ${document.operations.map((op) => printOperation(op, rootPath)).join('\n')}
 
-  const ${serializersUniqueName} = <Type>[
-    ${importedSerializers.map((s) => '...$s').join(', ')},
-    ${rootPath.manager.usedNames.where((name) => !name.contains('Builder')).join(',')},
-  ];
-
-  ${moduleSerializers(serializersUniqueName)}
+  ${printModuleSerializers(
+    serializersUniqueName,
+    importedSerializers,
+    rootPath.manager.usedNames
+        .where((name) => !name.contains('Builder'))
+        .toSet(),
+  )}
 
   ${ignoreLints}
   ''');
+}
+
+String printModuleSerializers(
+  String serializersUniqueName,
+  List<String> importedSerializers,
+  Iterable<String> serializables,
+) {
+  final valueClasses = serializables.toSet();
+  final fragments = <String>{};
+  for (var ss in serializables.where((name) => name.endsWith('SelectionSet'))) {
+    final fragmentName = ss.substring(0, ss.length - 'SelectionSet'.length);
+    valueClasses.remove(fragmentName);
+    fragments.add(fragmentName);
+  }
+
+  final serializers = '(serializers.toBuilder()..addAll([' +
+      fragments.map((f) => '$f.serializer').join(',') +
+      '])).build()';
+
+  return '''
+  const ${serializersUniqueName} = <Type>[
+    ${importedSerializers.map((s) => '...$s').join(', ')},
+    ${valueClasses.join(',')}
+  ];
+
+  ${moduleSerializers(serializersUniqueName, serializers)}
+  ''';
 }

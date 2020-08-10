@@ -82,6 +82,7 @@ String builtClass(
 String sourceDocBlock(GraphQLEntity source) =>
     docstring('```graphql\n${source}\n```');
 
+// NOTE built_value throws with different serializer names
 String _serializers(String className) => '''
     static Serializer<$className> get serializer => ${serializerName(className)};
     static final fromJson = _serializers.curryFromJson(serializer);
@@ -91,6 +92,9 @@ String _serializers(String className) => '''
 
 String serializerName(String name) =>
     '_\$' + dartName(unhide(name)) + 'Serializer';
+
+String serializerClassName(String name) =>
+    '_\$' + className(unhide(name)) + 'Serializer';
 
 String builderClassFor(
   String className, {
@@ -323,12 +327,16 @@ String modelsFrom(AssetId assetId) {
   return dartName(segments.join('/')) + 'Models';
 }
 
-String moduleSerializers(String serializersUniqueName) => '''
+String moduleSerializers(
+  String serializersUniqueName, [
+  String serializers = 'serializers',
+]) =>
+    '''
 
   @SerializersFor(${serializersUniqueName})
   final Serializers serializers = _\$serializers;
 
-  final _serializers = ${configuration.convenienceSerializersFunction}(serializers);
+  final _serializers = ${configuration.convenienceSerializersFunction}($serializers);
 ''';
 
 String printDirective(AssetId asset,
@@ -369,7 +377,6 @@ String printDirectives(
     import 'package:built_collection/built_collection.dart';
     import 'package:built_value/built_value.dart';
     import 'package:built_value/serializer.dart';
-    import 'package:built_value/standard_json_plugin.dart';
 
     ${additional}
     ${asset.imports.map(printGraphQlDirective('import')).join('\n')}

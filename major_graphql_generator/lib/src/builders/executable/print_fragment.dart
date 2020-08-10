@@ -6,8 +6,6 @@ import 'package:major_graphql_generator/src/builders/schema/print_type.dart';
 import 'package:major_graphql_generator/src/builders/utils.dart';
 import 'package:major_graphql_generator/src/operation.dart';
 
-final _hideSelectionSets = false;
-
 String printFragmentMixin(
   ExecutableGraphQLEntity source,
   SelectionSet selectionSet,
@@ -118,9 +116,20 @@ String printFragmentMixin(
 
       ${toObjectBuilder(selectionSet.schemaType, selectionSet.fields)}
 
+
+      static Serializer<${path.className}> get serializer => ${serializerName(path.className)};
+
     }
 
     $built
+
+
+    class ${serializerClassName(path.className)} extends ${serializerClassName(concreteClassName)} {
+      @override
+      final Iterable<Type> types = const [${path.className}];
+    }
+
+    Serializer<${path.className}> ${serializerName(path.className)} = ${serializerClassName(path.className)}();
     ''');
 }
 
@@ -145,6 +154,8 @@ String builtMixinFactories(
 
       static ${selectionSetClassName}Builder builderFor(${className} fragmentInstance) =>
         selectionSet(fragmentInstance).toBuilder();
+
+      static final fromJson = ${selectionSetClassName}.fromJson;
     ''';
 
 // static ${className} from(${focusClass} focus) => ${selectionSetClassName}.from(focus);

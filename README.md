@@ -36,3 +36,9 @@ dev_dependencies:
   build_runner: ^1.7.4
 ```
 
+
+### dev notes
+
+* `irreducibleTypes` are types for which selection sets should not be generated. You can supply your own type for them as well by setting `generate: false`. They are still assumed to be built value types unless they are in the `scalars` map. Not that you need to refer to them in the config by their graphql type name.
+* 
+* `replaceTypes` ma
