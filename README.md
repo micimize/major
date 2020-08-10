@@ -28,17 +28,41 @@ targets:
 
 ```yaml
 dependencies:
-  major_graphql: ^0.0.1
+  major_graphql: ^0.0.3
   # or major_graphql_flutter: ^0.0.1 for flutter
 
 dev_dependencies:
-  major_graphql_generator: ^0.0.1
+  major_graphql_generator: ^0.0.3
   build_runner: ^1.7.4
 ```
 
 
 ### dev notes
-
+* These libraries are **highly experimental**, and the generator is currently **quite slow**.
+* [custom scalar usage & configuration](https://github.com/micimize/major/issues/21#issuecomment-671395549) 
+* [unions appear to be broken](https://github.com/micimize/major/issues/22)
+* There are currently numerous smaller [limitations and caveats](https://github.com/micimize/major/issues/23)
 * `irreducibleTypes` are types for which selection sets should not be generated. You can supply your own type for them as well by setting `generate: false`. They are still assumed to be built value types unless they are in the `scalars` map. Not that you need to refer to them in the config by their graphql type name.
-* 
-* `replaceTypes` ma
+* `replaceTypes` renames all references to a given type
+* `mixins` can be added conditionally:
+```yaml
+mixins:
+  - name: Entity
+    when:
+      fields:
+      - entityId
+      - validFrom
+      - validUntil
+```
+* userland code can be injected via `imports` and `exports` (and needs to be to use scalars and mixins):
+```yaml
+schema:
+  path: savvy_app|lib/graphql/schema.graphql
+  imports:
+    - package:savvy_app/graphql/base.dart
+    - package:built_value/json_object.dart
+  exports:
+    - package:savvy_app/graphql/base.dart
+    - package:built_value/json_object.dart
+```
+
