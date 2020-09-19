@@ -158,9 +158,9 @@ String printInlineFragments(
 
     }
 
-    /// Add the missing build interface
+    /// Add the missing build interface 2
     extension ${className}BuilderExt on ${className}Builder {
-      Character build() => null;
+      ${className} build() => null;
     }
   ''');
 }
