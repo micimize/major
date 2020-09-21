@@ -109,7 +109,11 @@ String printInlineFragments(
   final implementations = BuiltSet<String>(<String>[
     '${config.mgPrefix}.BuiltToJson',
     //u.selectionSetOf(schemaClass),
-    ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
+    ...selectionSet.fragmentPaths
+        .map<String>(u.pathClassName)
+        .followedBy(selectionSet.fragmentSpreads.map(
+          (s) => u.className(s.alias),
+        )),
     ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
   ]).join(', ');
 
