@@ -114,7 +114,8 @@ String printInlineFragments(
         .followedBy(selectionSet.fragmentSpreads.map(
           (s) => u.className(s.alias),
         )),
-    ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
+    ...config.configuration
+        .mixinsWhen(selectionSet.fields.map((e) => e.name), className),
   ]).join(', ');
 
   return u.format('''

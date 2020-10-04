@@ -46,13 +46,12 @@ const nestedBuilders = false;
 
 @immutable
 class MixinConfig {
-  MixinConfig({
-    @required this.name,
-    @required this.whenFields,
-  });
+  MixinConfig(
+      {@required this.name, @required this.whenFields, @required this.nameNot});
   final String name;
 
   final Set<String> whenFields;
+  final Set<String> nameNot;
 }
 
 @immutable
@@ -125,12 +124,18 @@ class Configuration {
   /// defaults to `'_mg.ConvenienceSerializers'`
   final String convenienceSerializersFunction;
 
-  Iterable<String> mixinsWhen(Iterable<String> fieldNames) {
+  Iterable<String> mixinsWhen(Iterable<String> fieldNames, String name) {
     fieldNames ??= {};
     final fields = fieldNames.toSet();
-    return forMixins
-        .where((m) => fields.containsAll(m.whenFields))
-        .map((m) => m.name);
+
+    return forMixins.where((m) {
+      if (m.nameNot != null) {
+        return !m.nameNot.contains(name);
+      }
+      return true;
+    }).where((m) {
+      return fields.containsAll(m.whenFields);
+    }).map((m) => m.name);
   }
 
   factory Configuration.fromMap(Map<String, dynamic> config) {
@@ -166,18 +171,24 @@ class Configuration {
           ),
         ),
       ),
-      forMixins: mixins
-          .map(
-            (mixinConfig) => MixinConfig(
-              name: mixinConfig['name'] as String,
-              whenFields: Set.from(
-                _fromYamlList<String>(
-                  (mixinConfig['when'] as Map)['fields'],
-                ),
+      forMixins: mixins.map(
+        (mixinConfig) {
+          final when = (mixinConfig['when'] as Map);
+          return MixinConfig(
+            name: mixinConfig['name'] as String,
+            nameNot: when['nameNot'] != null
+                ? Set.from(_fromYamlList<String>(
+                    when['nameNot'],
+                  ))
+                : null,
+            whenFields: Set.from(
+              _fromYamlList<String>(
+                when['fields'],
               ),
             ),
-          )
-          .toList(),
+          );
+        },
+      ).toList(),
       convenienceSerializersFunction: convenienceSerializersFunction,
     );
   }
