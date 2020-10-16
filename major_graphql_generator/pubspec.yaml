@@ -1,12 +1,10 @@
 name: major_graphql_generator
-description: Generator component of major_graphql
-version: 0.0.3+1
+version: 0.0.4
 homepage: https://github.com/micimize/major/tree/master/major_graphql_generator
-
-environment:
-  sdk: ">=2.7.0 <3.0.0"
-
-dependencies:
+description: Generator component of major_graphql
+environment: 
+  sdk: '>=2.7.0 <3.0.0'
+dependencies: 
   meta: ^1.1.8
   path: ^1.6.4
   glob: ^1.2.0
@@ -19,26 +17,10 @@ dependencies:
   built_collection: ^4.3.2
   built_value: ^7.0.9
   major_graphql: ^0.0.3
-  #  path: ../major_graphql
-
-  # We automatically apply these builders
-  # TODO: waiting on https://github.com/google/built_value.dart/pull/836 
   built_value_generator: ^7.0.9
   gql_code_gen: ^0.1.5
-
-dev_dependencies:
+dev_dependencies: 
   pedantic: ^1.8.0
   test: ^1.6.0
   build_runner: ^1.7.4
-  build_test:
-
-
-# dependency_overrides:
-#   major_graphql:
-#     path: ../major_graphql
-#
-# built_value_generator: ^7.0.9
-#   git:
-#     url: git@github.com:micimize/built_value.dart.git
-#     ref: patch-1
-#     path: built_value_generator
+  build_test: any

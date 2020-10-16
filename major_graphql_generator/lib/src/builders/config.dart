@@ -45,13 +45,28 @@ class _Extensions {
 const nestedBuilders = false;
 
 @immutable
+class _When {
+  const _When({
+    @required this.fields,
+    @required this.nameNot,
+  });
+
+  /// When all these fields are present, the mixin will be added
+  final Set<String> fields;
+
+  /// Do not add the mixin for these names
+  final Set<String> nameNot;
+}
+
+@immutable
 class MixinConfig {
-  MixinConfig(
-      {@required this.name, @required this.whenFields, @required this.nameNot});
+  MixinConfig({
+    @required this.name,
+    @required this.when,
+  });
   final String name;
 
-  final Set<String> whenFields;
-  final Set<String> nameNot;
+  final _When when;
 }
 
 @immutable
@@ -129,12 +144,12 @@ class Configuration {
     final fields = fieldNames.toSet();
 
     return forMixins.where((m) {
-      if (m.nameNot != null) {
-        return !m.nameNot.contains(name);
+      if (m.when.nameNot != null) {
+        return !m.when.nameNot.contains(name);
       }
       return true;
     }).where((m) {
-      return fields.containsAll(m.whenFields);
+      return fields.containsAll(m.when.fields);
     }).map((m) => m.name);
   }
 
@@ -176,14 +191,16 @@ class Configuration {
           final when = (mixinConfig['when'] as Map);
           return MixinConfig(
             name: mixinConfig['name'] as String,
-            nameNot: when['nameNot'] != null
-                ? Set.from(_fromYamlList<String>(
-                    when['nameNot'],
-                  ))
-                : null,
-            whenFields: Set.from(
-              _fromYamlList<String>(
-                when['fields'],
+            when: _When(
+              nameNot: when['nameNot'] != null
+                  ? Set.from(_fromYamlList<String>(
+                      when['nameNot'],
+                    ))
+                  : null,
+              fields: Set.from(
+                _fromYamlList<String>(
+                  when['fields'],
+                ),
               ),
             ),
           );

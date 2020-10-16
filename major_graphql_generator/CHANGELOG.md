@@ -1,3 +1,9 @@
+# 0.0.4
+
+### [Contributions](https://github.com/micimize/major/pull/24) from @ryankauk
+* **feat**: add filter for mixin by class name
+* **fix**: use fragment mixin on selection set when printInlineFragments is used
+
 ## 0.0.3
 
 - `convenienceSerializersFunction` for injecting custom serializers
