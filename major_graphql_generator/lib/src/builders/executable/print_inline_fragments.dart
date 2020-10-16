@@ -109,8 +109,13 @@ String printInlineFragments(
   final implementations = BuiltSet<String>(<String>[
     '${config.mgPrefix}.BuiltToJson',
     //u.selectionSetOf(schemaClass),
-    ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
-    ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
+    ...selectionSet.fragmentPaths
+        .map<String>(u.pathClassName)
+        .followedBy(selectionSet.fragmentSpreads.map(
+          (s) => u.className(s.alias),
+        )),
+    ...config.configuration
+        .mixinsWhen(selectionSet.fields.map((e) => e.name), className),
   ]).join(', ');
 
   return u.format('''
@@ -158,9 +163,9 @@ String printInlineFragments(
 
     }
 
-    /// Add the missing build interface
+    /// Add the missing build interface 2
     extension ${className}BuilderExt on ${className}Builder {
-      Character build() => null;
+      ${className} build() => null;
     }
   ''');
 }

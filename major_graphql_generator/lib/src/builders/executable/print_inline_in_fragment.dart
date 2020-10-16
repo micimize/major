@@ -105,7 +105,8 @@ String printInlineFragmentMixin(
     // '${config.mgPrefix}.BuiltToJson',
     //parentClass,
     ...selectionSet.fragmentPaths.map<String>(u.pathClassName),
-    ...config.configuration.mixinsWhen(selectionSet.fields.map((e) => e.name)),
+    ...config.configuration
+        .mixinsWhen(selectionSet.fields.map((e) => e.name), className),
   ]).join(', ');
 
   final fragmentFactories = fragmentsTemplate.map((fragment) {

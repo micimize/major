@@ -54,19 +54,20 @@ String printFragmentMixin(
       .map<String>(pathClassName)
       .followedBy(selectionSet.fragmentSpreads.map((e) => className(e.name))));
 
-  final builtImplements = BuiltSet<String>(<String>[
-    ss.parentClass,
-    ...ss.interfaces,
-    ...fragmentModelImplementations,
-    ...config.configuration.mixinsWhen(
-        (selectionSet.fields + additionalFields).map((e) => e.name)),
-  ]).join(', ');
-
   final schemaClass = className(selectionSet.schemaType.name);
 
   final parentClass = selectionSetOf(schemaClass);
 
   final concreteClassName = path.append('SelectionSet').className;
+
+  final builtImplements = BuiltSet<String>(<String>[
+    ss.parentClass,
+    ...ss.interfaces,
+    ...fragmentModelImplementations,
+    ...config.configuration.mixinsWhen(
+        (selectionSet.fields + additionalFields).map((e) => e.name),
+        concreteClassName),
+  ]).join(', ');
 
   final ssFields = (selectionSet.fields + additionalFields).toList();
   final built = builtClass(

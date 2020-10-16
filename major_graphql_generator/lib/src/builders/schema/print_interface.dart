@@ -61,8 +61,8 @@ implements Built<$CLASS_NAME, ${CLASS_NAME}Builder>
       factory $CLASS_NAME([void Function(${CLASS_NAME}Builder) updates]) = _\$${CLASS_NAME};
   */
 
-  final implements =
-      configuration.mixinsWhen(interfaceType.fields.map((e) => e.name));
+  final implements = configuration.mixinsWhen(
+      interfaceType.fields.map((e) => e.name), CLASS_NAME);
   return format(
       interfaceType.fields.map((f) => printField(CLASS_NAME, f)).join('') +
           '''

@@ -64,7 +64,7 @@ String builtClass(
       ...implements,
       if (serializable ?? !className.startsWith('_')) '$mgPrefix.BuiltToJson',
       'Built<$className, ${className}Builder>',
-      ...configuration.mixinsWhen(fieldNames),
+      ...configuration.mixinsWhen(fieldNames, className),
     ],
     body: '''
         $mainFactory
