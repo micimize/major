@@ -27,6 +27,7 @@ flutter:
   uses-material-design: true
 
 dependency_overrides:
+  recase: ^3.0.0
   graphql_server:
     git:
       url: git@github.com:micimize/angel.git

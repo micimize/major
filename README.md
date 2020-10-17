@@ -53,6 +53,10 @@ mixins:
       - entityId
       - validFrom
       - validUntil
+      # disable mixin for these classes
+      nameNot:
+        - MySpecialEntity
+        - MyOtherSpecialEntity
 ```
 * userland code can be injected via `imports` and `exports` (and needs to be to use scalars and mixins):
 ```yaml
