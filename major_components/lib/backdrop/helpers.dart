@@ -5,6 +5,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/all.dart';
+import 'package:major_components/transition_provider.dart';
 
 import './cross_fade.dart';
 
@@ -258,80 +260,57 @@ class SimpleSwitcher extends StatelessWidget {
   }
 }
 
-// closely coupled
-class TabSwitcher extends StatelessWidget {
-  const TabSwitcher({
-    this.isOnTop,
-    Key key,
-    this.duration = const Duration(
-        milliseconds: 300), // TODO idk why tab speed is so much faster
-    this.child,
-  }) : super(key: key);
-
+// TODO will need animation mixin?
+// future ref https://github.com/rrousselGit/flutter_hooks/blob/1bafe5c6ad96de9ff152abfe06fae7a1650c057b/lib/src/animation.dart
+/// Fade in and up or out and down depending on the [PageTransition]
+/// of the current context.
+class VerticalFadeSwitcher extends StatelessWidget {
+  VerticalFadeSwitcher({
+    @required this.child,
+    this.curve = Curves.easeIn,
+    this.reverseCurve = Curves.easeOut,
+  });
   final Widget child;
-  final Duration duration;
-  final bool isOnTop;
 
-  Curve direct(Curve c) => isOnTop ? c : c.flipped;
+  final Curve curve;
+  final Curve reverseCurve;
 
   Widget _slide(
+    double direction,
+    Animation<double> animation,
     Widget child,
   ) =>
-      TweenAnimationBuilder(
-        duration: duration,
+      SlideTransition(
+        position: Tween(
+          begin: Offset(1.1 * (direction ?? 0), direction == 0 ? 0.5 : 0),
+          end: Offset.zero,
+        ).animate(animation),
+        child: child,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    //}, ScopedReader watch) {
+    // Listens to the value exposed by counterProvider
+    // final animation = watch(PageTransition.current).animation;
+    final animation = ModalRoute.of(context).inPlacePageTransition;
+
+    return _slide(
+      0.0, // TODO left in in case of sidways transitions
+      CurvedAnimation(
+        parent: animation,
         curve: Curves.easeOutQuad,
-        tween: isOnTop
-            ? Tween(
-                begin: Offset(0, 0.5),
-                end: Offset.zero,
-              )
-            : Tween(
-                begin: Offset.zero,
-                end: Offset(0, 0.5),
-              ),
-        builder: (BuildContext context, Offset offset, Widget child) {
-          return FractionalTranslation(
-            translation: offset,
-            transformHitTests: true,
-            child: child,
-          );
-        },
+      ),
+      FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: Interval(
+            0.4,
+            1.0,
+          ),
+        ),
         child: child,
-      );
-
-  Widget _fade(Widget child) => AnimatedOpacity(
-        opacity: isOnTop ? 1 : 0,
-        duration: duration,
-        curve: isOnTop
-            ? Interval(
-                0.5,
-                1.0,
-                curve: Curves.easeIn,
-              )
-            : Interval(
-                0.0,
-                0.5,
-                curve: Curves.easeOut,
-              ),
-        child: child,
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    //final p = TabNavigator.focusOf(context).tabNavigator.currentPath;
-    //print([isOnTop, p, p.pointsTo(context)]);
-    return _slide(_fade(child));
-  }
-}
-
-class AnimationProvider extends StatefulWidget {
-  @override
-  _AnimationProviderState createState() => _AnimationProviderState();
-}
-
-class _AnimationProviderState extends State<AnimationProvider> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
+      ),
+    );
   }
 }

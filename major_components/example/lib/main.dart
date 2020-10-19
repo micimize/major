@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'package:major_components/backdrop/backdrop.dart';
-import 'package:major_components/backdrop/backdrop_tabs.dart';
+import 'package:major_components/backdrop/backdrop_state_provider.dart';
 import 'package:major_components_example/data.dart';
+import './users_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -56,33 +58,20 @@ class _MyHomePageState extends State<MyHomePage>
     BackdropBarContent header(String text) => BackdropBarContent(
           title: BackdropTitle.fromText(text),
         );
-    return MaterialApp(
-      title: 'Major Components',
-      home: Builder(
-        builder: (conetxt) => Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Theme.of(context).primaryColor,
-          body: SafeArea(
-            bottom: false,
-            child: Backdrop(
-              /// TODO this should be a riverpod thing I think
-              controller: BackdropController(
-                isOpen: isOpen,
-                onOpenChanged: onOpenChange,
-                controller: backdropController,
-              ),
-              bar: BackdropBar(
-                top: BackdropBarContent(
-                  title: BackdropTitle.fromText('constant top'),
-                ),
-                back: header('back layer'),
-                front: header('front layer'),
-              ),
-              backLayer: RaisedButton(onPressed: () {}, child: Text('wow')),
-              frontLayer: User.infiniteList(context),
-            ),
+
+    return ProviderScope(
+      overrides: [
+        BackdropOpenState.current.overrideWithValue(
+          BackdropOpenState(
+            isOpen: isOpen,
+            onOpenChanged: onOpenChange,
+            controller: backdropController,
           ),
         ),
+      ],
+      child: MaterialApp(
+        title: 'Major Components',
+        home: UsersPage(),
       ),
     );
   }

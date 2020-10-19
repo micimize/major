@@ -6,11 +6,13 @@
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/single_child_widget.dart';
 import '../big_sheet.dart';
 
 import './helpers.dart';
 import '../tab_navigator.dart';
+
+import './backdrop_state_provider.dart';
+export './backdrop_state_provider.dart';
 
 part './backdrop_controller.dart';
 part './backdrop_bar.dart';
@@ -21,15 +23,13 @@ const double frontClosedHeight = 92.0; // front layer height when closed
 
 class Backdrop extends StatefulWidget {
   const Backdrop({
-    @required this.controller,
     this.bar,
     this.frontHeading,
     this.frontLayer,
     this.backLayer,
+    this.openState,
     Key key,
   }) : super(key: key);
-
-  final BackdropController controller;
 
   ///
   final BackdropBar bar;
@@ -38,6 +38,8 @@ class Backdrop extends StatefulWidget {
   final Widget frontLayer;
 
   final Widget frontHeading;
+
+  final BackdropOpenState openState;
 
   @override
   _BackdropState createState() => _BackdropState();
@@ -64,8 +66,9 @@ class _BackdropState extends State<Backdrop>
   // TODO It's awkward to have both controller-driven and in-place duration-driven animations
   // TODO Maybe we should just replace the controller with top-level durations and curves?
 
-  bool get isOpen => widget.controller.isOpen;
-  AnimationController get controller => widget.controller.controller;
+  bool get isOpen => widget.openState.isOpen;
+  AnimationController get controller => widget.openState.controller;
+  ValueChanged<bool> get onOpenChanged => widget.openState.onOpenChanged;
 
   AnimationController _peakController;
 
@@ -89,7 +92,7 @@ class _BackdropState extends State<Backdrop>
 
   @override
   void didUpdateWidget(oldWidget) {
-    if (oldWidget.controller.isOpen != widget.controller.isOpen) {
+    if (oldWidget.openState.isOpen != widget.openState.isOpen) {
       controller.fling(velocity: isOpen ? 1 : -1);
     }
     super.didUpdateWidget(oldWidget);
@@ -107,12 +110,9 @@ class _BackdropState extends State<Backdrop>
     }
   }
 
-  void toggleFrontLayer() => setState(() {
-        widget.controller.onOpenChanged(!isOpen);
-      });
+  void toggleFrontLayer() => setState(() => onOpenChanged(!isOpen));
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
-    final isOnTop = true; // TODO use inherited transitions
     return ListenableProvider.value(
       value: _peakController,
       child: Column(
@@ -133,11 +133,8 @@ class _BackdropState extends State<Backdrop>
           ),
           // Front layer
           Expanded(
-            child: TabSwitcher(
-              isOnTop: isOnTop,
+            child: VerticalFadeSwitcher(
               child: BigSheet(
-                key: Key((widget.frontLayer.key ?? widget.frontLayer.hashCode)
-                    .toString()),
                 child: Scrim(
                   applied: isOpen,
                   child: wrappedFrontLayer,
@@ -165,7 +162,18 @@ class _BackdropState extends State<Backdrop>
 
   @override
   Widget build(BuildContext context) {
+    final m = ModalRoute.of(context);
+    final animation = m.animation;
+    animation.addListener(() => print([m.isCurrent, animation.value]));
     return LayoutBuilder(builder: _buildStack);
+  }
+
+  @override
+  void dispose() {
+    /// TODO the backdrop is not disposed, but we only see
+    /// builds from the
+    print('disposing');
+    super.dispose();
   }
 
   @override

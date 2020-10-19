@@ -96,7 +96,9 @@ class BackdropBarContentLayout {
     return IconTheme.merge(
       data: theme.primaryIconTheme,
       child: DefaultTextStyle(
-          style: theme.primaryTextTheme.headline6, child: child),
+        style: theme.primaryTextTheme.headline6,
+        child: child,
+      ),
     );
   }
 
