@@ -4,18 +4,19 @@
 // found in the LICENSE file.
 
 import 'package:flutter/rendering.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:major_components/major_components.dart';
 
 import 'package:major_components/src/backdrop/big_sheet.dart';
 import 'package:major_components/src/backdrop/scrim.dart';
-import 'package:major_components/src/tab_navigator.dart';
 import 'package:major_components/src/backdrop/_simple_switcher.dart';
 
 import './backdrop_state_provider.dart';
 import './backdrop_bar.dart';
 
 import 'package:major_components/src/transitions.dart';
+
+import 'package:major_components/src/cheaters_global_key.dart';
 
 class Backdrop extends StatefulWidget {
   const Backdrop({
@@ -42,19 +43,13 @@ class Backdrop extends StatefulWidget {
 }
 
 class _BackdropState extends State<Backdrop>
-    with SingleTickerProviderStateMixin {
+    with RouteChangeObserver<Backdrop> {
   // TODO It's awkward to have both controller-driven and in-place duration-driven animations
   // TODO Maybe we should just replace the controller with top-level durations and curves?
 
   bool get isOpen => widget.openState.isOpen;
   AnimationController get controller => widget.openState.controller;
   ValueChanged<bool> get onOpenChanged => widget.openState.onOpenChanged;
-
-  AnimationController _peakController;
-
-  // Animation<double> _frontOpacity;
-
-  bool onTop = true;
 
   @override
   void initState() {
@@ -64,10 +59,6 @@ class _BackdropState extends State<Backdrop>
         controller.value = 0.0;
       }
     });
-
-    _peakController = AnimationController(vsync: this)..value = 1;
-
-    // _frontOpacity = controller.drive(_frontOpacityTween);
   }
 
   @override
@@ -78,57 +69,55 @@ class _BackdropState extends State<Backdrop>
     super.didUpdateWidget(oldWidget);
   }
 
-  void setOnTop(TabPath path) {
-    if (!mounted) return;
-    final isOnTop = path.pointsTo(context);
-    if (onTop != isOnTop) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          onTop = isOnTop;
-        });
-      });
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    subscribeToRouteChanges();
+  }
+
+  @override
+  void dispose() {
+    unsubscribeFromRouteChanges();
+    super.dispose();
   }
 
   void toggleFrontLayer() => setState(() => onOpenChanged(!isOpen));
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
-    final pageAnimation = ModalRoute.of(context).inPlacePageTransition;
-    return ListenableProvider.value(
-      value: _peakController,
-      child: Column(
-        //key: CheatersGlobalKey.of(context, 'backdrop'),
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            child: widget.bar,
+    final pageAnimation = routeFromContext.inPlacePageTransition;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          key: alwaysOnTopGlobalKey(context, 'major_components.BackdropBar'),
+          child: widget.bar,
+        ),
+        // Back layer
+        SizeTransition(
+          axisAlignment: -1.0,
+          sizeFactor: CurvedAnimation(
+            parent: controller,
+            curve: Curves.easeInOut,
           ),
-          // Back layer
-          SizeTransition(
-            axisAlignment: -1.0,
-            sizeFactor: CurvedAnimation(
-              parent: controller,
-              curve: Curves.easeInOut,
-            ),
-            child: SimpleSwitcher(child: widget.backLayer),
-          ),
-          // Front layer
-          Expanded(
-            child: SlideVerticallyBetweenPages(
-              pageAnimation: pageAnimation,
-              child: BigSheet(
-                child: Scrim(
-                  applied: isOpen,
-                  child: FadeBetweenPages(
-                    pageAnimation: pageAnimation,
-                    child: wrappedFrontLayer,
-                  ),
+          child: SimpleSwitcher(child: widget.backLayer),
+        ),
+        // Front layer
+        Expanded(
+          child: SlideVerticallyBetweenPages(
+            pageAnimation: pageAnimation,
+            child: BigSheet(
+              child: Scrim(
+                applied: isOpen,
+                child: FadeBetweenPages(
+                  pageAnimation: pageAnimation,
+                  child: wrappedFrontLayer,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// TODO make open state based
 class SimpleSwitcher extends StatelessWidget {
   const SimpleSwitcher({
     Key key,
@@ -49,3 +50,13 @@ class SimpleSwitcher extends StatelessWidget {
     );
   }
 }
+
+SimpleSwitcher switcher(Widget item) => SimpleSwitcher(
+      alignment: Alignment.centerLeft,
+      switchInCurve: Curves.linear,
+      switchOutCurve: Curves.linear,
+      duration: Duration(milliseconds: 250),
+      sizeCurve: Interval(0.0, 0.5, curve: Curves.linear),
+      fadeCurve: Interval(0.5, 1.0, curve: Curves.linear),
+      child: item ?? SizedBox(width: 0, height: 0),
+    );

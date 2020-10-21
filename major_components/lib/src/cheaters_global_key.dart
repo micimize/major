@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:major_components/src/pointless.dart';
+import 'package:major_components/src/tab_navigator.dart';
+
+Key cheatersGlobalKey(BuildContext context, Object label) {
+  return ModalRoute.of(context).isOnTop
+      ? GlobalObjectKey(label)
+      : ObjectKey(label);
+}
 
 class CheatersGlobalKey extends InheritedWidget {
   CheatersGlobalKey._({

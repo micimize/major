@@ -5,8 +5,8 @@ description: graphql_flutter bindings for major_graphql
 environment: 
   sdk: '>=2.7.0 <3.0.0'
 dependencies: 
-  graphql: ^4.0.0
-  graphql_flutter: ^4.0.0
+  graphql: ^4.0.0-beta
+  graphql_flutter: ^4.0.0-beta
   gql: ^0.12.2
   flutter: 
     sdk: flutter

@@ -1,8 +1,9 @@
 // Fundamentals
+export './backdrop_widget.dart';
 export './backdrop_bar.dart';
+export './backdrop_bar_content.dart';
 export './backdrop_state_provider.dart';
 export './peak_behavior.dart';
-export './backdrop_widget.dart';
 
 // Common UI elements
 export './backdrop_tabs.dart';

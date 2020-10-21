@@ -72,9 +72,12 @@ class _MyHomePageState extends State<MyHomePage>
           ),
         ),
       ],
-      child: MaterialApp(
-        title: 'Major Components',
-        home: UsersPage(),
+      child: RouteChangeProvider(
+        builder: (context, observer) => MaterialApp(
+          title: 'Major Components',
+          navigatorObservers: [observer],
+          home: UsersPage(),
+        ),
       ),
     );
   }

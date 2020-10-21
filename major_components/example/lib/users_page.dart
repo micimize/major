@@ -15,21 +15,18 @@ class UsersPage extends ConsumerWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).primaryColor,
-      body: SafeArea(
-        bottom: false,
-        child: Backdrop(
-          /// TODO this should be a riverpod thing I think
-          openState: watch(BackdropOpenState.current),
-          bar: BackdropBar(
-            top: BackdropBarContent(
-              title: BackdropTitle.fromText('constant top'),
-            ),
-            back: header('user back layer'),
-            front: header('users front'),
+      body: Backdrop(
+        /// TODO this should be a riverpod thing I think
+        openState: watch(BackdropOpenState.current),
+        bar: BackdropBar(
+          top: BackdropBarContent(
+            title: BackdropTitle.fromText('constant top'),
           ),
-          backLayer: BackNav(),
-          frontLayer: User.infiniteList(context),
+          back: header('user back layer'),
+          front: header('users front'),
         ),
+        backLayer: BackNav(),
+        frontLayer: User.infiniteList(context),
       ),
     );
   }

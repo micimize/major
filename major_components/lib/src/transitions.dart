@@ -1,5 +1,6 @@
 // TODO configuration for coupling a global handoff point with the handoff-like transitions
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 import 'package:meta/meta.dart';
 
 extension InPlaceAnimationHelper on ModalRoute {
@@ -20,8 +21,10 @@ Animation<double> _inPlacePageTransition(
 PageRouteBuilder inPlaceHandoffRoute<T>({
   @required WidgetBuilder builder,
   double handOff = 0.5,
+  RouteSettings settings,
 }) =>
     PageRouteBuilder<T>(
+      settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => builder(context),
       transitionDuration: Duration(seconds: 1),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -34,6 +37,37 @@ PageRouteBuilder inPlaceHandoffRoute<T>({
         );
       },
     );
+
+class InPlaceHandoffPageRoute<T> extends PageRouteBuilder<T> {
+  /// Creates a route that fades abruptly at the [handOff] point with a [Threshold]
+  InPlaceHandoffPageRoute({
+    RouteSettings settings,
+    @required RoutePageBuilder pageBuilder,
+    Duration transitionDuration = const Duration(milliseconds: 300),
+    Duration reverseTransitionDuration = const Duration(milliseconds: 300),
+    bool maintainState = true,
+    bool fullscreenDialog = false,
+    this.handOff = 0.5,
+  }) : super(
+          settings: settings,
+          pageBuilder: pageBuilder,
+          fullscreenDialog: fullscreenDialog,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: _inPlacePageTransition(animation, secondaryAnimation),
+                curve: Threshold(handOff),
+              ),
+              child: child,
+            );
+          },
+          transitionDuration: transitionDuration,
+          reverseTransitionDuration: reverseTransitionDuration,
+        );
+
+  /// The point in the animation at which to switch routes
+  final double handOff;
+}
 
 /// Vertically slide the child depending on [ModalRoute.inPlacePageTransition]
 class SlideVerticallyBetweenPages extends StatelessWidget {

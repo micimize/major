@@ -10,10 +10,12 @@ class BackNav extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, watch) {
-    VoidCallback navigateTo(WidgetBuilder page) => () => Navigator.push(
-          context,
-          inPlaceHandoffRoute(builder: page),
-        );
+    VoidCallback navigateTo(String name, WidgetBuilder page) =>
+        () => Navigator.push(
+              context,
+              inPlaceHandoffRoute(
+                  builder: page, settings: RouteSettings(name: name)),
+            );
 
     final theme = Theme.of(context);
     final style = theme.textTheme.button.copyWith(color: Colors.white);
@@ -21,11 +23,11 @@ class BackNav extends ConsumerWidget {
       data: theme.primaryIconTheme,
       child: Column(children: [
         FlatButton(
-          onPressed: navigateTo((c) => PostsPage()),
+          onPressed: navigateTo('posts', (c) => PostsPage()),
           child: Text('posts', style: style),
         ),
         FlatButton(
-          onPressed: navigateTo((c) => UsersPage()),
+          onPressed: navigateTo('users', (c) => UsersPage()),
           child: Text('users', style: style),
         ),
       ]),

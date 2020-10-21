@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/all.dart';
 import './pointless.dart';
 
 /// Wrapper around [NavigatorState] providing helpers
@@ -61,15 +62,15 @@ class TabNavigator extends StatefulWidget {
     );
   }
 
-  /// [TabNavFocus] for either [tab], or [forCurrentTab], or for that of the [context]
+  /// [TabNavFocus] for either [tab], or for [currentTab], or for that of the [context]
   static TabNavFocus focusOf(
     BuildContext context, {
     String tab,
-    bool forCurrentTab = false,
+    bool currentTab = false,
   }) {
     final navState = of(context);
     int tabIndex;
-    if (tab != null || forCurrentTab) {
+    if (tab != null || currentTab) {
       tabIndex = tab != null
           ? navState.widget.tabs.indexOf(_cleanTab(tab))
           : navState.tabIndex;
@@ -87,7 +88,7 @@ class TabNavigator extends StatefulWidget {
     String tab,
     @required ModalRoute<T> route,
   }) {
-    final tabState = focusOf(context, tab: tab, forCurrentTab: tab == null);
+    final tabState = focusOf(context, tab: tab, currentTab: tab == null);
     // TODO janky AF, but realized we want return values from navigateTo
     Future<T> result;
     tabState.setTab(and: () {
@@ -168,5 +169,17 @@ class TabNavigatorState extends State<TabNavigator>
   @override
   Widget build(BuildContext context) {
     return widget.builder(context, this);
+  }
+}
+
+extension IsOnTop on ModalRoute {
+  bool get isOnTop {
+    if (!isCurrent) {
+      return false;
+    }
+    final tabs = TabNavigator.of(subtreeContext, isNullOk: true);
+
+    /// If there is no tab navigator we assume it's topmost
+    return tabs == null || tabs.currentNavigator == navigator;
   }
 }
