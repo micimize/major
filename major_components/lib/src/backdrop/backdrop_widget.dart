@@ -127,7 +127,7 @@ class _BackdropState extends State<Backdrop>
   }
 
   Widget get wrappedFrontLayer {
-    if (widget.openState.peakBehavior != null) {
+    if (widget.openState.peakBehavior == null) {
       return widget.frontLayer;
     }
     return widget.openState.peakBehavior.bindFrontLayer(

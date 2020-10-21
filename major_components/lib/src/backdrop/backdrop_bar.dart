@@ -38,7 +38,8 @@ class BackdropBar extends StatefulWidget {
   _BackdropBarState createState() => _BackdropBarState();
 }
 
-class _BackdropBarState extends State<BackdropBar> {
+class _BackdropBarState extends State<BackdropBar>
+    with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -50,11 +51,6 @@ class _BackdropBarState extends State<BackdropBar> {
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
 
