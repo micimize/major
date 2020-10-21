@@ -10,6 +10,7 @@ import 'package:major_components/major_components.dart';
 import 'package:major_components/src/backdrop/big_sheet.dart';
 import 'package:major_components/src/backdrop/scrim.dart';
 import 'package:major_components/src/backdrop/_simple_switcher.dart';
+import 'package:major_components/src/tab_navigator.dart';
 
 import './backdrop_state_provider.dart';
 import './backdrop_bar.dart';
@@ -43,7 +44,7 @@ class Backdrop extends StatefulWidget {
 }
 
 class _BackdropState extends State<Backdrop>
-    with RouteChangeObserver<Backdrop> {
+    with SingleTickerProviderStateMixin, RouteChangeObserver<Backdrop> {
   // TODO It's awkward to have both controller-driven and in-place duration-driven animations
   // TODO Maybe we should just replace the controller with top-level durations and curves?
 
@@ -90,7 +91,11 @@ class _BackdropState extends State<Backdrop>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          key: alwaysOnTopGlobalKey(context, 'major_components.BackdropBar'),
+          key: alwaysOnTopGlobalKey(
+            context,
+            'major_components.BackdropBar',
+            when: pageAnimation.value >= 0.5,
+          ),
           child: widget.bar,
         ),
         // Back layer

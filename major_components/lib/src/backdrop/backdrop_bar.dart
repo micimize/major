@@ -149,18 +149,7 @@ class _BackdropBarRenderer extends StatelessWidget {
       title: title,
       trailing: trailing,
     );
-    final bar = stack.contentLayout.apply(context, content);
-
-    /// TODO should be own abstraction for handling the theming of the backdrop
-    final color = Theme.of(context).primaryColor;
-    return bar;
-    return Hero(
-      tag: 'major_components.BackdropBar',
-      child: Material(
-        color: color,
-        child: bar,
-      ),
-    );
+    return stack.contentLayout.apply(context, content);
   }
 }
 

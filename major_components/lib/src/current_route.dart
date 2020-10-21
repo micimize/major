@@ -31,10 +31,12 @@ mixin RouteChangeObserver<T extends StatefulWidget> on State<T>
   ///
   /// Is only exposed from [RouteChangeObserver] because
   /// the containing widget might not get rebuilt without it.
-  Key alwaysOnTopGlobalKey(BuildContext context, Object label) {
-    return ModalRoute.of(context).isOnTop
-        ? GlobalObjectKey(label)
-        : ObjectKey(label);
+  Key alwaysOnTopGlobalKey(
+    BuildContext context,
+    Object label, {
+    bool when = true,
+  }) {
+    return _route.isOnTop && when ? GlobalObjectKey(label) : ObjectKey(label);
   }
 
   void _setCurrent(bool val) => setState(() => val);

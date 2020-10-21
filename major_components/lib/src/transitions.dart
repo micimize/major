@@ -1,6 +1,5 @@
 // TODO configuration for coupling a global handoff point with the handoff-like transitions
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
 import 'package:meta/meta.dart';
 
 extension InPlaceAnimationHelper on ModalRoute {
@@ -26,7 +25,7 @@ PageRouteBuilder inPlaceHandoffRoute<T>({
     PageRouteBuilder<T>(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => builder(context),
-      transitionDuration: Duration(seconds: 1),
+      transitionDuration: Duration(milliseconds: 550),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
           opacity: CurvedAnimation(

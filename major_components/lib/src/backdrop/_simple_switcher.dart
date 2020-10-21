@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:major_components/src/backdrop/cross_fade.dart';
 
 // TODO make open state based
 class SimpleSwitcher extends StatelessWidget {
@@ -55,7 +56,7 @@ SimpleSwitcher switcher(Widget item) => SimpleSwitcher(
       alignment: Alignment.centerLeft,
       switchInCurve: Curves.linear,
       switchOutCurve: Curves.linear,
-      duration: Duration(milliseconds: 250),
+      duration: Duration(milliseconds: 550),
       sizeCurve: Interval(0.0, 0.5, curve: Curves.linear),
       fadeCurve: Interval(0.5, 1.0, curve: Curves.linear),
       child: item ?? SizedBox(width: 0, height: 0),
