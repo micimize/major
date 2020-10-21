@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/all.dart';
-import 'package:major_components/backdrop/backdrop.dart';
-import 'package:major_components/backdrop/backdrop_state_provider.dart';
-import 'package:major_components_example/data.dart';
+import 'package:major_components/major_components.dart';
+
 import './users_page.dart';
 
 void main() {
@@ -35,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with TickerProviderStateMixin<MyHomePage> {
   AnimationController backdropController;
+  AnimationController peakController;
   bool isOpen = false;
 
   @override
@@ -45,6 +45,8 @@ class _MyHomePageState extends State<MyHomePage>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+
+    peakController = AnimationController(vsync: this)..value = 1;
   }
 
   void onOpenChange(bool newOpen) {
@@ -66,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage>
             isOpen: isOpen,
             onOpenChanged: onOpenChange,
             controller: backdropController,
+            peakBehavior: PeakTopBarOnDrag(peakController),
           ),
         ),
       ],

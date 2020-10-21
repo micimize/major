@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:major_components/backdrop/backdrop.dart';
+import 'package:major_components/major_components.dart';
 import 'package:major_components_example/back_nav.dart';
 import 'package:major_components_example/data.dart';
 

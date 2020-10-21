@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:major_components/backdrop/backdrop.dart';
-import 'package:major_components/transition_provider.dart';
+import 'package:major_components/major_components.dart';
 import 'package:major_components_example/data.dart';
 import 'package:major_components_example/posts_page.dart';
 import 'package:major_components_example/users_page.dart';
