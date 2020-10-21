@@ -6,20 +6,16 @@
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '../big_sheet.dart';
 
-import './helpers.dart';
-import '../tab_navigator.dart';
+import 'package:major_components/src/backdrop/big_sheet.dart';
+import 'package:major_components/src/backdrop/scrim.dart';
+import 'package:major_components/src/tab_navigator.dart';
+import 'package:major_components/src/backdrop/_simple_switcher.dart';
 
 import './backdrop_state_provider.dart';
-export './backdrop_state_provider.dart';
+import './backdrop_bar.dart';
 
-part './backdrop_controller.dart';
-part './backdrop_bar.dart';
-part './leading_toggle_button.dart';
-
-// const double _kFrontHeadingHeight = 32.0; // front layer beveled rectangle
-const double frontClosedHeight = 92.0; // front layer height when closed
+import 'package:major_components/src/transitions.dart';
 
 class Backdrop extends StatefulWidget {
   const Backdrop({
@@ -43,22 +39,6 @@ class Backdrop extends StatefulWidget {
 
   @override
   _BackdropState createState() => _BackdropState();
-
-  static _BackdropState of(
-    BuildContext context, {
-    bool isNullOk = false,
-  }) {
-    assert(isNullOk != null);
-    assert(context != null);
-    final _BackdropState result =
-        context.findAncestorStateOfType<_BackdropState>();
-    if (isNullOk || result != null) {
-      return result;
-    }
-    throw FlutterError(
-      'Backdrop.of() called with a context that does not contain a Backdrop.\n',
-    );
-  }
 }
 
 class _BackdropState extends State<Backdrop>
@@ -113,6 +93,7 @@ class _BackdropState extends State<Backdrop>
   void toggleFrontLayer() => setState(() => onOpenChanged(!isOpen));
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
+    final pageAnimation = ModalRoute.of(context).inPlacePageTransition;
     return ListenableProvider.value(
       value: _peakController,
       child: Column(
@@ -133,11 +114,15 @@ class _BackdropState extends State<Backdrop>
           ),
           // Front layer
           Expanded(
-            child: VerticalFadeSwitcher(
+            child: SlideVerticallyBetweenPages(
+              pageAnimation: pageAnimation,
               child: BigSheet(
                 child: Scrim(
                   applied: isOpen,
-                  child: wrappedFrontLayer,
+                  child: FadeBetweenPages(
+                    pageAnimation: pageAnimation,
+                    child: wrappedFrontLayer,
+                  ),
                 ),
               ),
             ),
@@ -147,33 +132,19 @@ class _BackdropState extends State<Backdrop>
     );
   }
 
-  Widget get wrappedFrontLayer => NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (notification is ScrollUpdateNotification) {
-            widget.bar.applyPeakBehavior(_peakController, notification);
-          }
-          if (notification is ScrollEndNotification) {
-            widget.bar.applyPeakSnapBehavior(_peakController, notification);
-          }
-          return false;
-        },
-        child: widget.frontLayer,
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    final m = ModalRoute.of(context);
-    final animation = m.animation;
-    animation.addListener(() => print([m.isCurrent, animation.value]));
-    return LayoutBuilder(builder: _buildStack);
+  Widget get wrappedFrontLayer {
+    if (widget.openState.peakBehavior != null) {
+      return widget.frontLayer;
+    }
+    return widget.openState.peakBehavior.bindFrontLayer(
+      context,
+      widget.frontLayer,
+    );
   }
 
   @override
-  void dispose() {
-    /// TODO the backdrop is not disposed, but we only see
-    /// builds from the
-    print('disposing');
-    super.dispose();
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: _buildStack);
   }
 
   @override

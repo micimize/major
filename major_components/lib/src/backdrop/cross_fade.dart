@@ -1,5 +1,47 @@
 import 'package:flutter/material.dart';
 
+Widget crossFade(
+  bool isOpen,
+  AnimationController controller,
+  Widget back,
+  Widget front, {
+  AlignmentDirectional alignment = AlignmentDirectional.centerStart,
+  bool namesRoute = true,
+}) {
+  return back != null && front != null
+      ? CrossFadeTransition(
+          // TODO this was buggy at some point but idk why.
+          // without a key, titles do not properly transition (_switcher in BackdropBar)
+          // but this key is probably incorrect
+          key: Key(
+            'crossfade(${back.key ?? back.hashCode}, ${front.key ?? front.hashCode})',
+          ),
+          progress: controller,
+          alignment: alignment,
+          firstChild: actionable(
+            enabled: isOpen,
+            namesRoute: namesRoute,
+            child: back,
+          ),
+          secondChild: actionable(
+            enabled: !isOpen,
+            namesRoute: namesRoute,
+            child: front,
+          ),
+        )
+      : back ?? front;
+}
+
+/// Wraps `child` in a semantically aware pointer event swallower controlled by `enabled`.
+Semantics actionable({bool enabled, bool namesRoute = true, Widget child}) =>
+    Semantics(
+        enabled: enabled,
+        namesRoute: namesRoute,
+        child: IgnorePointer(
+          ignoring: !enabled,
+          child: child,
+        ));
+
 /// fade between two widgets
 ///
 /// extracted from backdrop demo

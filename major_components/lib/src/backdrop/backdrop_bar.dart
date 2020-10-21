@@ -1,4 +1,13 @@
-part of './backdrop.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import './pop_in.dart';
+import './cross_fade.dart';
+
+import './backdrop_state_provider.dart';
+import './leading_toggle_button.dart';
+import 'package:major_components/src/backdrop/_simple_switcher.dart';
 
 typedef ContentLayoutBuilder = Widget Function(
   BuildContext context,
@@ -74,7 +83,8 @@ class BackdropBarContentLayout {
 
   /// Compose [wrappers] that don't need to know about the details of context
   static WidgetLayoutBuilder composeWrappers(
-          Iterable<WidgetLayoutBuilder> wrappers) =>
+    Iterable<WidgetLayoutBuilder> wrappers,
+  ) =>
       (context, widget) {
         var _widget = widget;
         for (final wrapper in wrappers) {
@@ -121,25 +131,12 @@ class BackdropBarContentLayout {
   );
 }
 
-enum BackdropBarPeakBehavior {
-  /// No implicit affordance for peaking the `top` bar content from the `frontLayer`
-  None,
-
-  /// Logically the same as `None`, but semantically indicates an explicit affordance
-  Manual,
-
-  /// Peak and hide the `top` bar content based on a drag down from the user on the `frontLayer`
-  DragFrontLayer,
-}
-
 class BackdropBar extends StatefulWidget {
   BackdropBar({
     Key key,
     this.top,
     this.front,
     this.back,
-    this.peakBehavior = BackdropBarPeakBehavior.DragFrontLayer,
-    this.backgroundColor,
     this.contentLayout = const BackdropBarContentLayout(),
   })  : assert(front != null || back != null || top != null),
         super(key: key);
@@ -147,10 +144,7 @@ class BackdropBar extends StatefulWidget {
   final BackdropBarContent back;
 
   final BackdropBarContent front;
-  final BackdropBarPeakBehavior peakBehavior;
   final double pixelToPercent = 0.01;
-
-  final Color backgroundColor;
 
   final BackdropBarContentLayout contentLayout;
 
@@ -162,42 +156,19 @@ class BackdropBar extends StatefulWidget {
 
   @override
   _BackdropBarState createState() => _BackdropBarState();
-
-  /// Returns true to cancel bubbling
-  void applyPeakBehavior(
-    AnimationController peakController,
-    ScrollUpdateNotification notification,
-  ) {
-    if (peakBehavior != BackdropBarPeakBehavior.DragFrontLayer) {
-      return null;
-    }
-    if (notification.dragDetails == null) {
-      return applyPeakSnapBehavior(peakController, notification);
-    }
-
-    peakController.value += notification.dragDetails.primaryDelta / 56;
-  }
-
-  void applyPeakSnapBehavior(
-    AnimationController peakController,
-    ScrollNotification notification,
-  ) async {
-    if (peakController.isAnimating ||
-        peakController.status == AnimationStatus.completed) return;
-    peakController.fling(velocity: peakController.value > 0.5 ? 1.0 : -1.0);
-  }
 }
 
 class _BackdropBarState extends State<BackdropBar> {
   @override
   Widget build(BuildContext context) {
-    final backdropState = Backdrop.of(context);
-    return _BackdropBarRenderer(
-      peakBehavior: widget.peakBehavior,
-      isOpen: backdropState.isOpen,
-      backdropController: backdropState.controller,
-      peakController: Provider.of<AnimationController>(context),
-      stack: widget,
+    return Consumer(
+      builder: (context, watch, _) {
+        final backdropState = watch(BackdropOpenState.current);
+        return _BackdropBarRenderer(
+          openState: backdropState,
+          stack: widget,
+        );
+      },
     );
   }
 
@@ -217,17 +188,11 @@ class _BackdropBarState extends State<BackdropBar> {
 class _BackdropBarRenderer extends StatelessWidget {
   const _BackdropBarRenderer({
     Key key,
-    @required this.isOpen,
-    @required this.backdropController,
-    @required this.peakController,
-    @required this.peakBehavior,
+    @required this.openState,
     @required this.stack,
   }) : super(key: key);
 
-  final AnimationController backdropController;
-  final bool isOpen;
-  final BackdropBarPeakBehavior peakBehavior;
-  final AnimationController peakController;
+  final BackdropOpenState openState;
   final BackdropBar stack;
 
   BackdropBarContent get top => stack.top;
@@ -236,7 +201,14 @@ class _BackdropBarRenderer extends StatelessWidget {
 
   BackdropBarContent get back => stack.back;
 
-  BackdropBarContent get peakBar => stack.top;
+  /// Applies peak animation to top bar if necessary
+  Animation<double> get topBarAnimation {
+    if (openState.peakBehavior == null) {
+      return openState.controller.view;
+    }
+    return AnimationMax(
+        openState.controller.view, openState.peakBehavior.controller.view);
+  }
 
   Widget _withTop(Widget item, Widget top) {
     if (top == null) {
@@ -245,10 +217,7 @@ class _BackdropBarRenderer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        PopIn(
-          animation: AnimationMax(backdropController.view, peakController.view),
-          child: top,
-        ),
+        PopIn(animation: topBarAnimation, child: top),
         item,
       ],
     );
@@ -270,8 +239,8 @@ class _BackdropBarRenderer extends StatelessWidget {
       return top;
     }
     final item = crossFade(
-      isOpen,
-      backdropController,
+      openState.isOpen,
+      openState.controller,
       back,
       front,
     );
@@ -310,11 +279,16 @@ class _BackdropBarRenderer extends StatelessWidget {
       title: title,
       trailing: trailing,
     );
+    final bar = stack.contentLayout.apply(context, content);
 
-    final ThemeData theme = Theme.of(context);
-    return Container(
-      color: stack.backgroundColor ?? theme.primaryColor,
-      child: stack.contentLayout.apply(context, content),
+    /// TODO should be own abstraction for handling the theming of the backdrop
+    final color = Theme.of(context).primaryColor;
+    return Hero(
+      tag: 'major_components.BackdropBar',
+      child: Material(
+        color: color,
+        child: bar,
+      ),
     );
   }
 }
