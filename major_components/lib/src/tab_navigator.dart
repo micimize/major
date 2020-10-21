@@ -1,24 +1,6 @@
 import 'package:flutter/material.dart';
 import './pointless.dart';
 
-typedef OnPathChange = void Function(TabPath currentPath);
-
-@immutable
-class TabPath {
-  const TabPath(this.name, this.index, this.route);
-  final String name;
-  final int index;
-  final PageRoute route;
-
-  bool pointsTo(BuildContext context) {
-    final focus = TabNavigator.focusOf(context);
-    return focus.tabIndex == index && route == ModalRoute.of(context);
-  }
-
-  @override
-  String toString() => 'TabPath($name, $index, ${route?.settings?.name})';
-}
-
 /// Wrapper around [NavigatorState] providing helpers
 class TabNavFocus {
   TabNavFocus._(this.tabNavigator, this.tabIndex);
@@ -119,9 +101,6 @@ class TabNavigatorState extends State<TabNavigator>
     with TickerProviderStateMixin {
   List<GlobalKey<NavigatorState>> navStates;
   List<PageRoute> topRoutes;
-
-  TabPath get currentPath =>
-      TabPath(tabNames[tabIndex], tabIndex, topRoutes[tabIndex]);
 
   int previousTabIndex = 0;
 
