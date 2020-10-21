@@ -35,8 +35,6 @@ class TabNavFocus {
   /// focused navigator
   NavigatorState get state => tabNavigator.navStates[tabIndex].currentState;
 
-  RouteObserver<PageRoute> get observer => tabNavigator.observers[tabIndex];
-
   /// safely set the [tabNavigator] tab to this tab, then call [and]
   void setTab({VoidCallback and}) {
     if (tabIndex != tabNavigator.tabIndex && tabNavigator.mounted) {
@@ -115,43 +113,15 @@ class TabNavigator extends StatefulWidget {
     });
     return result;
   }
-
-  /// subscribe to navigation events and return an unsubscribe callbakc
-  static VoidCallback subscribe(
-    BuildContext context,
-    void Function(TabPath currentPath) onChange,
-  ) {
-    final focus = focusOf(context);
-    focus.tabNavigator._subscribers.add(onChange);
-    return () => focus.tabNavigator._subscribers.remove(onChange);
-  }
 }
 
 class TabNavigatorState extends State<TabNavigator>
     with TickerProviderStateMixin {
   List<GlobalKey<NavigatorState>> navStates;
-  List<TabObserver> observers;
   List<PageRoute> topRoutes;
-
-  final Set<OnPathChange> _subscribers = {};
 
   TabPath get currentPath =>
       TabPath(tabNames[tabIndex], tabIndex, topRoutes[tabIndex]);
-
-  void _setPath(int index, PageRoute route) =>
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          topRoutes[index] = route;
-          notifyPathListeners();
-        });
-      });
-
-  void notifyPathListeners() {
-    final path = currentPath;
-    for (final callback in _subscribers) {
-      callback(path);
-    }
-  }
 
   int previousTabIndex = 0;
 
@@ -176,13 +146,6 @@ class TabNavigatorState extends State<TabNavigator>
           ),
         )
         .toList();
-
-    observers = List.generate(
-      widget.tabs.length,
-      (i) => TabObserver(
-        onChange: (route) => _setPath(i, route),
-      ),
-    );
 
     topRoutes = List.generate(widget.tabs.length, (i) => null);
 
@@ -228,70 +191,3 @@ class TabNavigatorState extends State<TabNavigator>
     return widget.builder(context, this);
   }
 }
-
-class TabObserver extends RouteObserver<PageRoute<dynamic>> {
-  TabObserver({@required this.onChange});
-
-  final void Function(PageRoute<dynamic> route) onChange;
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic> previousRoute) {
-    super.didPush(route, previousRoute);
-    if (route is PageRoute) {
-      onChange(route);
-    }
-  }
-
-  @override
-  void didReplace({Route<dynamic> newRoute, Route<dynamic> oldRoute}) {
-    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-    if (newRoute is PageRoute) {
-      onChange(newRoute);
-    }
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic> previousRoute) {
-    super.didPop(route, previousRoute);
-    if (previousRoute is PageRoute && route is PageRoute) {
-      onChange(previousRoute);
-    }
-  }
-
-  @override
-  void didRemove(Route<dynamic> route, Route<dynamic> previousRoute) {
-    super.didRemove(route, previousRoute);
-    if (previousRoute is PageRoute && route is PageRoute) {
-      onChange(previousRoute);
-    }
-  }
-}
-
-/*
-class TabRouteProvider extends StatefulWidget {
-  @override
-  _TabRouteProviderState createState() => _TabRouteProviderState();
-}
-
-class _TabRouteProviderState extends State<TabRouteProvider> with RouteAware {
-  RouteObserver<PageRoute> routeObserver;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context));
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    context.watch<CurrentTab>();
-    return Container();
-  }
-}
-*/
