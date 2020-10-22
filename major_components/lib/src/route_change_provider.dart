@@ -52,6 +52,7 @@ mixin RouteChangeObserver<T extends StatefulWidget> on State<T>
   void didPushNext() => _setCurrent(false);
 }
 
+/// Provide a simple `RouteObserver<PageRoute<dynamic>>` for injection as a navigator observable
 class RouteChangeProvider extends StatefulWidget {
   RouteChangeProvider({
     @required this.builder,
@@ -79,21 +80,3 @@ class RouteChangeProviderState extends State<RouteChangeProvider> {
     return widget.builder(context, observer);
   }
 }
-
-/*
-extension IsOnTop on BuildContext {
-  bool get routeIsOnTop {
-    final route = CurrentRoute.of(this).route;
-    final contextRoute = ModalRoute.of(this);
-    if (!contextRoute.routeIsCurrent || contextRoute != route) {
-      return false;
-    }
-
-    final tabs = TabNavigator.of(this, isNullOk: true);
-
-    /// If there is no tab navigator we assume it's topmost
-    return tabs == null || tabs.currentNavigator == contextRoute.navigator;
-  }
-}
-
-*/

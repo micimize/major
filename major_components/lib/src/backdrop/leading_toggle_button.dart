@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import './backdrop_state_provider.dart';
+import 'package:major_components/src/backdrop/models/open_state.dart';
 
 /// Menu button that toggles
 ///
 /// <i class="material-icons md-36">menu</i> &#x2014; material icon named "menu".
 /// <i class="material-icons md-36">close</i> &#x2014; material icon named "close".
-class LeadingToggleButton extends ConsumerWidget {
+class LeadingToggleButton extends StatelessWidget {
   const LeadingToggleButton({
     Key key,
     this.tooltip = 'Toggle options page',
@@ -18,16 +16,13 @@ class LeadingToggleButton extends ConsumerWidget {
   final String tooltip;
 
   @override
-  Widget build(context, watch) {
-    final backdropState = watch(BackdropOpenState.current);
+  Widget build(context) {
+    final open = BackdropOpenState.of(context);
 
     final button = IconButton(
-      onPressed: backdropState.toggleFrontLayer,
+      onPressed: open.toggleOpen,
       tooltip: tooltip,
-      icon: AnimatedIcon(
-        icon: icon,
-        progress: backdropState.controller,
-      ),
+      icon: AnimatedIcon(icon: icon, progress: open.animation),
     );
     return button;
   }

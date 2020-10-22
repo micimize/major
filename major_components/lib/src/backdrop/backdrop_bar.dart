@@ -1,11 +1,9 @@
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:major_components/src/backdrop/models/open_state.dart';
 
 import './pop_in.dart';
 import './cross_fade.dart';
 
-import './backdrop_state_provider.dart';
 import './leading_toggle_button.dart';
 
 import 'package:major_components/src/backdrop/_simple_switcher.dart';
@@ -40,50 +38,20 @@ class BackdropBar extends StatefulWidget {
 
 class _BackdropBarState extends State<BackdropBar>
     with TickerProviderStateMixin {
-  @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, watch, _) {
-        final backdropState = watch(BackdropOpenState.current);
-        return _BackdropBarRenderer(
-          openState: backdropState,
-          stack: widget,
-        );
-      },
-    );
-  }
-}
+  BackdropBarContent get top => widget.top;
+  BackdropBarContent get front => widget.front;
+  BackdropBarContent get back => widget.back;
 
-/// Renders the given backdrops
-///
-/// Takes care of messy details like cross-fading defaults,
-/// TODO and "peak" animations
-///
-/// Having this be it's own class also makes
-/// managing the backdrop state easier
-class _BackdropBarRenderer extends StatelessWidget {
-  const _BackdropBarRenderer({
-    Key key,
-    @required this.openState,
-    @required this.stack,
-  }) : super(key: key);
-
-  final BackdropOpenState openState;
-  final BackdropBar stack;
-
-  BackdropBarContent get top => stack.top;
-
-  BackdropBarContent get front => stack.front;
-
-  BackdropBarContent get back => stack.back;
+  BackdropOpenModel openState;
 
   /// Applies peak animation to top bar if necessary
-  Animation<double> get topBarAnimation {
-    if (openState.peakBehavior == null) {
-      return openState.controller.view;
-    }
-    return AnimationMax(
-        openState.controller.view, openState.peakBehavior.controller.view);
+  Animation<double> get topBarAnimation =>
+      openState.resolvePeakAnimationOf(context);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    openState = BackdropOpenState.of(context);
   }
 
   Widget _withTop(Widget item, Widget top) {
@@ -145,7 +113,7 @@ class _BackdropBarRenderer extends StatelessWidget {
       title: title,
       trailing: trailing,
     );
-    return stack.contentLayout.apply(context, content);
+    return widget.contentLayout.apply(context, content);
   }
 }
 

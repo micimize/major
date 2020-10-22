@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:major_components/major_components.dart';
-import 'package:major_components_example/data.dart';
 import 'package:major_components_example/posts_page.dart';
 import 'package:major_components_example/users_page.dart';
 
-class BackNav extends ConsumerWidget {
+class BackNav extends StatelessWidget {
   BackNav();
 
   @override
-  Widget build(BuildContext context, watch) {
+  Widget build(BuildContext context) {
     VoidCallback navigateTo(String name, WidgetBuilder page) =>
         () => Navigator.push(
               context,

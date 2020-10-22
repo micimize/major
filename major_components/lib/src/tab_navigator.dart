@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
 import './pointless.dart';
 
 /// Wrapper around [NavigatorState] providing helpers

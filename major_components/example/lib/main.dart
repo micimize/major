@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/all.dart';
 import 'package:major_components/major_components.dart';
 
 import './users_page.dart';
@@ -35,43 +34,33 @@ class _MyHomePageState extends State<MyHomePage>
     with TickerProviderStateMixin<MyHomePage> {
   AnimationController backdropController;
   AnimationController peakController;
-  bool isOpen = false;
+
+  BackdropOpenState openState;
+  BackdropBarPeakBehavior peakBehavior;
 
   @override
   void initState() {
     super.initState();
-
-    backdropController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
+    openState = BackdropOpenState(
+      isOpen: false,
+      onOpenChanged: onOpenChange,
+      controller: AnimationController(
+        duration: const Duration(milliseconds: 300),
+        vsync: this,
+      ),
     );
-
-    peakController = AnimationController(vsync: this)..value = 1;
+    peakBehavior = PeakTopBarOnDrag(
+      AnimationController(vsync: this)..value = 1,
+    );
   }
 
-  void onOpenChange(bool newOpen) {
-    setState(() {
-      isOpen = newOpen;
-    });
-  }
+  void onOpenChange(bool newOpen) => setState(() => openState.fling(newOpen));
 
   @override
   Widget build(BuildContext context) {
-    BackdropBarContent header(String text) => BackdropBarContent(
-          title: BackdropTitle.fromText(text),
-        );
-
-    return ProviderScope(
-      overrides: [
-        BackdropOpenState.current.overrideWithValue(
-          BackdropOpenState(
-            isOpen: isOpen,
-            onOpenChanged: onOpenChange,
-            controller: backdropController,
-            peakBehavior: PeakTopBarOnDrag(peakController),
-          ),
-        ),
-      ],
+    return BackdropModelProvider(
+      openState: openState,
+      peakBehavior: peakBehavior,
       child: RouteChangeProvider(
         builder: (context, observer) => MaterialApp(
           title: 'Major Components',

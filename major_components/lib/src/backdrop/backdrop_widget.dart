@@ -3,21 +3,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
-import 'package:major_components/major_components.dart';
 
 import 'package:major_components/src/backdrop/big_sheet.dart';
+import 'package:major_components/src/backdrop/models/open_state.dart';
 import 'package:major_components/src/backdrop/scrim.dart';
 import 'package:major_components/src/backdrop/_simple_switcher.dart';
-import 'package:major_components/src/tab_navigator.dart';
-
-import './backdrop_state_provider.dart';
-import './backdrop_bar.dart';
-
+import 'package:major_components/src/route_change_provider.dart';
 import 'package:major_components/src/transitions.dart';
 
-import 'package:major_components/src/cheaters_global_key.dart';
+import './backdrop_bar.dart';
 
 class Backdrop extends StatefulWidget {
   const Backdrop({
@@ -25,7 +20,6 @@ class Backdrop extends StatefulWidget {
     this.frontHeading,
     this.frontLayer,
     this.backLayer,
-    this.openState,
     Key key,
   }) : super(key: key);
 
@@ -37,8 +31,6 @@ class Backdrop extends StatefulWidget {
 
   final Widget frontHeading;
 
-  final BackdropOpenState openState;
-
   @override
   _BackdropState createState() => _BackdropState();
 }
@@ -48,32 +40,17 @@ class _BackdropState extends State<Backdrop>
   // TODO It's awkward to have both controller-driven and in-place duration-driven animations
   // TODO Maybe we should just replace the controller with top-level durations and curves?
 
-  bool get isOpen => widget.openState.isOpen;
-  AnimationController get controller => widget.openState.controller;
-  ValueChanged<bool> get onOpenChanged => widget.openState.onOpenChanged;
+  BackdropOpenModel openState;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!isOpen) {
-        controller.value = 0.0;
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(oldWidget) {
-    if (oldWidget.openState.isOpen != widget.openState.isOpen) {
-      controller.fling(velocity: isOpen ? 1 : -1);
-    }
-    super.didUpdateWidget(oldWidget);
-  }
+  bool get isOpen => openState.isOpen;
+  AnimationController get controller => openState.controller;
+  ValueChanged<bool> get onOpenChanged => openState.onOpenChanged;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     subscribeToRouteChanges();
+    openState = BackdropOpenState.of(context);
   }
 
   @override
@@ -127,10 +104,10 @@ class _BackdropState extends State<Backdrop>
   }
 
   Widget get wrappedFrontLayer {
-    if (widget.openState.peakBehavior == null) {
+    if (!openState.isPeakable) {
       return widget.frontLayer;
     }
-    return widget.openState.peakBehavior.bindFrontLayer(
+    return openState.applyPeakBehavior(
       context,
       widget.frontLayer,
     );
@@ -139,12 +116,5 @@ class _BackdropState extends State<Backdrop>
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: _buildStack);
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(
-        DiagnosticsProperty<AnimationController>('controller', controller));
   }
 }

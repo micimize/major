@@ -22,7 +22,6 @@ environment:
 
 dependencies:
   faker: ^1.2.1
-  flutter_riverpod: ^0.11.2
   major_components:
     path: ../
   flutter:
