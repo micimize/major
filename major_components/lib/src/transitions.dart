@@ -8,6 +8,9 @@ extension InPlaceAnimationHelper on ModalRoute {
   ///
   /// If inbound, get [animation].
   /// If outbound, get the [secondaryAnimation] with a [ReversedAnimation] applied
+  ///
+  /// **Does not account for tab transitions**, for which you'll want to use
+  /// [inPlacePageAndTabTransition]
   Animation<double> get inPlacePageTransition =>
       _inPlacePageTransition(animation, secondaryAnimation);
 }
@@ -17,25 +20,8 @@ Animation<double> _inPlacePageTransition(
   return AnimationMin(inbound, ReverseAnimation(outbound));
 }
 
-PageRouteBuilder inPlaceHandoffRoute<T>({
-  @required WidgetBuilder builder,
-  double handOff = 0.5,
-  RouteSettings settings,
-}) =>
-    PageRouteBuilder<T>(
-      settings: settings,
-      pageBuilder: (context, animation, secondaryAnimation) => builder(context),
-      transitionDuration: Duration(milliseconds: 550),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: CurvedAnimation(
-            parent: _inPlacePageTransition(animation, secondaryAnimation),
-            curve: Threshold(handOff),
-          ),
-          child: child,
-        );
-      },
-    );
+RoutePageBuilder ignoreAnimations(WidgetBuilder builder) =>
+    (context, anime, secondAnime) => builder(context);
 
 class InPlaceHandoffPageRoute<T> extends PageRouteBuilder<T> {
   /// Creates a route that fades abruptly at the [handOff] point with a [Threshold]

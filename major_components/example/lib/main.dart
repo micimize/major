@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:major_components/major_components.dart';
+import 'package:major_components_example/posts_page.dart';
 
 import './users_page.dart';
 
@@ -58,14 +59,21 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
-    return BackdropModelProvider(
-      openState: openState,
-      peakBehavior: peakBehavior,
-      child: RouteChangeProvider(
-        builder: (context, observer) => MaterialApp(
-          title: 'Major Components',
-          navigatorObservers: [observer],
-          home: UsersPage(),
+    return MaterialApp(
+      title: 'Major Components',
+      home: BackdropModelProvider(
+        openState: openState,
+        peakBehavior: peakBehavior,
+        child: TabNavigator(
+          tabs: ['USERS', 'POSTS', 'OTHER'],
+          builder: (context, tabNav) => TabStack(
+            tabNavigator: tabNav,
+            itemBuilder: TabStack.inPlaceNavBuilder([
+              (_) => UsersPage(),
+              (_) => PostsPage(),
+              (_) => PostsPage(),
+            ]),
+          ),
         ),
       ),
     );

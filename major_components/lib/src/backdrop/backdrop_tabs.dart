@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart' hide TabBar;
+import 'package:major_components/src/tab_navigator.dart';
 import './_flutter_tabs_with_custom_inkwell.dart';
 
+/// Crane-like backdrop tabs.
+///
+/// Can be constructed from [fromTabNavigator]
+///
 class BackdropPillTabs extends StatelessWidget {
   BackdropPillTabs({
     Key key,
@@ -46,4 +51,52 @@ class BackdropPillTabs extends StatelessWidget {
       labelStyle: theme.textTheme.button,
     );
   }
+
+  Widget get withTitlePadding => _withTitlePadding(this);
 }
+
+class BackdropPillTabsFromTabNavigator extends StatelessWidget {
+  BackdropPillTabsFromTabNavigator({
+    Key key,
+    this.tabNavigator,
+    this.indicatorColor,
+    this.indicatorWeight = 2,
+    this.indicatorBorderRadius,
+    this.onTap,
+  }) : super(key: key);
+
+  /// Defaults to `TabNavigator.of(context)`
+  final TabNavigatorState tabNavigator;
+  final BorderRadius indicatorBorderRadius;
+  final Color indicatorColor;
+  final double indicatorWeight;
+  final ValueChanged<int> onTap;
+
+  ValueChanged<int> wrapTap(ValueChanged<int> navTap) => onTap == null
+      ? navTap
+      : (i) {
+          onTap(i);
+          return tabNavigator.onTapTab(i);
+        };
+
+  @override
+  Widget build(BuildContext context) {
+    final tabNav = tabNavigator ?? TabNavigator.of(context);
+    return BackdropPillTabs(
+      tabs: tabNav.tabNames.map((n) => Text(n)).toList(),
+      onTap: wrapTap(tabNav.onTapTab),
+      controller: tabNav.controller,
+      indicatorBorderRadius: indicatorBorderRadius,
+      indicatorColor: indicatorColor,
+      indicatorWeight: indicatorWeight,
+    );
+  }
+
+  Widget get withTitlePadding => _withTitlePadding(this);
+}
+
+Widget _withTitlePadding(Widget w) => Container(
+      padding: EdgeInsets.only(top: 6),
+      height: 40,
+      child: w,
+    );

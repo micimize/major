@@ -20,27 +20,6 @@ class User {
   final String fullName;
   final String email;
   final String bio;
-
-  static infiniteList(BuildContext context) =>
-      ListView.builder(itemBuilder: (c, i) {
-        final u = User();
-        return ListTile(
-          isThreeLine: true,
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            children: [
-              Text(u.fullName),
-              Expanded(child: Container()),
-              Text('@' + u.username,
-                  style: Theme.of(context).textTheme.caption),
-            ],
-          ),
-          subtitle: Text(
-            u.bio,
-            maxLines: 2,
-          ),
-        );
-      });
 }
 
 @immutable
@@ -59,27 +38,7 @@ class Post {
   final int likes;
   final String title;
   final String description;
-
-  static infiniteList(BuildContext context) =>
-      ListView.builder(itemBuilder: (c, i) {
-        final p = Post();
-        return ListTile(
-          isThreeLine: true,
-          leading: Icon(p.icon),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(p.title),
-              Text(
-                p.likes.toString(),
-                style: Theme.of(context).textTheme.caption,
-              ),
-            ],
-          ),
-          subtitle: Text(
-            p.description,
-            maxLines: 2,
-          ),
-        );
-      });
 }
+
+final users = List.generate(20, (i) => User());
+final posts = List.generate(20, (i) => Post());

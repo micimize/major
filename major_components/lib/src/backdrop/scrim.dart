@@ -5,7 +5,7 @@ class Scrim extends StatelessWidget {
     Key key,
     this.applied,
     this.child,
-    this.opacity = 0.75,
+    this.opacity = 0.5,
     this.color = Colors.white,
     this.speed = const Duration(milliseconds: 200),
     this.curve = const Interval(0.0, 0.4, curve: Curves.easeInOut),

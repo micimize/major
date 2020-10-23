@@ -11,8 +11,10 @@ class BackNav extends StatelessWidget {
     VoidCallback navigateTo(String name, WidgetBuilder page) =>
         () => Navigator.push(
               context,
-              inPlaceHandoffRoute(
-                  builder: page, settings: RouteSettings(name: name)),
+              InPlaceHandoffPageRoute(
+                pageBuilder: ignoreAnimations(page),
+                settings: RouteSettings(name: name),
+              ),
             );
 
     final theme = Theme.of(context);

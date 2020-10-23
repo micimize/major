@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:major_components/src/backdrop/cross_fade.dart';
 
 // TODO make open state based
 class SimpleSwitcher extends StatelessWidget {

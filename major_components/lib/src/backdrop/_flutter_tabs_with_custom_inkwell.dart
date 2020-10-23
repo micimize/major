@@ -1,6 +1,6 @@
 // ignore_for_file: omit_local_variable_types
 
-// EXTRACTED FROM FLUTTER JUST TO ADD BORDER RADIUS TO THE TAB INKWELL
+/// **`EXTRACTED FROM FLUTTER JUST TO ADD BORDER RADIUS TO THE TAB INKWELL`**
 
 // Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be

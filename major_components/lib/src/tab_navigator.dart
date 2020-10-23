@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:major_components/src/animations.dart';
+import './transitions.dart';
 import './pointless.dart';
 
 /// Wrapper around [NavigatorState] providing helpers
@@ -15,16 +17,21 @@ class TabNavFocus {
   bool get isCurrent => tabNavigator.tabIndex == tabIndex;
 
   /// focused navigator
-  NavigatorState get state => tabNavigator.navStates[tabIndex].currentState;
+  GlobalKey<NavigatorState> get navKey => tabNavigator.navStates[tabIndex];
+
+  /// focused navigator
+  NavigatorState get navState => navKey.currentState;
+
+  /// focused observer
+  RouteObserver<PageRoute> get observer => tabNavigator.observers[tabIndex];
 
   /// safely set the [tabNavigator] tab to this tab, then call [and]
   void setTab({VoidCallback and}) {
     if (tabIndex != tabNavigator.tabIndex && tabNavigator.mounted) {
-      tabNavigator.setTab(tabIndex, and: and);
-    } else {
-      tabNavigator.previousTabIndex = tabNavigator.tabIndex;
-      and();
+      return tabNavigator.setTab(tabIndex, and: and);
     }
+    //tabNavigator.previousTabIndex = tabNavigator.tabIndex;
+    and();
   }
 }
 
@@ -32,11 +39,21 @@ class TabNavigator extends StatefulWidget {
   TabNavigator({
     @required Iterable<String> tabs,
     @required this.builder,
+    this.initialIndex = 0,
+    this.transitionHandOff = 0.5,
     Key key,
   })  : tabs = tabs.map(_cleanTab).toList(),
         super(key: key);
 
   final List<String> tabs;
+  final int initialIndex;
+
+  /// At which point in the relative tab animation to hand off
+  /// between tabs
+  ///
+  /// Used by animations down the tree to smoothly transition.
+  final double transitionHandOff;
+
   final Widget Function(BuildContext context, TabNavigatorState tabNavigator)
       builder;
 
@@ -91,26 +108,28 @@ class TabNavigator extends StatefulWidget {
     // TODO janky AF, but realized we want return values from navigateTo
     Future<T> result;
     tabState.setTab(and: () {
-      result = tabState.state.push<T>(route);
+      result = tabState.navState.push<T>(route);
     });
     return result;
   }
 }
 
 class TabNavigatorState extends State<TabNavigator>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin<TabNavigator> {
   List<GlobalKey<NavigatorState>> navStates;
-  List<PageRoute> topRoutes;
-
-  int previousTabIndex = 0;
+  List<RouteObserver<PageRoute>> observers;
 
   TabController controller;
-
-  int tabIndex = 0;
+  int get previousTabIndex => controller.previousIndex;
+  int get tabIndex => controller.index;
 
   NavigatorState get currentNavigator => navStates[tabIndex].currentState;
 
   List<String> get tabNames => widget.tabs;
+  int get tabCount => widget.tabs.length;
+
+  List<TabNavFocus> get allTabData =>
+      List.generate(tabCount, (index) => TabNavFocus._(this, index));
 
   @override
   void initState() {
@@ -126,26 +145,21 @@ class TabNavigatorState extends State<TabNavigator>
         )
         .toList();
 
-    topRoutes = List.generate(widget.tabs.length, (i) => null);
+    observers = List.generate(tabCount, (i) => RouteObserver<PageRoute>());
 
     controller = TabController(
-      initialIndex: 0,
-      length: widget.tabs.length,
+      initialIndex: widget.initialIndex,
+      length: tabCount,
       vsync: this,
     );
   }
 
   void setTab(int newIndex, {VoidCallback and}) {
+    controller.animateTo(tabIndex);
     setState(() {
-      previousTabIndex = tabIndex;
-      tabIndex = newIndex;
       if (and != null) {
         and();
       }
-      if (controller.index != tabIndex) {
-        controller.animateTo(tabIndex);
-      }
-      //notifyPathListeners();
     });
   }
 
@@ -158,7 +172,6 @@ class TabNavigatorState extends State<TabNavigator>
   void onTapTab(int newIndex) {
     // double tap
     if (newIndex == tabIndex) {
-      setState(() => previousTabIndex = tabIndex);
       popToTop();
     } else if (mounted) {
       setTab(newIndex);
@@ -171,14 +184,64 @@ class TabNavigatorState extends State<TabNavigator>
   }
 }
 
+extension TransitionHelpers on TabNavigatorState {
+  /// At which point in the relative tab animation to hand off
+  /// between tabs
+  ///
+  /// Used by animations down the tree to smoothly transition.
+  double get transitionHandOff => widget.transitionHandOff;
+
+  Animation<double> get relativeTransition => RelativeAnimation(
+        parent: controller.animation,
+        begin: previousTabIndex.toDouble(),
+        end: tabIndex.toDouble(),
+      );
+
+  /// Where [relativeTransition].value has passed the [transitionHandOff]
+  ///
+  /// Will not function properly outside [AnimatedWidget]s, etc.
+  bool get passedTransitionHandoff =>
+      relativeTransition.value > transitionHandOff;
+
+  /// [transitionHandOff]-thresholded tab index for use in [AnimatedWidget]s and the like.
+  int get transitionTabIndex =>
+      passedTransitionHandoff ? tabIndex : previousTabIndex;
+
+  NavigatorState get transitionNavigator =>
+      navStates[transitionTabIndex].currentState;
+}
+
 extension IsOnTop on ModalRoute {
-  bool get isOnTop {
+  bool _isLogicallyOnTop(TabNavigatorState tabs) {
+    if (!isCurrent) {
+      return false;
+    }
+
+    /// If there is no tab navigator we assume it's topmost
+    return tabs == null || (tabs.currentNavigator == navigator);
+  }
+
+  bool get isVisuallyOnTop {
     if (!isCurrent) {
       return false;
     }
     final tabs = TabNavigator.of(subtreeContext, isNullOk: true);
 
     /// If there is no tab navigator we assume it's topmost
-    return tabs == null || tabs.currentNavigator == navigator;
+    return tabs == null || (tabs.transitionNavigator == navigator);
+  }
+
+  Animation<double> get inPlacePageAndTabTransition {
+    final tabs = TabNavigator.of(subtreeContext, isNullOk: true);
+    final pageTransition = inPlacePageTransition;
+    if (tabs == null) {
+      return pageTransition;
+    }
+    final isEntering = _isLogicallyOnTop(tabs);
+    var tabTransition = tabs.relativeTransition;
+    if (!isEntering) {
+      tabTransition = ReverseAnimation(tabTransition);
+    }
+    return AnimationMin(tabTransition, pageTransition);
   }
 }

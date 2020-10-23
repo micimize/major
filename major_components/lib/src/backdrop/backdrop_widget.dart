@@ -11,6 +11,7 @@ import 'package:major_components/src/backdrop/scrim.dart';
 import 'package:major_components/src/backdrop/_simple_switcher.dart';
 import 'package:major_components/src/route_change_provider.dart';
 import 'package:major_components/src/transitions.dart';
+import 'package:major_components/src/tab_navigator.dart';
 
 import './backdrop_bar.dart';
 
@@ -36,7 +37,9 @@ class Backdrop extends StatefulWidget {
 }
 
 class _BackdropState extends State<Backdrop>
-    with SingleTickerProviderStateMixin, RouteChangeObserver<Backdrop> {
+    with
+        SingleTickerProviderStateMixin<Backdrop>,
+        PageRouteChangeAware<Backdrop> {
   // TODO It's awkward to have both controller-driven and in-place duration-driven animations
   // TODO Maybe we should just replace the controller with top-level durations and curves?
 
@@ -62,7 +65,7 @@ class _BackdropState extends State<Backdrop>
   void toggleFrontLayer() => setState(() => onOpenChanged(!isOpen));
 
   Widget _buildStack(BuildContext context, BoxConstraints constraints) {
-    final pageAnimation = routeFromContext.inPlacePageTransition;
+    final pageAnimation = routeFromContext.inPlacePageAndTabTransition;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

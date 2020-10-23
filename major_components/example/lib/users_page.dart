@@ -17,14 +17,41 @@ class UsersPage extends StatelessWidget {
       body: Backdrop(
         bar: BackdropBar(
           top: BackdropBarContent(
-            title: BackdropTitle.fromText('constant top'),
+            title: BackdropPillTabsFromTabNavigator().withTitlePadding,
           ),
           back: header('user back layer'),
           front: header('users front'),
         ),
         backLayer: BackNav(),
-        frontLayer: User.infiniteList(context),
+        frontLayer: UserList(),
       ),
     );
+  }
+}
+
+class UserList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (c, i) {
+          final u = users[i];
+          return ListTile(
+            isThreeLine: true,
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              children: [
+                Text(u.fullName),
+                Expanded(child: Container()),
+                Text('@' + u.username,
+                    style: Theme.of(context).textTheme.caption),
+              ],
+            ),
+            subtitle: Text(
+              u.bio,
+              maxLines: 2,
+            ),
+          );
+        });
   }
 }

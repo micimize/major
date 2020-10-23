@@ -13,6 +13,7 @@ dependencies:
   provider: ^4.3.2+2
   built_collection: ^4.3.2
   built_value: ^7.0.9
+  functional: ^0.9.4+1
   flutter:
     sdk: flutter
 

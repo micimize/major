@@ -18,14 +18,43 @@ class PostsPage extends StatelessWidget {
       body: Backdrop(
         bar: BackdropBar(
           top: BackdropBarContent(
-            title: BackdropTitle.fromText('constant top'),
+            title: BackdropPillTabsFromTabNavigator().withTitlePadding,
           ),
           back: header('posts back layer'),
           front: header('posts front layer'),
         ),
         backLayer: BackNav(),
-        frontLayer: User.infiniteList(context),
+        frontLayer: PostList(),
       ),
     );
+  }
+}
+
+class PostList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: posts.length,
+        itemBuilder: (c, i) {
+          final p = posts[i];
+          return ListTile(
+            isThreeLine: true,
+            leading: Icon(p.icon),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(p.title),
+                Text(
+                  p.likes.toString(),
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ],
+            ),
+            subtitle: Text(
+              p.description,
+              maxLines: 2,
+            ),
+          );
+        });
   }
 }
