@@ -40,6 +40,6 @@ void pprint(dynamic json) {
   try {
     debugPrint(encoder.convert(_json));
   } catch (e) {
-    debugPrint(e.toString())
+    debugPrint(e.toString());
   }
 }
