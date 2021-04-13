@@ -1,5 +1,8 @@
 # `major_graphql`
 
+## Unmaintained
+I no longer use this project and have not maintained it in a while, thus I am archiving the repo. Anyone is free to fork – contact me if you want publishing permissions for the packages.
+
 `major_graphql` uses the dart `build` system and `gql` to generate `built_value` classes, primarily for use in client side applications.
 
 ### Packages
